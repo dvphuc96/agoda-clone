@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useParams, useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../contexts/AuthContext';
-import { hotelsApi, type RoomType, type Hotel } from '../api/hotels';
+import { type RoomType, type Hotel } from '../api/hotels';
 import { bookingsApi } from '../api/bookings';
 import BookingForm from '../components/booking/BookingForm';
 import PriceSummary from '../components/booking/PriceSummary';

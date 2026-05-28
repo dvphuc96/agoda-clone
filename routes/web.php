@@ -2,6 +2,5 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// SPA fallback — serve React app for all non-API routes
+Route::view('/{any}', 'welcome')->where('any', '.*');

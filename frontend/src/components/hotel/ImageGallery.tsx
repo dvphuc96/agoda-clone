@@ -1,13 +1,6 @@
 import { useState } from 'react';
 import type { HotelImage } from '../../api/hotels';
 
-const gradients = [
-  'from-blue-100 to-blue-300',
-  'from-sky-100 to-sky-300',
-  'from-amber-100 to-amber-300',
-  'from-emerald-100 to-emerald-300',
-];
-
 export default function ImageGallery({ images, hotelName }: { images: HotelImage[]; hotelName: string }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
 
