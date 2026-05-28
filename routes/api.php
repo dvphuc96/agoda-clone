@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\DestinationController;
 use App\Http\Controllers\Api\HotelController;
+use App\Http\Controllers\Api\PaymentController;
 use Illuminate\Support\Facades\Route;
 
 // Auth routes
@@ -22,6 +23,10 @@ Route::get('/hotels/featured', [HotelController::class, 'featured']);
 Route::get('/hotels/{slug}', [HotelController::class, 'show']);
 Route::get('/hotels/{slug}/rooms', [HotelController::class, 'rooms']);
 
+// Payment callbacks (public - gateway redirects)
+Route::get('/payments/vnpay/callback', [PaymentController::class, 'vnpayCallback']);
+Route::get('/payments/momo/callback', [PaymentController::class, 'momoCallback']);
+
 // Authenticated routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
@@ -31,4 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/bookings', [BookingController::class, 'store']);
     Route::get('/bookings/{bookingCode}', [BookingController::class, 'show']);
     Route::delete('/bookings/{bookingCode}', [BookingController::class, 'destroy']);
+
+    Route::post('/payments/create', [PaymentController::class, 'create']);
+    Route::get('/payments/{id}', [PaymentController::class, 'show']);
 });
