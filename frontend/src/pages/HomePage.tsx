@@ -1,3 +1,13 @@
+import HeroSearch from '../components/home/HeroSearch';
+import DestinationGrid from '../components/home/DestinationGrid';
+import FeaturedHotels from '../components/home/FeaturedHotels';
+
 export default function HomePage() {
-  return <div className="p-8 text-center text-text-secondary">HomePage</div>;
+  return (
+    <>
+      <HeroSearch />
+      <DestinationGrid />
+      <FeaturedHotels />
+    </>
+  );
 }
