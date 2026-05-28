@@ -1,0 +1,87 @@
+<h2>Phần 3: Pages & API Endpoints</h2>
+<p class="subtitle">5 trang chính + REST API cho booking flow</p>
+
+<h3 style="color: #e8a838; margin-top: 16px;">📱 Page Flow</h3>
+<div class="mockup">
+  <div class="mockup-body" style="background: #1a1a2e; color: #eee; padding: 20px; font-family: monospace; font-size: 13px; line-height: 1.6;">
+    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center;">
+      <div style="border: 2px solid #4ade80; border-radius: 8px; padding: 10px 16px; background: #16213e; text-align: center;">
+        <div style="color: #4ade80; font-weight: bold;">🏠 Home</div>
+        <div style="font-size: 11px; color: #888;">Hero + Search<br>Destinations<br>Featured Hotels</div>
+      </div>
+      <div style="color: #e8a838; font-size: 20px;">→</div>
+      <div style="border: 2px solid #60a5fa; border-radius: 8px; padding: 10px 16px; background: #16213e; text-align: center;">
+        <div style="color: #60a5fa; font-weight: bold;">🔍 Search</div>
+        <div style="font-size: 11px; color: #888;">Filter + Sort<br>Hotel Cards<br>Pagination</div>
+      </div>
+      <div style="color: #e8a838; font-size: 20px;">→</div>
+      <div style="border: 2px solid #f472b6; border-radius: 8px; padding: 10px 16px; background: #16213e; text-align: center;">
+        <div style="color: #f472b6; font-weight: bold;">🏨 Hotel Detail</div>
+        <div style="font-size: 11px; color: #888;">Gallery + Info<br>Room Types<br>Reviews</div>
+      </div>
+      <div style="color: #e8a838; font-size: 20px;">→</div>
+      <div style="border: 2px solid #fb923c; border-radius: 8px; padding: 10px 16px; background: #16213e; text-align: center;">
+        <div style="color: #fb923c; font-weight: bold;">📋 Booking</div>
+        <div style="font-size: 11px; color: #888;">Guest Info<br>Price Summary<br>Confirm</div>
+      </div>
+      <div style="color: #e8a838; font-size: 20px;">→</div>
+      <div style="border: 2px solid #facc15; border-radius: 8px; padding: 10px 16px; background: #16213e; text-align: center;">
+        <div style="color: #facc15; font-weight: bold;">💳 Payment</div>
+        <div style="font-size: 11px; color: #888;">VNPay / MoMo<br>Gateway Redirect<br>Callback</div>
+      </div>
+    </div>
+    <div style="text-align: center; margin-top: 16px; color: #888; font-size: 12px;">
+      + Trang phụ: Login / Register / My Bookings / Booking Detail
+    </div>
+  </div>
+</div>
+
+<h3 style="color: #e8a838; margin-top: 24px;">🔌 API Endpoints</h3>
+<div class="mockup">
+  <div class="mockup-body" style="background: #1a1a2e; color: #eee; padding: 16px; font-family: monospace; font-size: 12px; line-height: 1.8;">
+
+    <!-- Auth -->
+    <div style="margin-bottom: 16px;">
+      <div style="color: #4ade80; font-weight: bold; border-bottom: 1px solid #4ade80; padding-bottom: 4px; margin-bottom: 8px;">🔐 Auth</div>
+      <div><span style="background: #22c55e; color: #000; padding: 1px 6px; border-radius: 3px; font-size: 11px;">POST</span>  /api/auth/register</div>
+      <div><span style="background: #22c55e; color: #000; padding: 1px 6px; border-radius: 3px; font-size: 11px;">POST</span>  /api/auth/login</div>
+      <div><span style="background: #22c55e; color: #000; padding: 1px 6px; border-radius: 3px; font-size: 11px;">POST</span>  /api/auth/logout</div>
+      <div><span style="background: #3b82f6; color: #000; padding: 1px 6px; border-radius: 3px; font-size: 11px;">GET</span>   /api/auth/me</div>
+    </div>
+
+    <!-- Destinations -->
+    <div style="margin-bottom: 16px;">
+      <div style="color: #60a5fa; font-weight: bold; border-bottom: 1px solid #60a5fa; padding-bottom: 4px; margin-bottom: 8px;">📍 Destinations</div>
+      <div><span style="background: #3b82f6; color: #000; padding: 1px 6px; border-radius: 3px; font-size: 11px;">GET</span>   /api/destinations</div>
+      <div><span style="background: #3b82f6; color: #000; padding: 1px 6px; border-radius: 3px; font-size: 11px;">GET</span>   /api/destinations/{slug}/hotels</div>
+    </div>
+
+    <!-- Hotels -->
+    <div style="margin-bottom: 16px;">
+      <div style="color: #f472b6; font-weight: bold; border-bottom: 1px solid #f472b6; padding-bottom: 4px; margin-bottom: 8px;">🏨 Hotels</div>
+      <div><span style="background: #3b82f6; color: #000; padding: 1px 6px; border-radius: 3px; font-size: 11px;">GET</span>   /api/hotels <span style="color: #666;">?destination=&check_in=&check_out=&guests=&star=&price_min=&price_max=&sort=&page=</span></div>
+      <div><span style="background: #3b82f6; color: #000; padding: 1px 6px; border-radius: 3px; font-size: 11px;">GET</span>   /api/hotels/{slug}</div>
+      <div><span style="background: #3b82f6; color: #000; padding: 1px 6px; border-radius: 3px; font-size: 11px;">GET</span>   /api/hotels/{slug}/rooms <span style="color: #666;">?check_in=&check_out=</span></div>
+      <div><span style="background: #3b82f6; color: #000; padding: 1px 6px; border-radius: 3px; font-size: 11px;">GET</span>   /api/hotels/featured</div>
+    </div>
+
+    <!-- Bookings -->
+    <div style="margin-bottom: 16px;">
+      <div style="color: #fb923c; font-weight: bold; border-bottom: 1px solid #fb923c; padding-bottom: 4px; margin-bottom: 8px;">📋 Bookings <span style="color: #666; font-weight: normal;">(require auth)</span></div>
+      <div><span style="background: #3b82f6; color: #000; padding: 1px 6px; border-radius: 3px; font-size: 11px;">GET</span>   /api/bookings</div>
+      <div><span style="background: #22c55e; color: #000; padding: 1px 6px; border-radius: 3px; font-size: 11px;">POST</span>  /api/bookings</div>
+      <div><span style="background: #3b82f6; color: #000; padding: 1px 6px; border-radius: 3px; font-size: 11px;">GET</span>   /api/bookings/{booking_code}</div>
+      <div><span style="background: #ef4444; color: #000; padding: 1px 6px; border-radius: 3px; font-size: 11px;">DEL</span>   /api/bookings/{booking_code} <span style="color: #666;">(cancel)</span></div>
+    </div>
+
+    <!-- Payments -->
+    <div style="margin-bottom: 16px;">
+      <div style="color: #facc15; font-weight: bold; border-bottom: 1px solid #facc15; padding-bottom: 4px; margin-bottom: 8px;">💳 Payments <span style="color: #666; font-weight: normal;">(require auth)</span></div>
+      <div><span style="background: #22c55e; color: #000; padding: 1px 6px; border-radius: 3px; font-size: 11px;">POST</span>  /api/payments/create <span style="color: #666;">→ redirect to VNPay/MoMo</span></div>
+      <div><span style="background: #3b82f6; color: #000; padding: 1px 6px; border-radius: 3px; font-size: 11px;">GET</span>   /api/payments/vnpay/callback</div>
+      <div><span style="background: #3b82f6; color: #000; padding: 1px 6px; border-radius: 3px; font-size: 11px;">GET</span>   /api/payments/momo/callback</div>
+      <div><span style="background: #3b82f6; color: #000; padding: 1px 6px; border-radius: 3px; font-size: 11px;">GET</span>   /api/payments/{id}</div>
+    </div>
+
+  </div>
+</div>

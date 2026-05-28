@@ -1,0 +1,138 @@
+<h2>Phần 4: UI Layout — Home Page (Updated)</h2>
+<p class="subtitle">Bảng màu Blue + Gold — Tin cậy + Sang trọng</p>
+
+<div class="mockup">
+  <div class="mockup-header">🏠 Trang Home — Color Palette</div>
+  <div class="mockup-body" style="background: #f8fafc; color: #333; padding: 0; font-family: system-ui, sans-serif; font-size: 13px; line-height: 1.5;">
+
+    <!-- Color Palette Bar -->
+    <div style="display: flex; height: 40px;">
+      <div style="flex: 2; background: #1e40af; display: flex; align-items: center; justify-content: center; color: white; font-size: 11px;">Primary #1e40af</div>
+      <div style="flex: 1; background: #2563eb; display: flex; align-items: center; justify-content: center; color: white; font-size: 11px;">Blue #2563eb</div>
+      <div style="flex: 1; background: #f59e0b; display: flex; align-items: center; justify-content: center; color: white; font-size: 11px;">Gold #f59e0b</div>
+      <div style="flex: 1; background: #fbbf24; display: flex; align-items: center; justify-content: center; color: #333; font-size: 11px;">Light Gold #fbbf24</div>
+      <div style="flex: 1; background: #f1f5f9; display: flex; align-items: center; justify-content: center; color: #333; font-size: 11px;">BG #f1f5f9</div>
+    </div>
+
+    <!-- Navbar -->
+    <div style="background: #1e40af; color: white; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center;">
+      <div style="font-size: 20px; font-weight: bold;">Viet<span style="color: #fbbf24;">Stay</span></div>
+      <div style="display: flex; gap: 20px; font-size: 13px; align-items: center;">
+        <span>Điểm đến</span>
+        <span>Khách sạn</span>
+        <span>Villa</span>
+        <span>Ưu đãi</span>
+        <span style="background: #f59e0b; color: white; padding: 6px 16px; border-radius: 6px; font-weight: bold; font-size: 12px;">Đăng nhập</span>
+      </div>
+    </div>
+
+    <!-- Hero Section -->
+    <div style="background: linear-gradient(135deg, #1e40af, #2563eb, #3b82f6); padding: 56px 24px; text-align: center;">
+      <div style="font-size: 32px; font-weight: bold; color: white; margin-bottom: 8px;">Khám phá Việt Nam tuyệt đẹp</div>
+      <div style="font-size: 16px; color: #bfdbfe; margin-bottom: 28px;">Đặt phòng khách sạn, villa giá tốt nhất tại các điểm đến hot nhất</div>
+
+      <!-- Search Box -->
+      <div style="background: white; border-radius: 12px; padding: 16px 20px; max-width: 820px; margin: 0 auto; display: flex; gap: 12px; align-items: center; box-shadow: 0 4px 24px rgba(0,0,0,0.15);">
+        <div style="flex: 2; text-align: left; border-right: 1px solid #e5e7eb; padding-right: 12px;">
+          <div style="font-size: 10px; color: #6b7280; text-transform: uppercase; font-weight: 600;">Điểm đến</div>
+          <div style="color: #374151; font-weight: 500;">Bạn muốn đi đâu?</div>
+        </div>
+        <div style="flex: 1.5; text-align: left; border-right: 1px solid #e5e7eb; padding-right: 12px;">
+          <div style="font-size: 10px; color: #6b7280; text-transform: uppercase; font-weight: 600;">Nhận phòng</div>
+          <div style="color: #374151; font-weight: 500;">Chọn ngày</div>
+        </div>
+        <div style="flex: 1.5; text-align: left; border-right: 1px solid #e5e7eb; padding-right: 12px;">
+          <div style="font-size: 10px; color: #6b7280; text-transform: uppercase; font-weight: 600;">Trả phòng</div>
+          <div style="color: #374151; font-weight: 500;">Chọn ngày</div>
+        </div>
+        <div style="flex: 1; text-align: left; border-right: 1px solid #e5e7eb; padding-right: 12px;">
+          <div style="font-size: 10px; color: #6b7280; text-transform: uppercase; font-weight: 600;">Khách</div>
+          <div style="color: #374151; font-weight: 500;">2 người</div>
+        </div>
+        <div style="background: #f59e0b; color: white; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer;">Tìm kiếm</div>
+      </div>
+    </div>
+
+    <!-- Popular Destinations -->
+    <div style="padding: 32px 24px;">
+      <div style="font-size: 22px; font-weight: bold; color: #1e3a5f; margin-bottom: 4px;">Điểm đến nổi bật</div>
+      <div style="font-size: 14px; color: #6b7280; margin-bottom: 20px;">Những nơi được yêu thích nhất</div>
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+        <div style="border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); cursor: pointer; transition: transform 0.2s;">
+          <div style="background: linear-gradient(135deg, #1e40af, #3b82f6); height: 120px; display: flex; align-items: flex-end; padding: 12px;">
+            <span style="color: white; font-weight: bold; font-size: 16px;">🏔️ Đà Lạt</span>
+          </div>
+          <div style="padding: 10px; background: white; font-size: 12px; color: #6b7280;">128 khách sạn</div>
+        </div>
+        <div style="border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+          <div style="background: linear-gradient(135deg, #0284c7, #38bdf8); height: 120px; display: flex; align-items: flex-end; padding: 12px;">
+            <span style="color: white; font-weight: bold; font-size: 16px;">🏖️ Phú Quốc</span>
+          </div>
+          <div style="padding: 10px; background: white; font-size: 12px; color: #6b7280;">95 khách sạn</div>
+        </div>
+        <div style="border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+          <div style="background: linear-gradient(135deg, #7c3aed, #a78bfa); height: 120px; display: flex; align-items: flex-end; padding: 12px;">
+            <span style="color: white; font-weight: bold; font-size: 16px;">🏯 Huế</span>
+          </div>
+          <div style="padding: 10px; background: white; font-size: 12px; color: #6b7280;">72 khách sạn</div>
+        </div>
+        <div style="border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+          <div style="background: linear-gradient(135deg, #059669, #34d399); height: 120px; display: flex; align-items: flex-end; padding: 12px;">
+            <span style="color: white; font-weight: bold; font-size: 16px;">🌾 Sapa</span>
+          </div>
+          <div style="padding: 10px; background: white; font-size: 12px; color: #6b7280;">54 khách sạn</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Featured Hotels -->
+    <div style="padding: 0 24px 32px;">
+      <div style="font-size: 22px; font-weight: bold; color: #1e3a5f; margin-bottom: 4px;">Khách sạn nổi bật</div>
+      <div style="font-size: 14px; color: #6b7280; margin-bottom: 20px;">Được đặt nhiều nhất tuần qua</div>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+        <div style="border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.08); background: white;">
+          <div style="background: linear-gradient(135deg, #dbeafe, #93c5fd); height: 140px; display: flex; align-items: center; justify-content: center;">
+            <span style="font-size: 48px;">🏨</span>
+          </div>
+          <div style="padding: 14px;">
+            <div style="font-weight: bold; font-size: 14px; color: #1e293b;">Sofitel Legend Metropole</div>
+            <div style="font-size: 12px; color: #6b7280; margin-top: 2px;">📍 Hà Nội · ⭐⭐⭐⭐⭐</div>
+            <div style="margin-top: 10px;">
+              <span style="font-size: 18px; font-weight: bold; color: #1e40af;">3,500,000đ</span><span style="font-size: 11px; color: #9ca3af;"> /đêm</span>
+            </div>
+          </div>
+        </div>
+        <div style="border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.08); background: white;">
+          <div style="background: linear-gradient(135deg, #e0f2fe, #7dd3fc); height: 140px; display: flex; align-items: center; justify-content: center;">
+            <span style="font-size: 48px;">🏖️</span>
+          </div>
+          <div style="padding: 14px;">
+            <div style="font-weight: bold; font-size: 14px; color: #1e293b;">InterContinental Danang</div>
+            <div style="font-size: 12px; color: #6b7280; margin-top: 2px;">📍 Đà Nẵng · ⭐⭐⭐⭐⭐</div>
+            <div style="margin-top: 10px;">
+              <span style="font-size: 18px; font-weight: bold; color: #1e40af;">4,200,000đ</span><span style="font-size: 11px; color: #9ca3af;"> /đêm</span>
+            </div>
+          </div>
+        </div>
+        <div style="border-radius: 12px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.08); background: white;">
+          <div style="background: linear-gradient(135deg, #fef3c7, #fcd34d); height: 140px; display: flex; align-items: center; justify-content: center;">
+            <span style="font-size: 48px;">🏡</span>
+          </div>
+          <div style="padding: 14px;">
+            <div style="font-weight: bold; font-size: 14px; color: #1e293b;">Azerai La Residence</div>
+            <div style="font-size: 12px; color: #6b7280; margin-top: 2px;">📍 Huế · ⭐⭐⭐⭐</div>
+            <div style="margin-top: 10px;">
+              <span style="font-size: 18px; font-weight: bold; color: #1e40af;">2,800,000đ</span><span style="font-size: 11px; color: #9ca3af;"> /đêm</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="background: #1e293b; color: #94a3b8; padding: 24px; text-align: center; font-size: 12px;">
+      <div style="margin-bottom: 4px;"><span style="color: white; font-weight: bold;">Viet<span style="color: #fbbf24;">Stay</span></span></div>
+      © 2026 VietStay — Đặt phòng khách sạn & villa tại Việt Nam
+    </div>
+  </div>
+</div>

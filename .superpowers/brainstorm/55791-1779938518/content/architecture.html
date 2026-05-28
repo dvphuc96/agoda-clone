@@ -1,0 +1,76 @@
+<h2>Phần 1: Kiến trúc hệ thống</h2>
+<p class="subtitle">Monolith Laravel + React SPA — Một repo, deploy đơn giản</p>
+
+<div class="mockup">
+  <div class="mockup-header">System Architecture</div>
+  <div class="mockup-body" style="background: #1a1a2e; color: #eee; padding: 20px; font-family: monospace; font-size: 13px; line-height: 1.6;">
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+      <!-- Browser -->
+      <div style="border: 2px solid #e8a838; border-radius: 8px; padding: 12px; background: #16213e;">
+        <div style="color: #e8a838; font-weight: bold; margin-bottom: 8px;">🌐 Browser (User)</div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <span style="background: #0f3460; padding: 4px 10px; border-radius: 4px;">React SPA</span>
+          <span style="background: #0f3460; padding: 4px 10px; border-radius: 4px;">Tailwind CSS</span>
+          <span style="background: #0f3460; padding: 4px 10px; border-radius: 4px;">React Router</span>
+        </div>
+      </div>
+
+      <!-- Arrow -->
+      <div style="text-align: center; color: #e8a838;">▼ REST API (JSON) ▼</div>
+
+      <!-- Laravel -->
+      <div style="border: 2px solid #e8a838; border-radius: 8px; padding: 12px; background: #16213e;">
+        <div style="color: #e8a838; font-weight: bold; margin-bottom: 8px;">⚙️ Laravel 11 (Backend API)</div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 6px;">
+          <span style="background: #0f3460; padding: 4px 10px; border-radius: 4px;">Auth (Sanctum)</span>
+          <span style="background: #0f3460; padding: 4px 10px; border-radius: 4px;">Eloquent ORM</span>
+          <span style="background: #0f3460; padding: 4px 10px; border-radius: 4px;">API Resources</span>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <span style="background: #0f3460; padding: 4px 10px; border-radius: 4px;">VNPay SDK</span>
+          <span style="background: #0f3460; padding: 4px 10px; border-radius: 4px;">MoMo SDK</span>
+          <span style="background: #0f3460; padding: 4px 10px; border-radius: 4px;">Mail (SMTP)</span>
+        </div>
+      </div>
+
+      <!-- Arrow -->
+      <div style="text-align: center; color: #e8a838;">▼ ▼ ▼</div>
+
+      <!-- Data Layer -->
+      <div style="display: flex; gap: 12px;">
+        <div style="border: 2px solid #e8a838; border-radius: 8px; padding: 12px; background: #16213e; flex: 1;">
+          <div style="color: #e8a838; font-weight: bold; margin-bottom: 4px;">🗄️ MySQL</div>
+          <div style="font-size: 12px; color: #aaa;">Users, Hotels, Rooms, Bookings, Payments, Destinations</div>
+        </div>
+        <div style="border: 2px solid #e8a838; border-radius: 8px; padding: 12px; background: #16213e; flex: 1;">
+          <div style="color: #e8a838; font-weight: bold; margin-bottom: 4px;">📁 Storage</div>
+          <div style="font-size: 12px; color: #aaa;">Hotel images, Room photos (local/S3)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h3 style="margin-top: 24px;">Cấu trúc thư mục dự án</h3>
+<div class="mockup">
+  <div class="mockup-body" style="background: #1a1a2e; color: #eee; padding: 16px; font-family: monospace; font-size: 13px; line-height: 1.8;">
+    <div style="color: #e8a838;">agoda-clone/</div>
+    <div>├── app/</div>
+    <div>│   ├── Http/Controllers/Api/    <span style="color: #666;"># API endpoints</span></div>
+    <div>│   ├── Models/                  <span style="color: #666;"># Eloquent models</span></div>
+    <div>│   ├── Services/                <span style="color: #666;"># Business logic</span></div>
+    <div>│   └── Requests/                <span style="color: #666;"># Validation</span></div>
+    <div>├── database/</div>
+    <div>│   ├── migrations/              <span style="color: #666;"># Schema</span></div>
+    <div>│   └── seeders/                 <span style="color: #666;"># Sample data VN</span></div>
+    <div>├── frontend/                    <span style="color: #e8a838;"># React SPA</span></div>
+    <div>│   ├── src/</div>
+    <div>│   │   ├── pages/               <span style="color: #666;"># Home, Search, Detail, Booking</span></div>
+    <div>│   │   ├── components/          <span style="color: #666;"># UI components</span></div>
+    <div>│   │   ├── hooks/               <span style="color: #666;"># Custom hooks</span></div>
+    <div>│   │   └── api/                 <span style="color: #666;"># API client</span></div>
+    <div>│   └── public/</div>
+    <div>├── routes/api.php               <span style="color: #666;"># API routes</span></div>
+    <div>└── public/                      <span style="color: #666;"># React build output</span></div>
+  </div>
+</div>

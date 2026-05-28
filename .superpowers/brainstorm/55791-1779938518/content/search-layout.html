@@ -1,0 +1,167 @@
+<h2>Phần 4b: UI Layout — Search Page</h2>
+<p class="subtitle">Danh sách khách sạn với filter, sort, pagination</p>
+
+<div class="mockup">
+  <div class="mockup-header">🔍 Trang Search Results</div>
+  <div class="mockup-body" style="background: #fbfbfd; color: #333; padding: 0; font-family: system-ui, sans-serif; font-size: 13px; line-height: 1.5;">
+
+    <!-- Top Bar with search summary -->
+    <div style="background: white; border-bottom: 1px solid #f5f5f7; padding: 14px 32px; display: flex; justify-content: space-between; align-items: center;">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <div style="font-size: 20px; font-weight: bold; color: #1d1d1f;">Viet<span style="color: #fbbf24;">Stay</span></div>
+        <div style="display: flex; gap: 8px; margin-left: 24px;">
+          <div style="background: #f5f5f7; padding: 6px 14px; border-radius: 8px; font-size: 12px; color: #1d1d1f;">📍 Đà Lạt</div>
+          <div style="background: #f5f5f7; padding: 6px 14px; border-radius: 8px; font-size: 12px; color: #1d1d1f;">📅 15/06 - 17/06</div>
+          <div style="background: #f5f5f7; padding: 6px 14px; border-radius: 8px; font-size: 12px; color: #1d1d1f;">👤 2 khách</div>
+        </div>
+      </div>
+      <div style="color: #0066cc; font-size: 13px; font-weight: 500; cursor: pointer;">Sửa tìm kiếm</div>
+    </div>
+
+    <div style="display: flex; gap: 0;">
+
+      <!-- Sidebar Filters -->
+      <div style="width: 260px; min-width: 260px; background: white; border-right: 1px solid #f5f5f7; padding: 24px;">
+        <div style="font-weight: 700; font-size: 16px; color: #1d1d1f; margin-bottom: 20px;">Bộ lọc</div>
+
+        <!-- Price Range -->
+        <div style="margin-bottom: 24px;">
+          <div style="font-size: 13px; font-weight: 600; color: #1d1d1f; margin-bottom: 10px;">Khoảng giá (đ/đêm)</div>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <div style="flex: 1; background: #f5f5f7; border-radius: 8px; padding: 8px 10px; font-size: 12px; color: #86868b;">500,000</div>
+            <span style="color: #d2d2d7;">—</span>
+            <div style="flex: 1; background: #f5f5f7; border-radius: 8px; padding: 8px 10px; font-size: 12px; color: #86868b;">5,000,000</div>
+          </div>
+        </div>
+
+        <!-- Star Rating -->
+        <div style="margin-bottom: 24px;">
+          <div style="font-size: 13px; font-weight: 600; color: #1d1d1f; margin-bottom: 10px;">Hạng sao</div>
+          <div style="display: flex; gap: 6px;">
+            <div style="background: #0066cc; color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px;">⭐ 5</div>
+            <div style="background: #f5f5f7; color: #424245; padding: 6px 12px; border-radius: 6px; font-size: 12px;">⭐ 4</div>
+            <div style="background: #f5f5f7; color: #424245; padding: 6px 12px; border-radius: 6px; font-size: 12px;">⭐ 3</div>
+          </div>
+        </div>
+
+        <!-- Property Type -->
+        <div style="margin-bottom: 24px;">
+          <div style="font-size: 13px; font-weight: 600; color: #1d1d1f; margin-bottom: 10px;">Loại hình</div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #424245; cursor: pointer;">
+              <div style="width: 18px; height: 18px; border: 2px solid #0066cc; border-radius: 4px; background: #0066cc; display: flex; align-items: center; justify-content: center; color: white; font-size: 10px;">✓</div>
+              Khách sạn
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #424245; cursor: pointer;">
+              <div style="width: 18px; height: 18px; border: 2px solid #d2d2d7; border-radius: 4px;"></div>
+              Villa
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #424245; cursor: pointer;">
+              <div style="width: 18px; height: 18px; border: 2px solid #d2d2d7; border-radius: 4px;"></div>
+              Resort
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #424245; cursor: pointer;">
+              <div style="width: 18px; height: 18px; border: 2px solid #d2d2d7; border-radius: 4px;"></div>
+              Căn hộ
+            </label>
+          </div>
+        </div>
+
+        <!-- Amenities -->
+        <div style="margin-bottom: 24px;">
+          <div style="font-size: 13px; font-weight: 600; color: #1d1d1f; margin-bottom: 10px;">Tiện ích</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+            <div style="background: rgba(0,102,204,0.1); color: #0066cc; padding: 5px 10px; border-radius: 6px; font-size: 11px; font-weight: 500;">WiFi</div>
+            <div style="background: rgba(0,102,204,0.1); color: #0066cc; padding: 5px 10px; border-radius: 6px; font-size: 11px; font-weight: 500;">Hồ bơi</div>
+            <div style="background: #f5f5f7; color: #424245; padding: 5px 10px; border-radius: 6px; font-size: 11px;">Bãi xe</div>
+            <div style="background: #f5f5f7; color: #424245; padding: 5px 10px; border-radius: 6px; font-size: 11px;">Spa</div>
+            <div style="background: #f5f5f7; color: #424245; padding: 5px 10px; border-radius: 6px; font-size: 11px;">Gym</div>
+            <div style="background: #f5f5f7; color: #424245; padding: 5px 10px; border-radius: 6px; font-size: 11px;">Bữa sáng</div>
+          </div>
+        </div>
+
+        <div style="background: #0066cc; color: white; padding: 10px; border-radius: 10px; text-align: center; font-weight: 600; font-size: 13px; cursor: pointer;">Áp dụng bộ lọc</div>
+      </div>
+
+      <!-- Results -->
+      <div style="flex: 1; padding: 24px 32px;">
+
+        <!-- Sort bar -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <div style="font-size: 14px; color: #86868b;">Tìm thấy <strong style="color: #1d1d1f;">24 khách sạn</strong> tại Đà Lạt</div>
+          <div style="display: flex; gap: 6px;">
+            <div style="background: #0066cc; color: white; padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 500;">Phổ biến</div>
+            <div style="background: #f5f5f7; color: #424245; padding: 6px 14px; border-radius: 8px; font-size: 12px;">Giá thấp nhất</div>
+            <div style="background: #f5f5f7; color: #424245; padding: 6px 14px; border-radius: 8px; font-size: 12px;">Giá cao nhất</div>
+            <div style="background: #f5f5f7; color: #424245; padding: 6px 14px; border-radius: 8px; font-size: 12px;">Đánh giá</div>
+          </div>
+        </div>
+
+        <!-- Hotel Card 1 -->
+        <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.04); margin-bottom: 16px; display: flex;">
+          <div style="background: linear-gradient(135deg, #dbeafe, #93c5fd); width: 260px; min-height: 200px; display: flex; align-items: center; justify-content: center;">
+            <span style="font-size: 64px;">🏨</span>
+          </div>
+          <div style="flex: 1; padding: 20px; display: flex; justify-content: space-between;">
+            <div>
+              <div style="font-weight: 700; font-size: 17px; color: #1d1d1f;">Dalat Palace Heritage</div>
+              <div style="font-size: 12px; color: #86868b; margin-top: 4px;">📍 12 Trần Phú, Đà Lạt · ⭐⭐⭐⭐⭐</div>
+              <div style="display: flex; gap: 6px; margin-top: 10px;">
+                <span style="background: #f5f5f7; padding: 3px 8px; border-radius: 4px; font-size: 10px; color: #424245;">WiFi</span>
+                <span style="background: #f5f5f7; padding: 3px 8px; border-radius: 4px; font-size: 10px; color: #424245;">Hồ bơi</span>
+                <span style="background: #f5f5f7; padding: 3px 8px; border-radius: 4px; font-size: 10px; color: #424245;">Bữa sáng</span>
+                <span style="background: #f5f5f7; padding: 3px 8px; border-radius: 4px; font-size: 10px; color: #424245;">Spa</span>
+              </div>
+              <div style="margin-top: 12px; font-size: 12px; color: #86868b;">Còn <strong style="color: #059669;">3 phòng</strong> trống cho ngày bạn chọn</div>
+            </div>
+            <div style="text-align: right; display: flex; flex-direction: column; justify-content: space-between;">
+              <div style="background: #059669; color: white; padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; display: inline-block; margin-left: auto;">9.2 Tuyệt vời</div>
+              <div>
+                <div style="font-size: 12px; color: #86868b; text-decoration: line-through;">4,500,000đ</div>
+                <div style="font-size: 22px; font-weight: 700; color: #0066cc;">3,200,000đ</div>
+                <div style="font-size: 11px; color: #86868b;">/đêm · đã bao gồm thuế</div>
+              </div>
+              <div style="background: #f59e0b; color: white; padding: 8px 20px; border-radius: 8px; font-weight: 600; font-size: 13px; text-align: center; cursor: pointer;">Xem phòng</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hotel Card 2 -->
+        <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.04); margin-bottom: 16px; display: flex;">
+          <div style="background: linear-gradient(135deg, #fef3c7, #fcd34d); width: 260px; min-height: 200px; display: flex; align-items: center; justify-content: center;">
+            <span style="font-size: 64px;">🏡</span>
+          </div>
+          <div style="flex: 1; padding: 20px; display: flex; justify-content: space-between;">
+            <div>
+              <div style="font-weight: 700; font-size: 17px; color: #1d1d1f;">Ana Villas Dalat</div>
+              <div style="font-size: 12px; color: #86868b; margin-top: 4px;">📍 5 Lâm Viên, Đà Lạt · ⭐⭐⭐⭐</div>
+              <div style="display: flex; gap: 6px; margin-top: 10px;">
+                <span style="background: #f5f5f7; padding: 3px 8px; border-radius: 4px; font-size: 10px; color: #424245;">WiFi</span>
+                <span style="background: #f5f5f7; padding: 3px 8px; border-radius: 4px; font-size: 10px; color: #424245;">Hồ bơi</span>
+                <span style="background: #f5f5f7; padding: 3px 8px; border-radius: 4px; font-size: 10px; color: #424245;">Bãi xe</span>
+              </div>
+              <div style="margin-top: 12px; font-size: 12px; color: #86868b;">Còn <strong style="color: #059669;">5 phòng</strong> trống cho ngày bạn chọn</div>
+            </div>
+            <div style="text-align: right; display: flex; flex-direction: column; justify-content: space-between;">
+              <div style="background: #059669; color: white; padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; display: inline-block; margin-left: auto;">8.8 Rất tốt</div>
+              <div>
+                <div style="font-size: 22px; font-weight: 700; color: #0066cc;">1,800,000đ</div>
+                <div style="font-size: 11px; color: #86868b;">/đêm · đã bao gồm thuế</div>
+              </div>
+              <div style="background: #f59e0b; color: white; padding: 8px 20px; border-radius: 8px; font-weight: 600; font-size: 13px; text-align: center; cursor: pointer;">Xem phòng</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div style="display: flex; justify-content: center; gap: 6px; margin-top: 24px;">
+          <div style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 13px; color: #86868b; background: #f5f5f7;">←</div>
+          <div style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 13px; color: white; background: #0066cc; font-weight: 600;">1</div>
+          <div style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 13px; color: #424245; background: #f5f5f7;">2</div>
+          <div style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 13px; color: #424245; background: #f5f5f7;">3</div>
+          <div style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 13px; color: #86868b; background: #f5f5f7;">→</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

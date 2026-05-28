@@ -1,0 +1,129 @@
+<h2>Phần 2: Database Schema</h2>
+<p class="subtitle">MySQL 8 — Entity Relationship Diagram cho booking platform</p>
+
+<div class="mockup">
+  <div class="mockup-header">ER Diagram — 7 bảng chính</div>
+  <div class="mockup-body" style="background: #1a1a2e; color: #eee; padding: 20px; font-family: monospace; font-size: 12px; line-height: 1.7; overflow-x: auto;">
+    <div style="display: flex; flex-wrap: wrap; gap: 16px; justify-content: center;">
+
+      <!-- users -->
+      <div style="border: 2px solid #4ade80; border-radius: 8px; padding: 12px; background: #16213e; min-width: 200px;">
+        <div style="color: #4ade80; font-weight: bold; border-bottom: 1px solid #4ade80; padding-bottom: 6px; margin-bottom: 8px;">👤 users</div>
+        <div><span style="color: #fbbf24;">PK</span> id BIGINT</div>
+        <div>name VARCHAR(255)</div>
+        <div>email VARCHAR(255) UNIQUE</div>
+        <div>phone VARCHAR(20)</div>
+        <div>password VARCHAR(255)</div>
+        <div>avatar VARCHAR(500)</div>
+        <div>role ENUM(user, admin)</div>
+        <div>timestamps, soft_delete</div>
+      </div>
+
+      <!-- destinations -->
+      <div style="border: 2px solid #60a5fa; border-radius: 8px; padding: 12px; background: #16213e; min-width: 200px;">
+        <div style="color: #60a5fa; font-weight: bold; border-bottom: 1px solid #60a5fa; padding-bottom: 6px; margin-bottom: 8px;">📍 destinations</div>
+        <div><span style="color: #fbbf24;">PK</span> id BIGINT</div>
+        <div>name VARCHAR(255)</div>
+        <div>slug VARCHAR(255) UNIQUE</div>
+        <div>image VARCHAR(500)</div>
+        <div>description TEXT</div>
+        <div>region ENUM(mien_bac, mien_trung, mien_nam)</div>
+        <div>timestamps</div>
+      </div>
+
+      <!-- hotels -->
+      <div style="border: 2px solid #f472b6; border-radius: 8px; padding: 12px; background: #16213e; min-width: 220px;">
+        <div style="color: #f472b6; font-weight: bold; border-bottom: 1px solid #f472b6; padding-bottom: 6px; margin-bottom: 8px;">🏨 hotels</div>
+        <div><span style="color: #fbbf24;">PK</span> id BIGINT</div>
+        <div><span style="color: #60a5fa;">FK</span> destination_id → destinations</div>
+        <div>name VARCHAR(255)</div>
+        <div>slug VARCHAR(255) UNIQUE</div>
+        <div>description TEXT</div>
+        <div>address VARCHAR(500)</div>
+        <div>star_rating TINYINT (1-5)</div>
+        <div>latitude DECIMAL(10,8)</div>
+        <div>longitude DECIMAL(11,8)</div>
+        <div>phone VARCHAR(20)</div>
+        <div>email VARCHAR(255)</div>
+        <div>checkin_time TIME (14:00)</div>
+        <div>checkout_time TIME (12:00)</div>
+        <div>amenities JSON</div>
+        <div>status ENUM(active, inactive)</div>
+        <div>timestamps, soft_delete</div>
+      </div>
+
+      <!-- room_types -->
+      <div style="border: 2px solid #a78bfa; border-radius: 8px; padding: 12px; background: #16213e; min-width: 220px;">
+        <div style="color: #a78bfa; font-weight: bold; border-bottom: 1px solid #a78bfa; padding-bottom: 6px; margin-bottom: 8px;">🛏️ room_types</div>
+        <div><span style="color: #fbbf24;">PK</span> id BIGINT</div>
+        <div><span style="color: #f472b6;">FK</span> hotel_id → hotels</div>
+        <div>name VARCHAR(255)</div>
+        <div>description TEXT</div>
+        <div>max_guests INT</div>
+        <div>bed_type ENUM(single, double, twin, king)</div>
+        <div>size_sqm DECIMAL(6,2)</div>
+        <div>price_per_night DECIMAL(12,2)</div>
+        <div>amenities JSON</div>
+        <div>total_rooms INT</div>
+        <div>timestamps</div>
+      </div>
+
+      <!-- bookings -->
+      <div style="border: 2px solid #fb923c; border-radius: 8px; padding: 12px; background: #16213e; min-width: 220px;">
+        <div style="color: #fb923c; font-weight: bold; border-bottom: 1px solid #fb923c; padding-bottom: 6px; margin-bottom: 8px;">📋 bookings</div>
+        <div><span style="color: #fbbf24;">PK</span> id BIGINT</div>
+        <div><span style="color: #4ade80;">FK</span> user_id → users</div>
+        <div><span style="color: #a78bfa;">FK</span> room_type_id → room_types</div>
+        <div>booking_code VARCHAR(10) UNIQUE</div>
+        <div>check_in DATE</div>
+        <div>check_out DATE</div>
+        <div>guests INT</div>
+        <div>special_requests TEXT</div>
+        <div>total_price DECIMAL(12,2)</div>
+        <div>status ENUM(pending, confirmed, cancelled, completed)</div>
+        <div>timestamps, soft_delete</div>
+      </div>
+
+      <!-- payments -->
+      <div style="border: 2px solid #facc15; border-radius: 8px; padding: 12px; background: #16213e; min-width: 220px;">
+        <div style="color: #facc15; font-weight: bold; border-bottom: 1px solid #facc15; padding-bottom: 6px; margin-bottom: 8px;">💳 payments</div>
+        <div><span style="color: #fbbf24;">PK</span> id BIGINT</div>
+        <div><span style="color: #fb923c;">FK</span> booking_id → bookings</div>
+        <div>payment_method ENUM(vnpay, momo)</div>
+        <div>transaction_id VARCHAR(255)</div>
+        <div>amount DECIMAL(12,2)</div>
+        <div>currency VARCHAR(3) DEFAULT 'VND'</div>
+        <div>status ENUM(pending, success, failed, refunded)</div>
+        <div>paid_at TIMESTAMP</div>
+        <div>gateway_response JSON</div>
+        <div>timestamps</div>
+      </div>
+
+      <!-- hotel_images -->
+      <div style="border: 2px solid #34d399; border-radius: 8px; padding: 12px; background: #16213e; min-width: 200px;">
+        <div style="color: #34d399; font-weight: bold; border-bottom: 1px solid #34d399; padding-bottom: 6px; margin-bottom: 8px;">🖼️ hotel_images</div>
+        <div><span style="color: #fbbf24;">PK</span> id BIGINT</div>
+        <div><span style="color: #f472b6;">FK</span> hotel_id → hotels</div>
+        <div><span style="color: #a78bfa;">FK</span> room_type_id → room_types (nullable)</div>
+        <div>image_path VARCHAR(500)</div>
+        <div>caption VARCHAR(255)</div>
+        <div>sort_order INT</div>
+        <div>timestamps</div>
+      </div>
+
+    </div>
+
+    <!-- Relationships -->
+    <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #333;">
+      <div style="color: #e8a838; font-weight: bold; margin-bottom: 10px;">🔗 Relationships</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+        <div><span style="color: #60a5fa;">destinations</span> 1 ──→ N <span style="color: #f472b6;">hotels</span></div>
+        <div><span style="color: #f472b6;">hotels</span> 1 ──→ N <span style="color: #a78bfa;">room_types</span></div>
+        <div><span style="color: #4ade80;">users</span> 1 ──→ N <span style="color: #fb923c;">bookings</span></div>
+        <div><span style="color: #a78bfa;">room_types</span> 1 ──→ N <span style="color: #fb923c;">bookings</span></div>
+        <div><span style="color: #fb923c;">bookings</span> 1 ──→ N <span style="color: #facc15;">payments</span></div>
+        <div><span style="color: #f472b6;">hotels</span> 1 ──→ N <span style="color: #34d399;">hotel_images</span></div>
+      </div>
+    </div>
+  </div>
+</div>
