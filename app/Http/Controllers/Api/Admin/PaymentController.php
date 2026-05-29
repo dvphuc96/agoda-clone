@@ -25,6 +25,15 @@ class PaymentController extends Controller
         if ($request->filled('date_to')) {
             $query->whereDate('created_at', '<=', $request->date_to);
         }
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('transaction_id', 'like', "%{$request->search}%")
+                    ->orWhereHas('booking', fn ($b) => $b->where('booking_code', 'like', "%{$request->search}%"));
+            });
+        }
+        if ($request->filled('booking_id')) {
+            $query->where('booking_id', $request->booking_id);
+        }
 
         return PaymentResource::collection($query->paginate((int) $request->input('per_page', 15)));
     }

@@ -111,7 +111,7 @@ export default function LocationListPage() {
           Create location
         </button>
       </div>
-      <DataTable data={locations.data?.data ?? []} columns={columns} emptyText={locations.isLoading ? 'Loading...' : 'No locations found.'} />
+      <DataTable data={locations.data?.data ?? []} columns={columns} emptyText={locations.isLoading ? 'Loading…' : 'No locations found.'} />
 
       <AdminModal open={modalOpen} title={editing ? 'Edit location' : 'Create location'} width="md" onClose={closeModal}>
         <form className="space-y-4" onSubmit={(event) => { event.preventDefault(); save.mutate(); }}>

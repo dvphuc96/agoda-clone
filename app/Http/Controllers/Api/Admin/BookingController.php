@@ -35,6 +35,12 @@ class BookingController extends Controller
                     ->orWhereHas('user', fn ($user) => $user->where('name', 'like', "%{$request->search}%")->orWhere('email', 'like', "%{$request->search}%"));
             });
         }
+        if ($request->filled('room_type_id')) {
+            $query->where('room_type_id', $request->room_type_id);
+        }
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
 
         return BookingResource::collection($query->paginate((int) $request->input('per_page', 15)));
     }

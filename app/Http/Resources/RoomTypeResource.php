@@ -20,6 +20,7 @@ class RoomTypeResource extends JsonResource
             'amenities' => $this->amenities,
             'total_rooms' => $this->total_rooms,
             'images' => HotelImageResource::collection($this->whenLoaded('images')),
+            'hotel' => new HotelResource($this->whenLoaded('hotel')),
             'available_rooms' => $this->when(
                 $this->check_in && $this->check_out,
                 fn() => $this->getAvailableRoomsCount($this->check_in, $this->check_out)

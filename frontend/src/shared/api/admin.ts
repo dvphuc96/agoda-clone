@@ -93,6 +93,7 @@ export const adminApi = {
   deleteRoomType: (id: number) => apiClient.delete(`/admin/room-types/${id}`),
   uploadRoomTypeImages: (id: number, files: FileList | File[]) =>
     apiClient.post<RoomType>(`/admin/room-types/${id}/images`, formDataWithFiles('images[]', files), { headers: { 'Content-Type': 'multipart/form-data' } }),
+  deleteRoomTypeImage: (imageId: number) => apiClient.delete(`/admin/room-types/images/${imageId}`),
 
   bookings: (params?: Record<string, string | number>) => apiClient.get<Paginated<Booking>>('/admin/bookings', { params }),
   booking: (id: number) => apiClient.get<Booking>(`/admin/bookings/${id}`),

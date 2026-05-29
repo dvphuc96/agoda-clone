@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Api\HotelController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\RoomTypeController;
 use App\Http\Controllers\Api\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Api\Admin\LocationController as AdminLocationController;
 use App\Http\Controllers\Api\Admin\HotelController as AdminHotelController;
@@ -29,6 +30,9 @@ Route::get('/hotels', [HotelController::class, 'index']);
 Route::get('/hotels/featured', [HotelController::class, 'featured']);
 Route::get('/hotels/{slug}', [HotelController::class, 'show']);
 Route::get('/hotels/{slug}/rooms', [HotelController::class, 'rooms']);
+
+// Room type routes
+Route::get('/room-types/{roomType}', [RoomTypeController::class, 'show']);
 
 // Payment callbacks (public - gateway redirects)
 Route::get('/payments/vnpay/callback', [PaymentController::class, 'vnpayCallback']);

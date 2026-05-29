@@ -32,6 +32,12 @@ class HotelController extends Controller
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
+        if ($request->filled('min_price')) {
+            $query->whereHas('roomTypes', fn ($q) => $q->where('price_per_night', '>=', $request->min_price));
+        }
+        if ($request->filled('max_price')) {
+            $query->whereHas('roomTypes', fn ($q) => $q->where('price_per_night', '<=', $request->max_price));
+        }
 
         return HotelResource::collection($query->paginate((int) $request->input('per_page', 15)));
     }

@@ -15,7 +15,24 @@ class RoomTypeController extends Controller
 {
     public function index(Hotel $hotel)
     {
-        return RoomTypeResource::collection($hotel->roomTypes()->with('images')->paginate(15));
+        abort_if(!$hotel->exists, 404, 'Hotel not found.');
+
+        $query = $hotel->roomTypes()->with('images');
+
+        if (request()->filled('min_price')) {
+            $query->where('price_per_night', '>=', request()->min_price);
+        }
+        if (request()->filled('max_price')) {
+            $query->where('price_per_night', '<=', request()->max_price);
+        }
+        if (request()->filled('amenity')) {
+            $query->whereJsonContains('amenities', request()->amenity);
+        }
+        if (request()->filled('bed_type')) {
+            $query->where('bed_type', request()->bed_type);
+        }
+
+        return RoomTypeResource::collection($query->paginate(15));
     }
 
     public function store(Request $request, Hotel $hotel): JsonResponse
