@@ -1,0 +1,76 @@
+<h2>GoStay UI + multilingual scope</h2>
+<p class="subtitle">Pick the implementation shape. The recommended path keeps momentum while giving the app a real i18n foundation.</p>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mockup">
+        <div class="mockup-header">A. Recommended vertical polish</div>
+        <div class="mockup-body">
+          <div class="mock-nav">GoStay | Lưu trú | Đơn đặt phòng | VI / EN</div>
+          <div style="display:grid;grid-template-columns:1.2fr .8fr;gap:14px;margin-top:14px">
+            <div>
+              <div class="placeholder" style="height:80px">Hero booking search</div>
+              <div class="placeholder" style="height:44px;margin-top:8px">Curated locations</div>
+            </div>
+            <div>
+              <div class="placeholder" style="height:62px">Auth + booking summary polish</div>
+              <div class="placeholder" style="height:62px;margin-top:8px">Hotel detail polish</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A. Polish all customer pages + UI i18n</h3>
+      <p>Vietnamese default, English switcher, shared translation files, and visual cleanup across home, search, hotel detail, auth, booking, payment, and my bookings.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mockup">
+        <div class="mockup-header">B. Homepage/search first</div>
+        <div class="mockup-body">
+          <div class="mock-nav">GoStay | VI / EN</div>
+          <div class="placeholder" style="height:120px;margin-top:14px">Homepage hero + search results redesign</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px">
+            <div class="placeholder" style="height:44px">Card</div>
+            <div class="placeholder" style="height:44px">Card</div>
+            <div class="placeholder" style="height:44px">Card</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B. Public discovery pages first</h3>
+      <p>Fastest visual impact. Home/search get strongest polish and i18n; deeper booking/auth pages receive basic accented Vietnamese only.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mockup">
+        <div class="mockup-header">C. Full product localization</div>
+        <div class="mockup-body">
+          <div class="mock-nav">Locale-aware UI + data</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px">
+            <div class="placeholder" style="height:80px">UI translations</div>
+            <div class="placeholder" style="height:80px">Hotel/location translated data</div>
+            <div class="placeholder" style="height:54px">Backend locale API</div>
+            <div class="placeholder" style="height:54px">Admin content workflow</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C. UI + backend/data localization</h3>
+      <p>Most complete, but much larger: translated hotel/location/room content, API locale negotiation, and admin/content decisions.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>My recommendation</h3>
+  <p>Choose A now. It fixes the embarrassing no-diacritics copy everywhere users see, adds a proper language switcher, and keeps backend data untouched until the product needs translated hotel content.</p>
+</div>

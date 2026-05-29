@@ -18,6 +18,8 @@ class PaymentResource extends JsonResource
             'currency' => $this->currency,
             'status' => $this->status,
             'paid_at' => $this->paid_at?->format('Y-m-d H:i:s'),
+            'gateway_response' => $this->gateway_response,
+            'booking' => new BookingResource($this->whenLoaded('booking')),
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
         ];
     }

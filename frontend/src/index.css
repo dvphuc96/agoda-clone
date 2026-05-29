@@ -5,20 +5,20 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* VietStay Color Tokens */
+/* GoStay Color Tokens */
 @theme {
-  --color-navy: #1e40af;
-  --color-primary: #0066cc;
-  --color-gold: #f59e0b;
-  --color-gold-light: #fbbf24;
-  --color-bg: #fbfbfd;
-  --color-text: #1d1d1f;
-  --color-text-secondary: #86868b;
+  --color-navy: #10201d;
+  --color-primary: #0f766e;
+  --color-gold: #c47a2c;
+  --color-gold-light: #e4a853;
+  --color-bg: #f6f1e9;
+  --color-text: #18201d;
+  --color-text-secondary: #6f756f;
   --color-surface: #ffffff;
-  --color-tab: #f5f5f7;
-  --color-border: #d2d2d7;
-  --color-success: #059669;
-  --color-footer: #1d1d1f;
+  --color-tab: #eee7da;
+  --color-border: #ded4c6;
+  --color-success: #0f766e;
+  --color-footer: #10201d;
 }
 
 @theme inline {
@@ -65,8 +65,8 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --background: #f6f1e9;
+  --foreground: #18201d;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
@@ -138,9 +138,14 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
   }
   html {
     @apply font-sans;
+  }
+  input,
+  select,
+  button {
+    font: inherit;
   }
 }

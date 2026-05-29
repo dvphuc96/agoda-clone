@@ -1,14 +1,14 @@
-# VietStay Backend Implementation Plan
+# GoStay Backend Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build the Laravel 13 API backend for VietStay hotel booking platform — auth, hotels, bookings, payments, seed data.
+**Goal:** Build the Laravel 13 API backend for GoStay hotel booking platform — auth, hotels, bookings, payments, seed data.
 
 **Architecture:** Monolith Laravel 13 project. API-only (JSON responses). Sanctum for SPA auth. MySQL 8 database. Payment integration via VNPay + MoMo SDK.
 
 **Tech Stack:** Laravel 13, PHP 8.3+, MySQL 8, Laravel Sanctum, vnpay/php-vnpay (or manual integration), momo/momo-payment (or manual integration)
 
-**Design Spec:** `docs/superpowers/specs/2026-05-28-vietstay-booking-design.md`
+**Design Spec:** `docs/superpowers/specs/2026-05-28-gostay-booking-design.md`
 
 ---
 
@@ -41,7 +41,7 @@ Edit `.env`:
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=vietstay
+DB_DATABASE=gostay
 DB_USERNAME=root
 DB_PASSWORD=
 ```
@@ -233,7 +233,7 @@ Expected: All 7 tables created successfully.
 
 ```bash
 git add -A
-git commit -m "feat: add all database migrations for VietStay"
+git commit -m "feat: add all database migrations for GoStay"
 ```
 
 ---
@@ -1111,7 +1111,7 @@ class PaymentService
         $vnp_Returnurl = config('services.vnpay.return_url');
 
         $vnp_TxnRef = $payment->id . '_' . time();
-        $vnp_OrderInfo = "Thanh toan dat phong VietStay #" . $payment->booking->booking_code;
+        $vnp_OrderInfo = "Thanh toan dat phong GoStay #" . $payment->booking->booking_code;
         $vnp_OrderType = 'hotelbooking';
         $vnp_Amount = $payment->amount * 100; // VNPay requires amount in VND * 100
         $vnp_Locale = 'vn';
@@ -1159,7 +1159,7 @@ class PaymentService
         $returnUrl = config('services.momo.return_url');
 
         $orderId = $payment->id . '_' . time();
-        $orderInfo = "Thanh toan dat phong VietStay #" . $payment->booking->booking_code;
+        $orderInfo = "Thanh toan dat phong GoStay #" . $payment->booking->booking_code;
         $amount = (string) intval($payment->amount);
         $requestId = (string) Str::uuid();
         $requestType = 'captureWallet';

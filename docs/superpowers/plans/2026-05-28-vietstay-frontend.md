@@ -1,14 +1,14 @@
-# VietStay Frontend Implementation Plan
+# GoStay Frontend Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build the React 19 SPA frontend for VietStay hotel booking platform — all pages, components, API integration, payment flow.
+**Goal:** Build the React 19 SPA frontend for GoStay hotel booking platform — all pages, components, API integration, payment flow.
 
 **Architecture:** React 19 SPA inside `frontend/` directory. Vite 6 build. Tailwind CSS 4 + shadcn/ui. TanStack Query v5 for server state. React Router 7 for routing. Axios for HTTP. Build output goes to Laravel `public/` directory.
 
 **Tech Stack:** React 19.2, Vite 6, Tailwind CSS 4, shadcn/ui, TanStack Query v5, React Router 7, Axios
 
-**Design Spec:** `docs/superpowers/specs/2026-05-28-vietstay-booking-design.md`
+**Design Spec:** `docs/superpowers/specs/2026-05-28-gostay-booking-design.md`
 
 **Backend API runs at:** `http://localhost:8000/api/`
 
@@ -73,7 +73,7 @@ Replace `frontend/src/index.css`:
 ```css
 @import "tailwindcss";
 
-/* VietStay Color Tokens */
+/* GoStay Color Tokens */
 @theme {
   --color-navy: #1e40af;
   --color-primary: #0066cc;
@@ -521,7 +521,7 @@ export default function Footer() {
         Viet<span className="text-gold-light">Stay</span>
       </div>
       <p className="mb-3">Đặt phòng khách sạn & villa nghỉ dưỡng cao cấp tại Việt Nam</p>
-      <p className="text-xs text-[#424245]">© 2026 VietStay. All rights reserved.</p>
+      <p className="text-xs text-[#424245]">© 2026 GoStay. All rights reserved.</p>
     </footer>
   );
 }
@@ -636,7 +636,7 @@ cd /Users/dvphuc/dev/project/agoda-clone/frontend
 npm run dev
 ```
 
-Expected: App at http://localhost:5173 with Navbar showing "VietStay" and Footer.
+Expected: App at http://localhost:5173 with Navbar showing "GoStay" and Footer.
 
 - [ ] **Step 8: Commit**
 
@@ -897,7 +897,7 @@ cd /Users/dvphuc/dev/project/agoda-clone/frontend
 npm run dev
 ```
 
-Expected: Home page with hero search, destinations grid, featured hotels. All using VietStay color palette.
+Expected: Home page with hero search, destinations grid, featured hotels. All using GoStay color palette.
 
 - [ ] **Step 7: Commit**
 

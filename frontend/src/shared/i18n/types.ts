@@ -1,0 +1,223 @@
+export const locales = ['vi', 'en'] as const;
+
+export type Locale = (typeof locales)[number];
+
+export type Messages = {
+  common: {
+    brand: string;
+    loading: string;
+    error: string;
+    retry: string;
+    home: string;
+    search: string;
+    bookNow: string;
+    viewDetails: string;
+    contact: string;
+    perNight: string;
+    from: string;
+    close: string;
+    menu: string;
+    language: string;
+    previous: string;
+    next: string;
+  };
+  nav: {
+    hotels: string;
+    destinations: string;
+    deals: string;
+    myBookings: string;
+    login: string;
+    logout: string;
+  };
+  home: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    destinationTitle: string;
+    destinationSubtitle: string;
+    viewAllDestinations: string;
+    staysCount: string;
+    featuredTitle: string;
+    featuredSubtitle: string;
+    exploreHotels: string;
+  };
+  regions: Record<string, string>;
+  searchForm: {
+    destination: string;
+    destinationPlaceholder: string;
+    checkIn: string;
+    checkOut: string;
+    guests: string;
+    guestsSingular: string;
+    guestsPlural: string;
+  };
+  search: {
+    title: string;
+    subtitle: string;
+    editSearch: string;
+    hideFilters: string;
+    showFilters: string;
+    filters: string;
+    clear: string;
+    applyFilters: string;
+    priceRange: string;
+    minPrice: string;
+    maxPrice: string;
+    starRating: string;
+    accommodationType: string;
+    amenities: string;
+    typeHotel: string;
+    typeVilla: string;
+    typeResort: string;
+    typeApartment: string;
+    sortBy: string;
+    sortRecommended: string;
+    sortPriceAsc: string;
+    sortPriceDesc: string;
+    sortRating: string;
+    resultsEyebrow: string;
+    resultsTitle: string;
+    resultsCount: string;
+    emptyTitle: string;
+    emptyBody: string;
+    errorBody: string;
+    recommended: string;
+    taxNote: string;
+  };
+  hotel: {
+    amenities: string;
+    overview: string;
+    location: string;
+    rooms: string;
+    checkIn: string;
+    checkOut: string;
+    guests: string;
+    maxGuests: string;
+    bedType: string;
+    roomSize: string;
+    totalRooms: string;
+    availableRooms: string;
+    chooseRoom: string;
+    noRooms: string;
+    notFoundTitle: string;
+    notFoundBody: string;
+    backToSearch: string;
+  };
+  auth: {
+    loginTitle: string;
+    loginSubtitle: string;
+    registerTitle: string;
+    registerSubtitle: string;
+    name: string;
+    email: string;
+    phone: string;
+    password: string;
+    confirmPassword: string;
+    namePlaceholder: string;
+    emailPlaceholder: string;
+    phonePlaceholder: string;
+    passwordPlaceholder: string;
+    passwordHint: string;
+    confirmPasswordPlaceholder: string;
+    loginAction: string;
+    registerAction: string;
+    loginLoading: string;
+    registerLoading: string;
+    noAccount: string;
+    hasAccount: string;
+    createAccount: string;
+    loginInstead: string;
+    loginError: string;
+    registerError: string;
+    passwordMismatch: string;
+    requiredTitle: string;
+    requiredBookingBody: string;
+  };
+  booking: {
+    title: string;
+    subtitle: string;
+    guestInfo: string;
+    summary: string;
+    specialRequests: string;
+    specialRequestsPlaceholder: string;
+    priceSummary: string;
+    nights: string;
+    taxes: string;
+    total: string;
+    confirm: string;
+    submitting: string;
+    bookingCode: string;
+    hotel: string;
+    roomType: string;
+    defaultRoomName: string;
+    defaultHotelName: string;
+    failure: string;
+    status: string;
+    createdAt: string;
+    cancel: string;
+    details: string;
+    detailTitle: string;
+    notFoundTitle: string;
+    backToList: string;
+    payNow: string;
+    back: string;
+    cancelConfirm: string;
+    cancelling: string;
+    cancelFailure: string;
+    emptyTitle: string;
+    emptyBody: string;
+    exploreHotels: string;
+  };
+  payment: {
+    title: string;
+    subtitle: string;
+    method: string;
+    payWithVnpay: string;
+    payWithMomo: string;
+    vnpayDescription: string;
+    momoDescription: string;
+    continuePayment: string;
+    success: string;
+    successBody: string;
+    successEmail: string;
+    pending: string;
+    failed: string;
+    failedBody: string;
+    createFailure: string;
+    redirecting: string;
+    viewBooking: string;
+    backHome: string;
+    info: string;
+    paidAt: string;
+  };
+  footer: {
+    tagline: string;
+    company: string;
+    support: string;
+    terms: string;
+    privacy: string;
+  };
+  status: {
+    pending: string;
+    confirmed: string;
+    cancelled: string;
+    completed: string;
+    success: string;
+    failed: string;
+    refunded: string;
+    unknown: string;
+  };
+  amenities: Record<string, string>;
+};
+
+type Join<K, P> = K extends string
+  ? P extends string
+    ? `${K}.${P}`
+    : never
+  : never;
+
+export type TranslationKey<T = Messages> = T extends string
+  ? never
+  : {
+      [K in keyof T]: T[K] extends string ? K & string : Join<K & string, TranslationKey<T[K]>>;
+    }[keyof T];

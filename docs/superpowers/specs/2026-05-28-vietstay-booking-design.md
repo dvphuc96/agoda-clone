@@ -1,8 +1,8 @@
-# VietStay — Hotel & Villa Booking Platform Design
+# GoStay — Hotel & Villa Booking Platform Design
 
 ## Overview
 
-VietStay là nền tảng đặt phòng khách sạn, villa, resort tại các điểm đến nổi tiếng ở Việt Nam. MVP tập trung vào core booking flow: search → detail → booking → payment.
+GoStay là nền tảng đặt phòng khách sạn, villa, resort tại các điểm đến nổi tiếng ở Việt Nam. MVP tập trung vào core booking flow: search → detail → booking → payment.
 
 ## Tech Stack
 
@@ -59,7 +59,7 @@ agoda-clone/
 - role ENUM(user, admin)
 - timestamps, soft_delete
 
-**destinations**
+**locations**
 - id BIGINT PK
 - name VARCHAR(255)
 - slug VARCHAR(255) UNIQUE
@@ -72,7 +72,7 @@ Seed data: Hà Nội, Đà Nẵng, Hội An, Nha Trang, Phú Quốc, Sapa, Huế
 
 **hotels**
 - id BIGINT PK
-- destination_id FK → destinations
+- location_id FK → locations
 - name VARCHAR(255)
 - slug VARCHAR(255) UNIQUE
 - description TEXT
@@ -137,7 +137,7 @@ Seed data: Hà Nội, Đà Nẵng, Hội An, Nha Trang, Phú Quốc, Sapa, Huế
 
 ### Relationships
 
-- destinations 1:N hotels
+- locations 1:N hotels
 - hotels 1:N room_types
 - hotels 1:N hotel_images
 - room_types 1:N hotel_images
@@ -149,7 +149,7 @@ Seed data: Hà Nội, Đà Nẵng, Hội An, Nha Trang, Phú Quốc, Sapa, Huế
 
 ### 5 trang chính
 
-1. **Home** (`/`) — Hero + search box, popular destinations, featured hotels
+1. **Home** (`/`) — Hero + search box, popular locations, featured hotels
 2. **Search** (`/search`) — Hotel list với filter/sort/pagination
 3. **Hotel Detail** (`/hotel/:slug`) — Gallery, info, room types, amenities
 4. **Booking** (`/booking/:roomTypeId`) — Guest info, price summary, confirm
@@ -172,11 +172,11 @@ Seed data: Hà Nội, Đà Nẵng, Hội An, Nha Trang, Phú Quốc, Sapa, Huế
 | POST | /api/auth/logout | Đăng xuất |
 | GET | /api/auth/me | Thông tin user hiện tại |
 
-### Destinations
+### Locations
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | /api/destinations | Danh sách điểm đến |
-| GET | /api/destinations/{slug}/hotels | Khách sạn theo điểm đến |
+| GET | /api/locations | Danh sách địa điểm |
+| GET | /api/locations/{slug}/hotels | Khách sạn theo địa điểm |
 
 ### Hotels
 | Method | Endpoint | Description |
@@ -186,7 +186,7 @@ Seed data: Hà Nội, Đà Nẵng, Hội An, Nha Trang, Phú Quốc, Sapa, Huế
 | GET | /api/hotels/{slug}/rooms | Room types + availability |
 | GET | /api/hotels/featured | Khách sạn nổi bật (home page) |
 
-Query params cho search: `destination, check_in, check_out, guests, star, price_min, price_max, sort, page`
+Query params cho search: `location, check_in, check_out, guests, star, price_min, price_max, sort, page`
 
 ### Bookings (require auth)
 | Method | Endpoint | Description |
@@ -235,16 +235,16 @@ Query params cho search: `destination, check_in, check_out, guests, star, price_
 
 ### Home Page Layout
 
-1. **Navbar**: Logo "VietStay" (Stay màu gold), menu links, nút đăng nhập (gold bg)
+1. **Navbar**: Logo "GoStay" (Stay màu gold), menu links, nút đăng nhập (gold bg)
 2. **Hero**: Blue gradient background, tagline, search box (destination, check-in, check-out, guests, nút "Tìm kiếm" blue)
 3. **Tab filter**: Tất cả / Khách sạn / Villa / Resort / Căn hộ (pill style)
-4. **Điểm đến nổi bật**: 4 card grid, gradient backgrounds, tên + số lượng lưu trú
+4. **Địa điểm nổi bật**: 4 card grid, gradient backgrounds, tên + số lượng lưu trú
 5. **Khách sạn nổi bật**: 3 card grid, ảnh, tên, địa điểm, sao, giá/đêm, nút "Đặt ngay"
 6. **Footer**: Dark bg, logo, mô tả, copyright
 
 ### Search Page Layout
 
-1. **Top bar**: Logo + search summary (destination, dates, guests) + "Sửa tìm kiếm"
+1. **Top bar**: Logo + search summary (location, dates, guests) + "Sửa tìm kiếm"
 2. **Sidebar trái (260px)**:
    - Bộ lọc giá (range)
    - Hạng sao (pill select)
@@ -284,7 +284,7 @@ Query params cho search: `destination, check_in, check_out, guests, star, price_
 
 20-30 khách sạn/villa tại 8 điểm đến:
 
-| Điểm đến | Vùng | Số khách sạn |
+| Địa điểm | Vùng | Số khách sạn |
 |----------|------|-------------|
 | Hà Nội | Miền Bắc | 3 |
 | Sapa | Miền Bắc | 2 |
@@ -301,7 +301,7 @@ Mỗi khách sạn có 2-4 room types với giá VND thực tế.
 
 ### In scope
 - User register/login
-- Search khách sạn với filter/sort
+- Search khách sạn với filter/sort + chọn địa điểm
 - Xem chi tiết khách sạn + phòng
 - Đặt phòng
 - Thanh toán VNPay + MoMo
@@ -312,7 +312,6 @@ Mỗi khách sạn có 2-4 room types với giá VND thực tế.
 - Review/đánh giá
 - Wishlist
 - Admin dashboard
-- Voucher/promotion
 - Real-time availability
 - Email xác nhận
 - Multi-role (hotel owner)

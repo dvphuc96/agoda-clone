@@ -32,10 +32,14 @@ class PaymentService
         $vnp_Url = config('services.vnpay.url');
         $vnp_Returnurl = config('services.vnpay.return_url');
 
+        if (!$vnp_TmnCode || !$vnp_HashSecret) {
+            return $this->createLocalSuccessPayment($payment, 'vnpay');
+        }
+
         $vnp_TxnRef = $payment->id . '_' . time();
-        $vnp_OrderInfo = "Thanh toan dat phong VietStay #" . $payment->booking->booking_code;
+        $vnp_OrderInfo = "Thanh toan dat phong GoStay #" . $payment->booking->booking_code;
         $vnp_OrderType = 'hotelbooking';
-        $vnp_Amount = $payment->amount * 100;
+        $vnp_Amount = (int) round((float) $payment->amount * 100);
         $vnp_Locale = 'vn';
         $vnp_BankCode = '';
         $vnp_IpAddr = request()->ip();
@@ -64,7 +68,10 @@ class PaymentService
         }
 
         $vnp_SecureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
-        $payment->update(['transaction_id' => $vnp_TxnRef]);
+        $payment->update([
+            'transaction_id' => $vnp_TxnRef,
+            'gateway_response' => ['frontend_origin' => $this->frontendOrigin()],
+        ]);
 
         return [
             'payment_id' => $payment->id,
@@ -80,8 +87,12 @@ class PaymentService
         $endpoint = config('services.momo.endpoint');
         $returnUrl = config('services.momo.return_url');
 
+        if (!$partnerCode || !$accessKey || !$secretKey) {
+            return $this->createLocalSuccessPayment($payment, 'momo');
+        }
+
         $orderId = $payment->id . '_' . time();
-        $orderInfo = "Thanh toan dat phong VietStay #" . $payment->booking->booking_code;
+        $orderInfo = "Thanh toan dat phong GoStay #" . $payment->booking->booking_code;
         $amount = (string) intval($payment->amount);
         $requestId = (string) Str::uuid();
         $requestType = 'captureWallet';
@@ -90,7 +101,10 @@ class PaymentService
         $rawSignature = "accessKey={$accessKey}&amount={$amount}&extraData={$extraData}&ipnUrl={$returnUrl}&orderId={$orderId}&orderInfo={$orderInfo}&partnerCode={$partnerCode}&redirectUrl={$returnUrl}&requestId={$requestId}&requestType={$requestType}";
         $signature = hash_hmac('sha256', $rawSignature, $secretKey);
 
-        $payment->update(['transaction_id' => $orderId]);
+        $payment->update([
+            'transaction_id' => $orderId,
+            'gateway_response' => ['frontend_origin' => $this->frontendOrigin()],
+        ]);
 
         $response = Http::post($endpoint, [
             'partnerCode' => $partnerCode,
@@ -108,6 +122,15 @@ class PaymentService
         ]);
 
         $data = $response->json();
+
+        if (!$response->successful() || empty($data['payUrl'])) {
+            $payment->update([
+                'status' => 'failed',
+                'gateway_response' => $data ?: ['message' => 'MoMo did not return a payment URL'],
+            ]);
+
+            throw new \InvalidArgumentException('Khong the tao URL thanh toan MoMo');
+        }
 
         return [
             'payment_id' => $payment->id,
@@ -140,13 +163,13 @@ class PaymentService
             $payment->update([
                 'status' => 'success',
                 'paid_at' => now(),
-                'gateway_response' => $data,
+                'gateway_response' => $this->gatewayResponseWithOrigin($payment, $data),
             ]);
             $payment->booking->update(['status' => 'confirmed']);
         } else {
             $payment->update([
                 'status' => 'failed',
-                'gateway_response' => $data,
+                'gateway_response' => $this->gatewayResponseWithOrigin($payment, $data),
             ]);
         }
 
@@ -163,20 +186,81 @@ class PaymentService
 
         $payment = Payment::where('transaction_id', $data['orderId'])->firstOrFail();
 
-        if ($signature === $data['signature'] && $data['resultCode'] === 0) {
+        if ($signature === ($data['signature'] ?? null) && (string) ($data['resultCode'] ?? '') === '0') {
             $payment->update([
                 'status' => 'success',
                 'paid_at' => now(),
-                'gateway_response' => $data,
+                'gateway_response' => $this->gatewayResponseWithOrigin($payment, $data),
             ]);
             $payment->booking->update(['status' => 'confirmed']);
         } else {
             $payment->update([
                 'status' => 'failed',
-                'gateway_response' => $data,
+                'gateway_response' => $this->gatewayResponseWithOrigin($payment, $data),
             ]);
         }
 
         return $payment;
+    }
+
+    private function createLocalSuccessPayment(Payment $payment, string $provider): array
+    {
+        if (!app()->environment(['local', 'testing'])) {
+            $payment->update([
+                'status' => 'failed',
+                'gateway_response' => ['message' => "{$provider} credentials are not configured"],
+            ]);
+
+            throw new \InvalidArgumentException('Cong thanh toan chua duoc cau hinh');
+        }
+
+        $transactionId = 'local_' . $provider . '_' . $payment->id . '_' . time();
+        $payment->update([
+            'transaction_id' => $transactionId,
+            'status' => 'success',
+            'paid_at' => now(),
+            'gateway_response' => [
+                'frontend_origin' => $this->frontendOrigin(),
+                'provider' => $provider,
+                'mode' => 'local',
+                'message' => 'Simulated local payment because gateway credentials are not configured.',
+            ],
+        ]);
+        $payment->booking->update(['status' => 'confirmed']);
+
+        $frontendUrl = rtrim($this->frontendOrigin(), '/');
+
+        return [
+            'payment_id' => $payment->id,
+            'payment_url' => $frontendUrl . '/payment/' . $payment->booking->booking_code . '?payment=success&provider=' . $provider . '&mode=local',
+        ];
+    }
+
+    private function frontendOrigin(): string
+    {
+        $origin = request()->headers->get('origin');
+        if ($origin) {
+            return $origin;
+        }
+
+        $referer = request()->headers->get('referer');
+        if ($referer) {
+            $parts = parse_url($referer);
+            if (!empty($parts['scheme']) && !empty($parts['host'])) {
+                return $parts['scheme'] . '://' . $parts['host'] . (isset($parts['port']) ? ':' . $parts['port'] : '');
+            }
+        }
+
+        return (string) config('app.frontend_url');
+    }
+
+    private function gatewayResponseWithOrigin(Payment $payment, array $data): array
+    {
+        $existing = $payment->gateway_response ?? [];
+
+        return array_merge(
+            isset($existing['frontend_origin']) ? ['frontend_origin' => $existing['frontend_origin']] : [],
+            $data
+        );
     }
 }

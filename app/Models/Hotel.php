@@ -13,7 +13,7 @@ class Hotel extends Model
     use HasFactory;
 
     protected $fillable = [
-        'destination_id', 'name', 'slug', 'description', 'address',
+        'location_id', 'name', 'slug', 'description', 'address',
         'star_rating', 'latitude', 'longitude', 'phone', 'email',
         'checkin_time', 'checkout_time', 'amenities', 'status',
     ];
@@ -34,9 +34,9 @@ class Hotel extends Model
         });
     }
 
-    public function destination(): BelongsTo
+    public function location(): BelongsTo
     {
-        return $this->belongsTo(Destination::class);
+        return $this->belongsTo(Location::class);
     }
 
     public function roomTypes(): HasMany

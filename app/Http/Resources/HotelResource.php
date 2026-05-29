@@ -24,7 +24,7 @@ class HotelResource extends JsonResource
             'checkout_time' => $this->checkout_time,
             'amenities' => $this->amenities,
             'status' => $this->status,
-            'destination' => new DestinationResource($this->whenLoaded('destination')),
+            'location' => new LocationResource($this->whenLoaded('location')),
             'images' => HotelImageResource::collection($this->whenLoaded('images')),
             'room_types' => RoomTypeResource::collection($this->whenLoaded('roomTypes')),
             'min_price' => $this->whenLoaded('roomTypes', function () {

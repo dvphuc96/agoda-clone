@@ -2,9 +2,16 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BookingController;
-use App\Http\Controllers\Api\DestinationController;
+use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Api\HotelController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Api\Admin\LocationController as AdminLocationController;
+use App\Http\Controllers\Api\Admin\HotelController as AdminHotelController;
+use App\Http\Controllers\Api\Admin\RoomTypeController as AdminRoomTypeController;
+use App\Http\Controllers\Api\Admin\BookingController as AdminBookingController;
+use App\Http\Controllers\Api\Admin\PaymentController as AdminPaymentController;
+use App\Http\Controllers\Api\Admin\UserController as AdminUserController;
 use Illuminate\Support\Facades\Route;
 
 // Auth routes
@@ -13,9 +20,9 @@ Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
 });
 
-// Destination routes
-Route::get('/destinations', [DestinationController::class, 'index']);
-Route::get('/destinations/{slug}/hotels', [DestinationController::class, 'hotels']);
+// Location routes
+Route::get('/locations', [LocationController::class, 'index']);
+Route::get('/locations/{slug}/hotels', [LocationController::class, 'hotels']);
 
 // Hotel routes
 Route::get('/hotels', [HotelController::class, 'index']);
@@ -39,4 +46,38 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/payments/create', [PaymentController::class, 'create']);
     Route::get('/payments/{id}', [PaymentController::class, 'show']);
+});
+
+Route::middleware(['auth:sanctum', 'isAdmin'])->prefix('admin')->group(function () {
+    Route::get('/dashboard/stats', [AdminDashboardController::class, 'stats']);
+    Route::get('/dashboard/revenue-chart', [AdminDashboardController::class, 'revenueChart']);
+    Route::get('/dashboard/booking-status', [AdminDashboardController::class, 'bookingStatus']);
+
+    Route::apiResource('locations', AdminLocationController::class);
+    Route::post('/locations/{location}/image', [AdminLocationController::class, 'uploadImage']);
+
+    Route::apiResource('hotels', AdminHotelController::class);
+    Route::patch('/hotels/{hotel}/toggle-status', [AdminHotelController::class, 'toggleStatus']);
+    Route::post('/hotels/{hotel}/images', [AdminHotelController::class, 'uploadImages']);
+    Route::delete('/hotels/images/{image}', [AdminHotelController::class, 'destroyImage']);
+
+    Route::get('/hotels/{hotel}/room-types', [AdminRoomTypeController::class, 'index']);
+    Route::post('/hotels/{hotel}/room-types', [AdminRoomTypeController::class, 'store']);
+    Route::get('/room-types/{roomType}', [AdminRoomTypeController::class, 'show']);
+    Route::put('/room-types/{roomType}', [AdminRoomTypeController::class, 'update']);
+    Route::delete('/room-types/{roomType}', [AdminRoomTypeController::class, 'destroy']);
+    Route::post('/room-types/{roomType}/images', [AdminRoomTypeController::class, 'uploadImages']);
+
+    Route::get('/bookings/export', [AdminBookingController::class, 'export']);
+    Route::get('/bookings', [AdminBookingController::class, 'index']);
+    Route::get('/bookings/{booking}', [AdminBookingController::class, 'show']);
+    Route::patch('/bookings/{booking}/status', [AdminBookingController::class, 'updateStatus']);
+
+    Route::get('/payments', [AdminPaymentController::class, 'index']);
+    Route::get('/payments/{payment}', [AdminPaymentController::class, 'show']);
+
+    Route::get('/users', [AdminUserController::class, 'index']);
+    Route::get('/users/{user}', [AdminUserController::class, 'show']);
+    Route::patch('/users/{user}/role', [AdminUserController::class, 'updateRole']);
+    Route::patch('/users/{user}/toggle-active', [AdminUserController::class, 'toggleActive']);
 });

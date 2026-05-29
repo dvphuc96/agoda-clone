@@ -19,6 +19,13 @@ class BookingResource extends JsonResource
             'total_price' => $this->total_price,
             'status' => $this->status,
             'nights' => $this->check_in->diffInDays($this->check_out),
+            'user' => $this->whenLoaded('user', fn () => [
+                'id' => $this->user->id,
+                'name' => $this->user->name,
+                'email' => $this->user->email,
+                'phone' => $this->user->phone,
+                'role' => $this->user->role,
+            ]),
             'room_type' => new RoomTypeResource($this->whenLoaded('roomType')),
             'payments' => PaymentResource::collection($this->whenLoaded('payments')),
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),

@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>VietStay - Dat phong khach san & villa tai Viet Nam</title>
+        <title>GoStay - Dat phong khach san & villa tai Viet Nam</title>
         <?php
             $jsFiles = glob(public_path('assets/index-*.js'));
             $cssFiles = glob(public_path('assets/index-*.css'));

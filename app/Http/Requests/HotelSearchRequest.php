@@ -9,7 +9,7 @@ class HotelSearchRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'destination' => ['nullable', 'string'],
+            'location' => ['nullable', 'string'],
             'check_in' => ['nullable', 'date', 'after_or_equal:today'],
             'check_out' => ['nullable', 'date', 'after:check_in'],
             'guests' => ['nullable', 'integer', 'min:1'],

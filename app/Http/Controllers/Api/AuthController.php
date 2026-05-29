@@ -30,6 +30,11 @@ class AuthController extends Controller
         }
 
         $user = Auth::user();
+        if (($user->is_active ?? true) === false) {
+            Auth::logout();
+            return response()->json(['message' => 'Tai khoan da bi vo hieu hoa'], 403);
+        }
+
         $token = $user->createToken('auth-token')->plainTextToken;
 
         return response()->json([

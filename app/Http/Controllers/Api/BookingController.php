@@ -13,40 +13,40 @@ class BookingController extends Controller
 {
     public function __construct(private BookingService $bookingService) {}
 
-    public function index(Request $request): JsonResponse
+    public function index(Request $request)
     {
         $bookings = $request->user()
             ->bookings()
-            ->with(['roomType.hotel.destination', 'payments'])
+            ->with(['roomType.hotel.location', 'payments'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        return response()->json(BookingResource::collection($bookings));
+        return BookingResource::collection($bookings);
     }
 
-    public function store(StoreBookingRequest $request): JsonResponse
+    public function store(StoreBookingRequest $request)
     {
         try {
             $booking = $this->bookingService->createBooking($request->user(), $request->validated());
-            $booking->load(['roomType.hotel.destination']);
+            $booking->load(['roomType.hotel.location']);
             return response()->json(new BookingResource($booking), 201);
         } catch (\InvalidArgumentException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         }
     }
 
-    public function show(Request $request, string $bookingCode): JsonResponse
+    public function show(Request $request, string $bookingCode)
     {
         $booking = $request->user()
             ->bookings()
             ->where('booking_code', $bookingCode)
-            ->with(['roomType.hotel.destination', 'roomType.images', 'payments'])
+            ->with(['roomType.hotel.location', 'roomType.images', 'payments'])
             ->firstOrFail();
 
         return response()->json(new BookingResource($booking));
     }
 
-    public function destroy(Request $request, string $bookingCode): JsonResponse
+    public function destroy(Request $request, string $bookingCode)
     {
         $booking = $request->user()
             ->bookings()

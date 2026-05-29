@@ -12,15 +12,15 @@ use Illuminate\Http\Request;
 
 class HotelController extends Controller
 {
-    public function index(HotelSearchRequest $request): JsonResponse
+    public function index(HotelSearchRequest $request)
     {
         $query = Hotel::where('status', 'active')
-            ->with(['destination', 'images']);
+            ->with(['location', 'images']);
 
-        if ($request->destination) {
-            $query->whereHas('destination', function ($q) use ($request) {
-                $q->where('slug', $request->destination)
-                  ->orWhere('name', 'like', "%{$request->destination}%");
+        if ($request->location) {
+            $query->whereHas('location', function ($q) use ($request) {
+                $q->where('slug', $request->location)
+                  ->orWhere('name', 'like', "%{$request->location}%");
             });
         }
 
@@ -44,20 +44,20 @@ class HotelController extends Controller
         };
 
         $hotels = $query->paginate(12);
-        return response()->json(HotelResource::collection($hotels));
+        return HotelResource::collection($hotels->appends($request->query()));
     }
 
-    public function show(string $slug): JsonResponse
+    public function show(string $slug)
     {
         $hotel = Hotel::where('slug', $slug)
             ->where('status', 'active')
-            ->with(['destination', 'images', 'roomTypes.images'])
+            ->with(['location', 'images', 'roomTypes.images'])
             ->firstOrFail();
 
         return response()->json(new HotelResource($hotel));
     }
 
-    public function rooms(string $slug, Request $request): JsonResponse
+    public function rooms(string $slug, Request $request)
     {
         $request->validate([
             'check_in' => ['required', 'date', 'after_or_equal:today'],
@@ -72,17 +72,17 @@ class HotelController extends Controller
             return $roomType;
         });
 
-        return response()->json(RoomTypeResource::collection($roomTypes));
+        return RoomTypeResource::collection($roomTypes);
     }
 
-    public function featured(): JsonResponse
+    public function featured()
     {
         $hotels = Hotel::where('status', 'active')
-            ->with(['destination', 'images'])
+            ->with(['location', 'images'])
             ->inRandomOrder()
             ->limit(6)
             ->get();
 
-        return response()->json(HotelResource::collection($hotels));
+        return HotelResource::collection($hotels);
     }
 }

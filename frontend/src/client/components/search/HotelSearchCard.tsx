@@ -1,0 +1,104 @@
+import { Link } from 'react-router-dom';
+import { ArrowRight, BadgeCheck, BedDouble, MapPin, Star, UsersRound } from 'lucide-react';
+import type { Hotel } from '../../../shared/api/hotels';
+import { formatVndForLocale } from '../../../shared/i18n/format';
+import { useI18n } from '../../../shared/i18n';
+import { amenityLabel, hotelBackdrop, hotelImage } from '../../../shared/ui/travel';
+
+export default function HotelSearchCard({ hotel, index }: { hotel: Hotel; index: number }) {
+  const { locale, t } = useI18n();
+  const checkIn = new URLSearchParams(window.location.search).get('check_in') || '';
+  const checkOut = new URLSearchParams(window.location.search).get('check_out') || '';
+  const room = hotel.room_types?.[0];
+  const price = hotel.min_price ?? room?.price_per_night;
+  const numericPrice = Number(price);
+  const hasPrice = Number.isFinite(numericPrice) && numericPrice > 0;
+  const displayPrice = formatVndForLocale(price, locale);
+  const amenityLabels = {
+    wifi: t('amenities.wifi'),
+    pool: t('amenities.pool'),
+    spa: t('amenities.spa'),
+    restaurant: t('amenities.restaurant'),
+    gym: t('amenities.gym'),
+    parking: t('amenities.parking'),
+    beach: t('amenities.beach'),
+    air_conditioning: t('amenities.air_conditioning'),
+    breakfast: t('amenities.breakfast'),
+  };
+
+  const viewRoomLink = checkIn && checkOut
+    ? `/hotel/${hotel.slug}?check_in=${checkIn}&check_out=${checkOut}`
+    : `/hotel/${hotel.slug}`;
+
+  return (
+    <div className="flex flex-col overflow-hidden rounded-lg border border-border bg-white shadow-sm transition duration-300 hover:shadow-xl md:flex-row">
+      <div className="relative h-52 w-full shrink-0 bg-cover bg-center md:h-auto md:w-64" style={hotelBackdrop(index)}>
+        <img
+          src={hotelImage(hotel, index)}
+          alt={hotel.name}
+          onError={event => {
+            event.currentTarget.style.display = 'none';
+          }}
+          className="h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,.16),transparent_34%,rgba(0,0,0,.22))]" />
+        <div className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-navy shadow-sm">
+          {hotel.location?.name}
+        </div>
+      </div>
+
+      <div className="flex flex-1 flex-col justify-between p-4 md:p-5">
+        <div>
+          <div className="mb-2 flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-1 rounded-md bg-[#fff5df] px-2 py-1 text-xs font-bold text-[#9a5d12]">
+              <Star className="h-3.5 w-3.5 fill-current" />
+              {hotel.star_rating}
+            </span>
+            <span className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-2 py-1 text-xs font-semibold text-primary">
+              <BadgeCheck className="h-3.5 w-3.5" />
+              {t('search.recommended')}
+            </span>
+          </div>
+          <Link to={viewRoomLink} className="text-lg font-semibold leading-6 text-text transition-colors hover:text-primary">
+            {hotel.name}
+          </Link>
+          <div className="mt-2 flex items-center gap-1.5 text-sm text-text-secondary">
+            <MapPin className="h-4 w-4 text-primary" />
+            <span>{hotel.address}</span>
+          </div>
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {hotel.amenities?.slice(0, 5).map((amenity, i) => (
+              <span key={i} className="rounded-full bg-tab px-2.5 py-1 text-[11px] font-medium text-text-secondary">
+                {amenityLabel(amenity, amenityLabels)}
+              </span>
+            ))}
+          </div>
+          <div className="mt-4 flex flex-wrap gap-3 text-xs text-text-secondary">
+            {room?.bed_type && <span className="inline-flex items-center gap-1.5"><BedDouble className="h-3.5 w-3.5 text-primary" />{room.bed_type}</span>}
+            {room?.max_guests && <span className="inline-flex items-center gap-1.5"><UsersRound className="h-3.5 w-3.5 text-primary" />{t('hotel.maxGuests', { count: room.max_guests })}</span>}
+            {room?.available_rooms !== undefined && <span className="font-semibold text-success">{t('hotel.availableRooms', { count: room.available_rooms })}</span>}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between gap-4 border-t border-border bg-[#fffaf2] p-4 md:w-56 md:flex-col md:items-end md:border-l md:border-t-0 md:bg-white md:p-5">
+        <div className="text-left md:text-right">
+          <div className="mb-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-text-secondary">{t('common.from')}</div>
+          <div className="text-2xl font-semibold text-navy">{displayPrice}</div>
+          {hasPrice && (
+            <div className="text-xs text-text-secondary">
+              {t('common.perNight')} · {t('search.taxNote')}
+            </div>
+          )}
+        </div>
+        <Link
+          to={viewRoomLink}
+          className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[#0b5f59]"
+        >
+          {t('hotel.chooseRoom')}
+          <ArrowRight className="h-4 w-4" />
+        </Link>
+      </div>
+    </div>
+  );
+}

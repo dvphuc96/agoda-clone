@@ -1,16 +1,29 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AuthProvider } from './contexts/AuthContext';
-import Layout from './components/layout/Layout';
-import HomePage from './pages/HomePage';
-import SearchPage from './pages/SearchPage';
-import HotelDetailPage from './pages/HotelDetailPage';
-import BookingPage from './pages/BookingPage';
-import PaymentPage from './pages/PaymentPage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import MyBookingsPage from './pages/MyBookingsPage';
-import BookingDetailPage from './pages/BookingDetailPage';
+import { lazy, Suspense } from 'react';
+import { I18nProvider } from './shared/i18n';
+import { AuthProvider } from './shared/contexts/AuthContext';
+import ClientLayout from './client/layouts/ClientLayout';
+import HomePage from './client/pages/HomePage';
+import SearchPage from './client/pages/SearchPage';
+import HotelDetailPage from './client/pages/HotelDetailPage';
+import BookingPage from './client/pages/BookingPage';
+import PaymentPage from './client/pages/PaymentPage';
+import LoginPage from './client/pages/LoginPage';
+import RegisterPage from './client/pages/RegisterPage';
+import MyBookingsPage from './client/pages/MyBookingsPage';
+import BookingDetailPage from './client/pages/BookingDetailPage';
+
+const AdminLayout = lazy(() => import('./admin/components/layout/AdminLayout'));
+const AdminDashboardPage = lazy(() => import('./admin/pages/DashboardPage'));
+const AdminLocationListPage = lazy(() => import('./admin/pages/locations/LocationListPage'));
+const AdminHotelListPage = lazy(() => import('./admin/pages/hotels/HotelListPage'));
+const AdminRoomTypeListPage = lazy(() => import('./admin/pages/hotels/RoomTypeListPage'));
+const AdminBookingListPage = lazy(() => import('./admin/pages/bookings/BookingListPage'));
+const AdminPaymentListPage = lazy(() => import('./admin/pages/payments/PaymentListPage'));
+const AdminUserListPage = lazy(() => import('./admin/pages/users/UserListPage'));
+
+const adminFallback = <div className="flex min-h-screen items-center justify-center bg-slate-100 text-slate-600">Loading admin...</div>;
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,23 +37,35 @@ const queryClient = new QueryClient({
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route element={<Layout />}>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/search" element={<SearchPage />} />
-              <Route path="/hotel/:slug" element={<HotelDetailPage />} />
-              <Route path="/booking/:roomTypeId" element={<BookingPage />} />
-              <Route path="/payment/:bookingCode" element={<PaymentPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              <Route path="/bookings" element={<MyBookingsPage />} />
-              <Route path="/bookings/:bookingCode" element={<BookingDetailPage />} />
-            </Route>
-          </Routes>
-        </BrowserRouter>
-      </AuthProvider>
+      <I18nProvider>
+        <AuthProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route element={<ClientLayout />}>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/search" element={<SearchPage />} />
+                <Route path="/hotel/:slug" element={<HotelDetailPage />} />
+                <Route path="/booking/:roomTypeId" element={<BookingPage />} />
+                <Route path="/payment/:bookingCode" element={<PaymentPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/bookings" element={<MyBookingsPage />} />
+                <Route path="/bookings/:bookingCode" element={<BookingDetailPage />} />
+              </Route>
+              <Route path="/admin" element={<Suspense fallback={adminFallback}><AdminLayout /></Suspense>}>
+                <Route index element={<Navigate to="/admin/dashboard" replace />} />
+                <Route path="dashboard" element={<Suspense fallback={adminFallback}><AdminDashboardPage /></Suspense>} />
+                <Route path="locations" element={<Suspense fallback={adminFallback}><AdminLocationListPage /></Suspense>} />
+                <Route path="hotels" element={<Suspense fallback={adminFallback}><AdminHotelListPage /></Suspense>} />
+                <Route path="hotels/:hotelId/rooms" element={<Suspense fallback={adminFallback}><AdminRoomTypeListPage /></Suspense>} />
+                <Route path="bookings" element={<Suspense fallback={adminFallback}><AdminBookingListPage /></Suspense>} />
+                <Route path="payments" element={<Suspense fallback={adminFallback}><AdminPaymentListPage /></Suspense>} />
+                <Route path="users" element={<Suspense fallback={adminFallback}><AdminUserListPage /></Suspense>} />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </AuthProvider>
+      </I18nProvider>
     </QueryClientProvider>
   );
 }

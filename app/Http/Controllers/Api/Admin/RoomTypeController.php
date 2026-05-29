@@ -1,0 +1,80 @@
+<?php
+
+namespace App\Http\Controllers\Api\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Http\Resources\RoomTypeResource;
+use App\Models\Hotel;
+use App\Models\HotelImage;
+use App\Models\RoomType;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
+class RoomTypeController extends Controller
+{
+    public function index(Hotel $hotel)
+    {
+        return RoomTypeResource::collection($hotel->roomTypes()->with('images')->paginate(15));
+    }
+
+    public function store(Request $request, Hotel $hotel): JsonResponse
+    {
+        $roomType = $hotel->roomTypes()->create($this->validated($request));
+
+        return response()->json(new RoomTypeResource($roomType->load('images')), 201);
+    }
+
+    public function show(RoomType $roomType): RoomTypeResource
+    {
+        return new RoomTypeResource($roomType->load(['hotel.location', 'images']));
+    }
+
+    public function update(Request $request, RoomType $roomType): RoomTypeResource
+    {
+        $roomType->update($this->validated($request));
+
+        return new RoomTypeResource($roomType->refresh()->load(['hotel.location', 'images']));
+    }
+
+    public function destroy(RoomType $roomType): JsonResponse
+    {
+        abort_if($roomType->bookings()->exists(), 422, 'Cannot delete a room type with bookings.');
+        $roomType->delete();
+
+        return response()->json(['message' => 'Room type deleted.']);
+    }
+
+    public function uploadImages(Request $request, RoomType $roomType)
+    {
+        $request->validate([
+            'images' => ['required', 'array'],
+            'images.*' => ['image', 'max:4096'],
+        ]);
+
+        foreach ($request->file('images', []) as $index => $image) {
+            HotelImage::create([
+                'hotel_id' => $roomType->hotel_id,
+                'room_type_id' => $roomType->id,
+                'image_path' => $image->store('room-types', 'public'),
+                'sort_order' => $roomType->images()->count() + $index,
+            ]);
+        }
+
+        return new RoomTypeResource($roomType->refresh()->load('images'));
+    }
+
+    private function validated(Request $request): array
+    {
+        return $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'max_guests' => ['required', 'integer', 'min:1'],
+            'bed_type' => ['required', 'string', 'max:255'],
+            'size_sqm' => ['nullable', 'integer', 'min:1'],
+            'price_per_night' => ['required', 'numeric', 'min:0'],
+            'amenities' => ['nullable', 'array'],
+            'total_rooms' => ['required', 'integer', 'min:1'],
+        ]);
+    }
+}
