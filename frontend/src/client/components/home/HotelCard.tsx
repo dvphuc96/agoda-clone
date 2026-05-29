@@ -40,12 +40,12 @@ export default function HotelCard({ hotel, index }: { hotel: Hotel; index: numbe
           <div>
             <div className="line-clamp-2 text-base font-semibold leading-5 text-text">{hotel.name}</div>
             <div className="mt-2 flex items-center gap-1.5 text-xs text-text-secondary">
-              <MapPin className="h-3.5 w-3.5 text-primary" />
+              <MapPin className="size-3.5 text-primary" />
               {hotel.location?.name}
             </div>
           </div>
           <div className="inline-flex items-center gap-1 rounded-md bg-[#fff5df] px-2 py-1 text-xs font-bold text-[#9a5d12]">
-            <Star className="h-3.5 w-3.5 fill-current" />
+            <Star className="size-3.5 fill-current" />
             {hotel.star_rating}
           </div>
         </div>
@@ -64,9 +64,9 @@ export default function HotelCard({ hotel, index }: { hotel: Hotel; index: numbe
           </div>
           <span
             aria-label={t('common.viewDetails')}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-primary text-white transition-colors group-hover:bg-[#0b5f59]"
+            className="inline-flex size-9 items-center justify-center rounded-md bg-primary text-white transition-colors group-hover:bg-[#0b5f59]"
           >
-            <ArrowRight className="h-4 w-4" />
+            <ArrowRight className="size-4" />
           </span>
         </div>
       </div>

@@ -52,8 +52,8 @@ export default function HotelInfo({ hotel }: { hotel: Hotel }) {
         <div>
           <h3 className="font-bold text-text text-sm mb-2">{t('hotel.amenities')}</h3>
           <div className="flex flex-wrap gap-2">
-            {hotel.amenities.map((amenity, i) => (
-              <span key={i} className="bg-tab text-text-secondary px-3 py-1.5 rounded-full text-xs font-medium">
+            {hotel.amenities.map((amenity) => (
+              <span key={amenity} className="bg-tab text-text-secondary px-3 py-1.5 rounded-full text-xs font-medium">
                 {amenityLabel(amenity, amenityLabels)}
               </span>
             ))}

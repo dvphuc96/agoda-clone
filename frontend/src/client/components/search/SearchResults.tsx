@@ -91,7 +91,7 @@ export default function SearchResults() {
 
       {hotels.length === 0 ? (
         <div className="rounded-lg border border-border bg-white px-6 py-14 text-center">
-          <SearchX className="mx-auto mb-4 h-10 w-10 text-primary" />
+          <SearchX className="mx-auto mb-4 size-10 text-primary" />
           <p className="font-semibold text-text">{t('search.emptyTitle')}</p>
           <p className="mt-1 text-sm text-text-secondary">{t('search.emptyBody')}</p>
         </div>
@@ -107,6 +107,7 @@ export default function SearchResults() {
           {lastPage > 1 && (
             <div className="flex justify-center items-center gap-2 mt-6">
               <button
+                type="button"
                 onClick={() => goToPage(currentPage - 1)}
                 disabled={currentPage <= 1}
                 className="rounded-md border border-border bg-white px-3 py-2 text-sm font-semibold transition-colors hover:bg-tab disabled:opacity-40"
@@ -115,9 +116,10 @@ export default function SearchResults() {
               </button>
               {Array.from({ length: lastPage }, (_, i) => i + 1).map(page => (
                 <button
+                  type="button"
                   key={page}
                   onClick={() => goToPage(page)}
-                  className={`h-9 w-9 rounded-md text-sm font-semibold transition-colors ${
+                  className={`size-9 rounded-md text-sm font-semibold transition-colors ${
                     page === currentPage
                       ? 'bg-navy text-white'
                       : 'border border-border bg-white text-text-secondary hover:bg-tab'
@@ -127,6 +129,7 @@ export default function SearchResults() {
                 </button>
               ))}
               <button
+                type="button"
                 onClick={() => goToPage(currentPage + 1)}
                 disabled={currentPage >= lastPage}
                 className="rounded-md border border-border bg-white px-3 py-2 text-sm font-semibold transition-colors hover:bg-tab disabled:opacity-40"

@@ -14,12 +14,7 @@ interface PriceSummaryProps {
 export default function PriceSummary({ room, hotelName, checkIn, checkOut, nights, guests }: PriceSummaryProps) {
   const { locale, t } = useI18n();
   const formatPrice = (price: string | number) => formatVndForLocale(price, locale);
-  const formatZeroPrice = () =>
-    new Intl.NumberFormat(locale === 'vi' ? 'vi-VN' : 'en-US', {
-      style: 'currency',
-      currency: 'VND',
-      maximumFractionDigits: 0,
-    }).format(0);
+  const formatZeroPrice = () => formatVndForLocale(0, locale);
 
   const pricePerNight = Number(room.price_per_night);
   const totalPrice = pricePerNight * nights;

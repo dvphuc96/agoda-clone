@@ -106,7 +106,7 @@ export default function LocationListPage() {
     <div>
       {pageTitle('Locations', 'Create destination records and maintain location imagery.')}
       <div className="mb-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search locations" className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm md:max-w-sm" />
+        <input aria-label="Tìm kiếm địa điểm" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search locations" className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm md:max-w-sm" />
         <button type="button" onClick={openCreate} className="rounded-md bg-slate-950 px-4 py-2 text-sm font-semibold text-white">
           Create location
         </button>
@@ -116,20 +116,20 @@ export default function LocationListPage() {
       <AdminModal open={modalOpen} title={editing ? 'Edit location' : 'Create location'} width="md" onClose={closeModal}>
         <form className="space-y-4" onSubmit={(event) => { event.preventDefault(); save.mutate(); }}>
           <Field label="Name">
-            <input value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} placeholder="Da Nang" className={fieldClass} />
+            <input aria-label="Tên địa điểm" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} placeholder="Da Nang" className={fieldClass} />
           </Field>
           <Field label="Slug">
-            <input value={form.slug} onChange={(event) => setForm({ ...form, slug: event.target.value })} placeholder="da-nang" className={fieldClass} />
+            <input aria-label="Đường dẫn" value={form.slug} onChange={(event) => setForm({ ...form, slug: event.target.value })} placeholder="da-nang" className={fieldClass} />
           </Field>
           <Field label="Region">
-            <input value={form.region} onChange={(event) => setForm({ ...form, region: event.target.value })} placeholder="Central Vietnam" className={fieldClass} />
+            <input aria-label="Khu vực" value={form.region} onChange={(event) => setForm({ ...form, region: event.target.value })} placeholder="Central Vietnam" className={fieldClass} />
           </Field>
           <Field label="Image URL">
-            <input value={form.image ?? ''} onChange={(event) => setForm({ ...form, image: event.target.value })} placeholder="https://..." className={fieldClass} />
+            <input aria-label="URL hình ảnh" value={form.image ?? ''} onChange={(event) => setForm({ ...form, image: event.target.value })} placeholder="https://..." className={fieldClass} />
           </Field>
           {editing && <ImageUpload label="Upload location image" onChange={(files) => upload.mutate({ id: editing.id, file: files[0] })} />}
           <Field label="Description">
-            <textarea value={form.description ?? ''} onChange={(event) => setForm({ ...form, description: event.target.value })} placeholder="Short destination overview" className={`${fieldClass} min-h-28`} />
+            <textarea aria-label="Mô tả" value={form.description ?? ''} onChange={(event) => setForm({ ...form, description: event.target.value })} placeholder="Short destination overview" className={`${fieldClass} min-h-28`} />
           </Field>
           <div className="flex justify-end gap-2 border-t border-slate-200 pt-4">
             <button type="button" className="rounded-md border px-4 py-2 text-sm font-semibold" onClick={closeModal}>Cancel</button>

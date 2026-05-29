@@ -69,8 +69,8 @@ export default function RoomTypeCard({ room, index }: { room: RoomType; index: n
           {/* Amenities */}
           {room.amenities && room.amenities.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-2">
-              {room.amenities.slice(0, 6).map((amenity, i) => (
-                <span key={i} className="text-[10px] bg-primary/5 text-primary px-2 py-0.5 rounded-full">
+              {room.amenities.slice(0, 6).map((amenity) => (
+                <span key={amenity} className="text-[10px] bg-primary/5 text-primary px-2 py-0.5 rounded-full">
                   {amenityLabel(amenity, amenityLabels)}
                 </span>
               ))}

@@ -1,14 +1,41 @@
 import type { Locale } from './types';
 
+const currencyCache = new Map<string, Intl.NumberFormat>();
+const dateCache = new Map<string, Intl.DateTimeFormat>();
+
+function getCurrencyFormatter(locale: Locale) {
+  const key = locale === 'vi' ? 'vi-VN' : 'en-US';
+  let fmt = currencyCache.get(key);
+  if (!fmt) {
+    fmt = new Intl.NumberFormat(key, {
+      style: 'currency',
+      currency: 'VND',
+      maximumFractionDigits: 0,
+    });
+    currencyCache.set(key, fmt);
+  }
+  return fmt;
+}
+
+function getDateFormatter(locale: Locale) {
+  const key = locale === 'vi' ? 'vi-VN' : 'en-US';
+  let fmt = dateCache.get(key);
+  if (!fmt) {
+    fmt = new Intl.DateTimeFormat(key, {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    });
+    dateCache.set(key, fmt);
+  }
+  return fmt;
+}
+
 export function formatVndForLocale(price: string | number | null | undefined, locale: Locale) {
   const value = Number(price ?? 0);
   if (!Number.isFinite(value) || value <= 0) return locale === 'vi' ? 'Liên hệ' : 'Contact';
 
-  return new Intl.NumberFormat(locale === 'vi' ? 'vi-VN' : 'en-US', {
-    style: 'currency',
-    currency: 'VND',
-    maximumFractionDigits: 0,
-  }).format(value);
+  return getCurrencyFormatter(locale).format(value);
 }
 
 export function formatDateForLocale(value: string | null | undefined, locale: Locale) {
@@ -28,14 +55,10 @@ export function formatDateForLocale(value: string | null | undefined, locale: Lo
     return value;
   }
 
-  return new Intl.DateTimeFormat(locale === 'vi' ? 'vi-VN' : 'en-US', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  }).format(date);
+  return getDateFormatter(locale).format(date);
 }
 
-export function statusLabel(status: string | null | undefined, labels: Record<string, string>) {
+function statusLabel(status: string | null | undefined, labels: Record<string, string>) {
   if (!status) return '';
   return labels[status] || status;
 }

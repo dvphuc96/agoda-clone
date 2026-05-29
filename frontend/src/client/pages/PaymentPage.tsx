@@ -110,6 +110,7 @@ export default function PaymentPage() {
               </p>
               <div className="flex flex-wrap gap-3 justify-center">
                 <button
+                  type="button"
                   onClick={() => window.location.href = `/payment/${bookingCode}`}
                   className="min-w-0 bg-primary text-white px-6 py-2.5 rounded-lg font-semibold text-sm break-words hover:bg-blue-700 transition-colors"
                 >
@@ -186,11 +187,12 @@ export default function PaymentPage() {
 
         {/* VNPay */}
         <button
+          type="button"
           onClick={() => handlePayment('vnpay')}
           disabled={loading}
           className="w-full min-w-0 bg-surface rounded-2xl shadow-sm border border-border/50 p-4 sm:p-5 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 hover:border-primary hover:shadow-md transition-all disabled:opacity-50 text-left"
         >
-          <div className="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center text-2xl shrink-0">
+          <div className="size-14 bg-blue-50 rounded-xl flex items-center justify-center text-2xl shrink-0">
             💳
           </div>
           <div className="min-w-0 flex-1">
@@ -202,11 +204,12 @@ export default function PaymentPage() {
 
         {/* MoMo */}
         <button
+          type="button"
           onClick={() => handlePayment('momo')}
           disabled={loading}
           className="w-full min-w-0 bg-surface rounded-2xl shadow-sm border border-border/50 p-4 sm:p-5 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 hover:border-primary hover:shadow-md transition-all disabled:opacity-50 text-left"
         >
-          <div className="w-14 h-14 bg-pink-50 rounded-xl flex items-center justify-center text-2xl shrink-0">
+          <div className="size-14 bg-pink-50 rounded-xl flex items-center justify-center text-2xl shrink-0">
             📱
           </div>
           <div className="min-w-0 flex-1">

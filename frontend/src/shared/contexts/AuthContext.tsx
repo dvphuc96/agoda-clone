@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { createContext, use, useState, useEffect, useMemo, useCallback, type ReactNode } from 'react';
 import { authApi, type User } from '../api/auth';
 
 interface AuthContextType {
@@ -23,7 +23,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .then(res => setUser(res.data))
         .catch(() => {
           localStorage.removeItem('auth_token');
-          localStorage.removeItem('auth_user');
+          localStorage.removeItem('auth_user:v1');
         })
         .finally(() => setLoading(false));
     } else {
@@ -31,39 +31,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = useCallback(async (email: string, password: string) => {
     const res = await authApi.login({ email, password });
     localStorage.setItem('auth_token', res.data.token);
-    localStorage.setItem('auth_user', JSON.stringify(res.data.user));
+    localStorage.setItem('auth_user:v1', JSON.stringify(res.data.user));
     setUser(res.data.user);
-  };
+  }, []);
 
-  const register = async (data: { name: string; email: string; password: string; password_confirmation: string; phone?: string }) => {
+  const register = useCallback(async (data: { name: string; email: string; password: string; password_confirmation: string; phone?: string }) => {
     const res = await authApi.register(data);
     localStorage.setItem('auth_token', res.data.token);
-    localStorage.setItem('auth_user', JSON.stringify(res.data.user));
+    localStorage.setItem('auth_user:v1', JSON.stringify(res.data.user));
     setUser(res.data.user);
-  };
+  }, []);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       await authApi.logout();
     } finally {
       localStorage.removeItem('auth_token');
-      localStorage.removeItem('auth_user');
+      localStorage.removeItem('auth_user:v1');
       setUser(null);
     }
-  };
+  }, []);
+
+  const value = useMemo(() => ({
+    user,
+    isAuthenticated: !!user,
+    login,
+    register,
+    logout,
+    loading,
+  }), [user, loading, login, register, logout]);
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, register, logout, loading }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext);
+  const context = use(AuthContext);
   if (!context) throw new Error('useAuth must be used within AuthProvider');
   return context;
 }

@@ -43,7 +43,7 @@ export default function BookingListPage() {
       id: 'actions',
       header: 'Update',
       cell: ({ row }) => (
-        <select value={row.original.status} onChange={(event) => statusMutation.mutate({ id: row.original.id, status: event.target.value as Booking['status'] })} className="rounded-md border border-slate-300 px-2 py-1 text-xs">
+        <select aria-label="Cập nhật trạng thái đặt phòng" value={row.original.status} onChange={(event) => statusMutation.mutate({ id: row.original.id, status: event.target.value as Booking['status'] })} className="rounded-md border border-slate-300 px-2 py-1 text-xs">
           <option value="pending">Pending</option>
           <option value="confirmed">Confirmed</option>
           <option value="completed">Completed</option>
@@ -58,8 +58,8 @@ export default function BookingListPage() {
       {pageTitle('Bookings', 'Review reservations, update lifecycle status, and export records.')}
       <div className="mb-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="flex flex-1 gap-2">
-          <input value={params.search} onChange={(event) => setParams({ ...params, search: event.target.value })} placeholder="Search code or guest" className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm md:max-w-sm" />
-          <select value={params.status} onChange={(event) => setParams({ ...params, status: event.target.value })} className="rounded-md border border-slate-300 px-3 py-2 text-sm">
+          <input aria-label="Tìm kiếm mã đặt phòng hoặc khách" value={params.search} onChange={(event) => setParams({ ...params, search: event.target.value })} placeholder="Search code or guest" className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm md:max-w-sm" />
+          <select aria-label="Lọc theo trạng thái" value={params.status} onChange={(event) => setParams({ ...params, status: event.target.value })} className="rounded-md border border-slate-300 px-3 py-2 text-sm">
             <option value="">All status</option>
             <option value="pending">Pending</option>
             <option value="confirmed">Confirmed</option>

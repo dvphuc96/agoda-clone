@@ -23,7 +23,7 @@ const AdminBookingListPage = lazy(() => import('./admin/pages/bookings/BookingLi
 const AdminPaymentListPage = lazy(() => import('./admin/pages/payments/PaymentListPage'));
 const AdminUserListPage = lazy(() => import('./admin/pages/users/UserListPage'));
 
-const adminFallback = <div className="flex min-h-screen items-center justify-center bg-slate-100 text-slate-600">Loading admin...</div>;
+const adminFallback = <div className="flex min-h-screen items-center justify-center bg-slate-100 text-slate-600">Loading admin…</div>;
 
 const queryClient = new QueryClient({
   defaultOptions: {

@@ -22,26 +22,15 @@ binary at `scripts/bin/harness-cli` in installed projects.
 <claude-mem-context>
 # Memory Context
 
-# [agoda-clone] recent context, 2026-05-29 8:32am GMT+7
+# [agoda-clone] recent context, 2026-05-29 9:46am GMT+7
 
 Legend: 🎯session 🔴bugfix 🟣feature 🔄refactor ✅change 🔵discovery ⚖️decision 🚨security_alert 🔐security_note
 Format: ID TIME TYPE TITLE
 Fetch details: get_observations([IDs]) | Search: mem-search skill
 
-Stats: 34 obs (9,455t read) | 2,381,378t work | 100% savings
+Stats: 50 obs (12,364t read) | 3,199,224t work | 100% savings
 
 ### May 28, 2026
-550 10:08a ⚖️ Structured brainstorming workflow created for Agoda clone project
-551 10:10a 🔵 Project structure and harness framework discovered for Agoda clone
-552 10:12a 🟣 Visual companion server infrastructure deployed for Agoda clone
-553 10:20a 🔵 Visual companion server re-established after timeout
-554 10:25a 🔵 Technology stack version research for Laravel and React
-555 10:31a 🔵 UI library popularity data collected for tech stack decision
-556 10:57a ⚖️ Approved v3 color scheme combining Abogo aesthetic with blue/gold accents
-557 11:20a ⚖️ Approved comprehensive design specification for VietStay booking platform
-558 11:23a ✅ Created comprehensive Laravel 13 backend implementation plan for VietStay
-559 11:31a ⚖️ Approved parallel implementation with 2 sub-agents
-560 11:32a 🟣 Implemented Laravel API Resources and hotel detail functionality
 561 11:43a 🟣 Implemented authentication pages with form validation and error handling
 562 11:46a 🟣 Implemented booking system with service layer, API endpoints, and frontend components
 563 11:49a 🟣 Docker containerization for frontend and backend services
@@ -56,7 +45,6 @@ Stats: 34 obs (9,455t read) | 2,381,378t work | 100% savings
 572 12:21p ✅ Complete Docker Compose database service refactoring
 573 12:22p ✅ Database directories and environment configuration synchronized
 574 " ✅ Database connection check simplified in entrypoint script
-S291 Project rebranding from VietStay to GoStay across codebase (May 28 at 12:24 PM)
 575 1:42p ✅ Project branding rename from VietStay to GoStay initiated
 S292 Complete project rebranding from VietStay to GoStay (May 28 at 1:43 PM)
 576 1:44p ✅ Docker Compose configuration rebranded from VietStay to GoStay
@@ -74,17 +62,38 @@ S298 API response handling fix for "e?.slice(...)?.map is not a function" error 
 S299 API response format fix - backend container needs rebuild (May 28 at 3:22 PM)
 582 3:23p 🔴 Removed JsonResponse type hints from controller methods returning Resource collections
 583 3:24p 🔵 API endpoint /api/locations now returns correct data format
-S300 Continue debugging "l?.map is not a function" TypeError (May 28 at 3:29 PM)
-**Investigated**: Previous session fixed similar "e?.slice(...)?.map is not a function" error by updating frontend API response handling and removing JsonResponse type hints from backend controllers. Frontend now accesses r.data.data for paginated responses.
+S300 Continue debugging "l?.map is not a function" TypeError (May 28 at 3:27 PM)
+598 4:57p 🔵 Admin Dashboard Implementation Status Assessment
+### May 29, 2026
+585 8:57a ✅ Installed react-doctor v0.2.11 in agoda-clone
+S301 Install react-doctor in agoda-clone project (May 29 at 8:58 AM)
+586 9:12a 🔵 React Doctor playbook successfully fetched
+587 9:14a 🔵 Project structure identified as Laravel + React application
+588 " 🔵 React 19.2.6 frontend with modern stack discovered
+589 " 🔵 React Doctor diagnostics executed successfully
+590 " 🔵 Diagnostic issues organized into 6 prioritized tasks
+591 9:15a 🔵 Component files located in @/components/ui/ directory
+592 9:16a 🔵 Only-export-components errors identified as false positives
+593 " 🔵 AdminModal component contains redundant size-axes issue
+594 " ✅ Redundant Tailwind size-axes fixes implemented in admin components
+595 9:17a ✅ Comprehensive Tailwind size-axes optimization completed across frontend components
+596 9:19a 🔴 Task 2 completed: comprehensive Tailwind size-axes optimization
+597 9:22a ✅ Accessibility improvements initiated for form controls missing labels
+599 9:25a 🔴 react-doctor source code fix
+600 9:36a 🔵 Agoda Clone Architecture Analysis
+601 " 🔴 React Button Type Attribute Fix
+602 9:37a 🔴 Comprehensive Button Type Attribute Fix
+603 9:38a 🔵 React Doctor Diagnostics Analysis
+604 9:39a ✅ React 19 migration in AuthContext
+605 " ✅ localStorage key versioning for auth data
+606 " 🔄 Code quality fixes across frontend codebase
+607 9:42a 🔄 useI18n hook React 19 migration
+608 " 🔄 Intl formatter performance optimization in adminUtils
+609 9:43a 🔄 Intl formatter caching in i18n format utilities
+610 9:44a 🔄 PriceSummary formatting optimization
+611 " ✅ Accessibility improvement in ImageGallery fallback
 
-**Learned**: Error persists with different variable name ("l" instead of "e"), suggesting another component has similar array/map issue or frontend changes not fully applied.
-
-**Completed**: Previous fixes included: removed axios interceptor, updated LocationGrid/HeroSearch/FeaturedHotels/HotelDetailPage components, fixed backend controller return type hints, confirmed API returns correct {data:[...]} format.
-
-**Next Steps**: Need to identify which component is throwing the "l?.map is not a function" error and apply similar fixes for accessing paginated data correctly.
-
-
-Access 2381k tokens of past work via get_observations([IDs]) or mem-search skill.
+Access 3199k tokens of past work via get_observations([IDs]) or mem-search skill.
 </claude-mem-context>
 
 # Rules

@@ -72,7 +72,7 @@ export default function HotelListPage() {
 
   const save = useMutation({
     mutationFn: () => {
-      const payload = { ...form, amenities: amenities.split(',').map((item) => item.trim()).filter(Boolean) };
+      const payload = { ...form, amenities: amenities.split(',').flatMap((item) => { const r = item.trim(); return r ? [r] : []; }) };
       return editing ? adminApi.updateHotel(editing.id, payload) : adminApi.createHotel(payload);
     },
     onSuccess: () => {
@@ -133,8 +133,8 @@ export default function HotelListPage() {
       {pageTitle('Hotels', 'Manage bookable properties, profile content, images, and room inventory.')}
       <div className="mb-3 flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
         <div className="flex flex-col gap-2 md:flex-row">
-          <input value={filters.search} onChange={(event) => setFilters({ ...filters, search: event.target.value })} placeholder="Search hotels" className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm md:w-80" />
-          <select value={filters.status} onChange={(event) => setFilters({ ...filters, status: event.target.value })} className="rounded-md border border-slate-300 px-3 py-2 text-sm">
+          <input aria-label="Tìm kiếm khách sạn" value={filters.search} onChange={(event) => setFilters({ ...filters, search: event.target.value })} placeholder="Search hotels" className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm md:w-80" />
+          <select aria-label="Lọc theo trạng thái" value={filters.status} onChange={(event) => setFilters({ ...filters, status: event.target.value })} className="rounded-md border border-slate-300 px-3 py-2 text-sm">
             <option value="">All status</option>
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
@@ -150,54 +150,54 @@ export default function HotelListPage() {
         <form className="space-y-5" onSubmit={(event) => { event.preventDefault(); save.mutate(); }}>
           <div className="grid gap-4 md:grid-cols-2">
             <Field label="Location">
-              <select value={form.location_id} onChange={(event) => setForm({ ...form, location_id: Number(event.target.value) })} className={fieldClass}>
+              <select aria-label="Chọn địa điểm" value={form.location_id} onChange={(event) => setForm({ ...form, location_id: Number(event.target.value) })} className={fieldClass}>
                 <option value={0}>Select location</option>
                 {(locations.data ?? []).map((location) => <option key={location.id} value={location.id}>{location.name}</option>)}
               </select>
             </Field>
             <Field label="Status">
-              <select value={form.status} onChange={(event) => setForm({ ...form, status: event.target.value as HotelPayload['status'] })} className={fieldClass}>
+              <select aria-label="Chọn trạng thái" value={form.status} onChange={(event) => setForm({ ...form, status: event.target.value as HotelPayload['status'] })} className={fieldClass}>
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
               </select>
             </Field>
             <Field label="Hotel name">
-              <input value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} placeholder="GoStay Grand Hotel" className={fieldClass} />
+              <input aria-label="Tên khách sạn" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} placeholder="GoStay Grand Hotel" className={fieldClass} />
             </Field>
             <Field label="Slug">
-              <input value={String(form.slug ?? '')} onChange={(event) => setForm({ ...form, slug: event.target.value })} placeholder="gostay-grand-hotel" className={fieldClass} />
+              <input aria-label="Đường dẫn" value={String(form.slug ?? '')} onChange={(event) => setForm({ ...form, slug: event.target.value })} placeholder="gostay-grand-hotel" className={fieldClass} />
             </Field>
             <Field label="Address">
-              <input value={form.address} onChange={(event) => setForm({ ...form, address: event.target.value })} placeholder="Street, district, city" className={fieldClass} />
+              <input aria-label="Địa chỉ" value={form.address} onChange={(event) => setForm({ ...form, address: event.target.value })} placeholder="Street, district, city" className={fieldClass} />
             </Field>
             <Field label="Star rating">
-              <input type="number" value={form.star_rating} onChange={(event) => setForm({ ...form, star_rating: Number(event.target.value) })} min={1} max={5} className={fieldClass} />
+              <input aria-label="Xếp hạng sao" type="number" value={form.star_rating} onChange={(event) => setForm({ ...form, star_rating: Number(event.target.value) })} min={1} max={5} className={fieldClass} />
             </Field>
             <Field label="Phone">
-              <input value={String(form.phone ?? '')} onChange={(event) => setForm({ ...form, phone: event.target.value })} placeholder="+84..." className={fieldClass} />
+              <input aria-label="Số điện thoại" value={String(form.phone ?? '')} onChange={(event) => setForm({ ...form, phone: event.target.value })} placeholder="+84..." className={fieldClass} />
             </Field>
             <Field label="Email">
-              <input value={String(form.email ?? '')} onChange={(event) => setForm({ ...form, email: event.target.value })} placeholder="hotel@gostay.local" className={fieldClass} />
+              <input aria-label="Email" value={String(form.email ?? '')} onChange={(event) => setForm({ ...form, email: event.target.value })} placeholder="hotel@gostay.local" className={fieldClass} />
             </Field>
             <Field label="Check-in time">
-              <input type="time" value={form.checkin_time} onChange={(event) => setForm({ ...form, checkin_time: event.target.value })} className={fieldClass} />
+              <input aria-label="Giờ nhận phòng" type="time" value={form.checkin_time} onChange={(event) => setForm({ ...form, checkin_time: event.target.value })} className={fieldClass} />
             </Field>
             <Field label="Check-out time">
-              <input type="time" value={form.checkout_time} onChange={(event) => setForm({ ...form, checkout_time: event.target.value })} className={fieldClass} />
+              <input aria-label="Giờ trả phòng" type="time" value={form.checkout_time} onChange={(event) => setForm({ ...form, checkout_time: event.target.value })} className={fieldClass} />
             </Field>
             <Field label="Latitude">
-              <input value={String(form.latitude ?? '')} onChange={(event) => setForm({ ...form, latitude: event.target.value })} placeholder="10.7769" className={fieldClass} />
+              <input aria-label="Vĩ độ" value={String(form.latitude ?? '')} onChange={(event) => setForm({ ...form, latitude: event.target.value })} placeholder="10.7769" className={fieldClass} />
             </Field>
             <Field label="Longitude">
-              <input value={String(form.longitude ?? '')} onChange={(event) => setForm({ ...form, longitude: event.target.value })} placeholder="106.7009" className={fieldClass} />
+              <input aria-label="Kinh độ" value={String(form.longitude ?? '')} onChange={(event) => setForm({ ...form, longitude: event.target.value })} placeholder="106.7009" className={fieldClass} />
             </Field>
           </div>
 
           <Field label="Description">
-            <textarea value={form.description ?? ''} onChange={(event) => setForm({ ...form, description: event.target.value })} placeholder="Property overview" className={`${fieldClass} min-h-24`} />
+            <textarea aria-label="Mô tả" value={form.description ?? ''} onChange={(event) => setForm({ ...form, description: event.target.value })} placeholder="Property overview" className={`${fieldClass} min-h-24`} />
           </Field>
           <Field label="Amenities">
-            <input value={amenities} onChange={(event) => setAmenities(event.target.value)} placeholder="Pool, Spa, Airport shuttle" className={fieldClass} />
+            <input aria-label="Tiện ích" value={amenities} onChange={(event) => setAmenities(event.target.value)} placeholder="Pool, Spa, Airport shuttle" className={fieldClass} />
           </Field>
           {editing && <ImageUpload label="Upload hotel images" multiple onChange={(files) => upload.mutate({ id: editing.id, files })} />}
 

@@ -51,11 +51,11 @@ export default function HotelSearchCard({ hotel, index }: { hotel: Hotel; index:
         <div>
           <div className="mb-2 flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1 rounded-md bg-[#fff5df] px-2 py-1 text-xs font-bold text-[#9a5d12]">
-              <Star className="h-3.5 w-3.5 fill-current" />
+              <Star className="size-3.5 fill-current" />
               {hotel.star_rating}
             </span>
             <span className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-2 py-1 text-xs font-semibold text-primary">
-              <BadgeCheck className="h-3.5 w-3.5" />
+              <BadgeCheck className="size-3.5" />
               {t('search.recommended')}
             </span>
           </div>
@@ -63,19 +63,19 @@ export default function HotelSearchCard({ hotel, index }: { hotel: Hotel; index:
             {hotel.name}
           </Link>
           <div className="mt-2 flex items-center gap-1.5 text-sm text-text-secondary">
-            <MapPin className="h-4 w-4 text-primary" />
+            <MapPin className="size-4 text-primary" />
             <span>{hotel.address}</span>
           </div>
           <div className="mt-3 flex flex-wrap gap-1.5">
-            {hotel.amenities?.slice(0, 5).map((amenity, i) => (
-              <span key={i} className="rounded-full bg-tab px-2.5 py-1 text-[11px] font-medium text-text-secondary">
+            {hotel.amenities?.slice(0, 5).map((amenity) => (
+              <span key={amenity} className="rounded-full bg-tab px-2.5 py-1 text-[11px] font-medium text-text-secondary">
                 {amenityLabel(amenity, amenityLabels)}
               </span>
             ))}
           </div>
           <div className="mt-4 flex flex-wrap gap-3 text-xs text-text-secondary">
-            {room?.bed_type && <span className="inline-flex items-center gap-1.5"><BedDouble className="h-3.5 w-3.5 text-primary" />{room.bed_type}</span>}
-            {room?.max_guests && <span className="inline-flex items-center gap-1.5"><UsersRound className="h-3.5 w-3.5 text-primary" />{t('hotel.maxGuests', { count: room.max_guests })}</span>}
+            {room?.bed_type && <span className="inline-flex items-center gap-1.5"><BedDouble className="size-3.5 text-primary" />{room.bed_type}</span>}
+            {room?.max_guests && <span className="inline-flex items-center gap-1.5"><UsersRound className="size-3.5 text-primary" />{t('hotel.maxGuests', { count: room.max_guests })}</span>}
             {room?.available_rooms !== undefined && <span className="font-semibold text-success">{t('hotel.availableRooms', { count: room.available_rooms })}</span>}
           </div>
         </div>
@@ -96,7 +96,7 @@ export default function HotelSearchCard({ hotel, index }: { hotel: Hotel; index:
           className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[#0b5f59]"
         >
           {t('hotel.chooseRoom')}
-          <ArrowRight className="h-4 w-4" />
+          <ArrowRight className="size-4" />
         </Link>
       </div>
     </div>

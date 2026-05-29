@@ -17,11 +17,12 @@ export default function SortBar() {
   return (
     <div className="mb-5 flex flex-wrap items-center gap-2">
       <span className="mr-1 inline-flex items-center gap-2 text-sm font-semibold text-text">
-        <ArrowDownAZ className="h-4 w-4 text-primary" />
+        <ArrowDownAZ className="size-4 text-primary" />
         {t('search.sortBy')}
       </span>
       {sortOptions.map(opt => (
         <button
+          type="button"
           key={opt.value}
           onClick={() => {
             const params = new URLSearchParams(searchParams);
@@ -36,8 +37,8 @@ export default function SortBar() {
               : 'border border-border bg-white text-text-secondary hover:border-primary hover:text-primary'
           }`}
         >
-          {opt.value === 'rating' && <Star className="h-3.5 w-3.5" />}
-          {opt.value === '' && <BadgeCheck className="h-3.5 w-3.5" />}
+          {opt.value === 'rating' && <Star className="size-3.5" />}
+          {opt.value === '' && <BadgeCheck className="size-3.5" />}
           {t(opt.labelKey)}
         </button>
       ))}

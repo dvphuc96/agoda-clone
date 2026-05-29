@@ -21,7 +21,7 @@ export default function FeaturedHotels() {
           <p className="mt-1 text-sm text-text-secondary">{t('home.featuredSubtitle')}</p>
         </div>
         <Link to="/search" className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#0b5f59]">
-          {t('home.exploreHotels')} <ArrowRight className="h-4 w-4" />
+          {t('home.exploreHotels')} <ArrowRight className="size-4" />
         </Link>
       </div>
       {isLoading && <p className="text-sm text-text-secondary">{t('common.loading')}</p>}

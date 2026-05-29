@@ -27,7 +27,7 @@ export default function LocationGrid() {
           <p className="mt-1 text-sm text-text-secondary">{t('home.destinationSubtitle')}</p>
         </div>
         <Link to="/search" className="inline-flex items-center gap-2 rounded-md border border-border bg-white px-4 py-2 text-sm font-semibold text-text transition-colors hover:border-primary hover:text-primary">
-          {t('home.viewAllDestinations')} <ArrowRight className="h-4 w-4" />
+          {t('home.viewAllDestinations')} <ArrowRight className="size-4" />
         </Link>
       </div>
       {isLoading && <p className="text-sm text-text-secondary">{t('common.loading')}</p>}
@@ -48,7 +48,7 @@ export default function LocationGrid() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
                 <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-semibold backdrop-blur">
-                  <MapPin className="h-3.5 w-3.5" />
+                  <MapPin className="size-3.5" />
                   {regionLabel(loc.region, t)}
                 </div>
                 <div className="text-xl font-semibold">{loc.name}</div>

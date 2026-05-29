@@ -1,12 +1,15 @@
+const vndFormatter = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 });
+const dateFormatter = new Intl.DateTimeFormat('en', { dateStyle: 'medium' });
+
 export const formatCurrency = (value: string | number | null | undefined) =>
-  new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(Number(value ?? 0));
+  vndFormatter.format(Number(value ?? 0));
 
 export const formatDate = (value: string | null | undefined) => {
   if (!value) return '-';
-  return new Intl.DateTimeFormat('en', { dateStyle: 'medium' }).format(new Date(value));
+  return dateFormatter.format(new Date(value));
 };
 
-export const numberValue = (value: string | number | null | undefined) => Number(value ?? 0);
+const numberValue = (value: string | number | null | undefined) => Number(value ?? 0);
 
 export const pageTitle = (title: string, subtitle: string) => (
   <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">

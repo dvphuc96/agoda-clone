@@ -29,25 +29,25 @@ export default function SearchPage() {
             </Link>
             {location && (
               <span className="inline-flex items-center gap-1.5 rounded-md border border-border bg-white px-3 py-2 text-xs font-semibold text-text">
-                <MapPin className="h-3.5 w-3.5 text-primary" />
+                <MapPin className="size-3.5 text-primary" />
                 {location}
               </span>
             )}
             {checkIn && checkOut && (
               <span className="inline-flex items-center gap-1.5 rounded-md border border-border bg-white px-3 py-2 text-xs font-semibold text-text">
-                <CalendarDays className="h-3.5 w-3.5 text-primary" />
+                <CalendarDays className="size-3.5 text-primary" />
                 {checkIn} - {checkOut}
               </span>
             )}
             {guests && (
               <span className="inline-flex items-center gap-1.5 rounded-md border border-border bg-white px-3 py-2 text-xs font-semibold text-text">
-                <UsersRound className="h-3.5 w-3.5 text-primary" />
+                <UsersRound className="size-3.5 text-primary" />
                 {guestLabel}
               </span>
             )}
           </div>
           <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-[#0b5f59]">
-            <PencilLine className="h-4 w-4" />
+            <PencilLine className="size-4" />
             {t('search.editSearch')}
           </Link>
         </div>
@@ -60,10 +60,11 @@ export default function SearchPage() {
         </div>
 
         <button
+          type="button"
           onClick={() => setShowFilters(!showFilters)}
           className="mb-4 inline-flex w-full items-center justify-center gap-2 rounded-md border border-border bg-white px-4 py-3 text-sm font-semibold text-text transition-colors hover:bg-tab md:hidden"
         >
-          {showFilters ? <X className="h-4 w-4" /> : <Filter className="h-4 w-4" />}
+          {showFilters ? <X className="size-4" /> : <Filter className="size-4" />}
           {showFilters ? t('search.hideFilters') : t('search.showFilters')}
         </button>
 

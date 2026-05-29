@@ -33,8 +33,8 @@ export default function LoginPage() {
       <div className="mx-auto flex w-full max-w-5xl items-center justify-center">
         <div className="w-full max-w-md rounded-lg border border-border/80 bg-surface p-6 shadow-[0_24px_70px_rgba(16,32,29,.12)] md:p-8">
           <div className="mb-7 text-center">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-              <LockKeyhole className="h-5 w-5" aria-hidden="true" />
+            <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <LockKeyhole className="size-5" aria-hidden="true" />
             </div>
             <h1 className="text-2xl font-bold text-text tracking-tight">{t('auth.loginTitle')}</h1>
             <p className="mt-2 text-sm leading-6 text-text-secondary">{t('auth.loginSubtitle')}</p>
@@ -83,7 +83,7 @@ export default function LoginPage() {
               className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#0b5f59] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? t('auth.loginLoading') : t('auth.loginAction')}
-              {!loading && <ArrowRight className="h-4 w-4" aria-hidden="true" />}
+              {!loading && <ArrowRight className="size-4" aria-hidden="true" />}
             </button>
           </form>
 

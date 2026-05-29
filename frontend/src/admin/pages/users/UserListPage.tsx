@@ -35,7 +35,7 @@ export default function UserListPage() {
       header: 'Actions',
       cell: ({ row }) => (
         <div className="flex gap-2">
-          <select value={row.original.role} onChange={(event) => roleMutation.mutate({ id: row.original.id, role: event.target.value as 'user' | 'admin' })} className="rounded-md border border-slate-300 px-2 py-1 text-xs">
+          <select aria-label="Thay đổi vai trò" value={row.original.role} onChange={(event) => roleMutation.mutate({ id: row.original.id, role: event.target.value as 'user' | 'admin' })} className="rounded-md border border-slate-300 px-2 py-1 text-xs">
             <option value="user">User</option>
             <option value="admin">Admin</option>
           </select>
@@ -51,8 +51,8 @@ export default function UserListPage() {
     <div>
       {pageTitle('Users', 'Manage user roles, account status, and customer records.')}
       <div className="mb-3 flex gap-2">
-        <input value={filters.search} onChange={(event) => setFilters({ ...filters, search: event.target.value })} placeholder="Search users" className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm md:max-w-sm" />
-        <select value={filters.role} onChange={(event) => setFilters({ ...filters, role: event.target.value })} className="rounded-md border border-slate-300 px-3 py-2 text-sm">
+        <input aria-label="Tìm kiếm người dùng" value={filters.search} onChange={(event) => setFilters({ ...filters, search: event.target.value })} placeholder="Search users" className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm md:max-w-sm" />
+        <select aria-label="Lọc theo vai trò" value={filters.role} onChange={(event) => setFilters({ ...filters, role: event.target.value })} className="rounded-md border border-slate-300 px-3 py-2 text-sm">
           <option value="">All roles</option>
           <option value="user">User</option>
           <option value="admin">Admin</option>

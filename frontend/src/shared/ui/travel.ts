@@ -38,7 +38,7 @@ const hotelBackdrops = [
   'linear-gradient(135deg, #1e293b 0%, #6d7280 52%, #d8ad6a 100%)',
 ];
 
-export function formatVnd(price: string | number | null | undefined) {
+function formatVnd(price: string | number | null | undefined) {
   const value = Number(price ?? 0);
   return Number.isFinite(value) && value > 0 ? `${value.toLocaleString('vi-VN')}đ` : 'Liên hệ';
 }
@@ -61,7 +61,7 @@ export function hotelImage(hotel: Hotel, index = 0) {
   return hotelFallbacks[index % hotelFallbacks.length];
 }
 
-export function fallbackHotelImage(index = 0) {
+function fallbackHotelImage(index = 0) {
   return hotelFallbacks[index % hotelFallbacks.length];
 }
 

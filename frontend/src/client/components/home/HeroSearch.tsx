@@ -34,7 +34,7 @@ export default function HeroSearch() {
         <div className="grid gap-8 lg:grid-cols-[1fr_380px] lg:items-end">
           <div className="max-w-3xl py-8 md:py-14">
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-[#f6e9d2]">
-              <Sparkles className="h-3.5 w-3.5" />
+              <Sparkles className="size-3.5" />
               {t('home.eyebrow')}
             </div>
             <h1 className="max-w-2xl text-4xl font-semibold leading-[1.02] tracking-tight md:text-6xl">
@@ -66,7 +66,7 @@ export default function HeroSearch() {
           <div className="grid gap-2 md:grid-cols-[1.35fr_1fr_1fr_.8fr_auto]">
             <label className="rounded-md border border-border bg-white px-4 py-3">
               <span className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-text-secondary">
-                <MapPin className="h-3.5 w-3.5 text-primary" />
+                <MapPin className="size-3.5 text-primary" />
                 {t('searchForm.destination')}
               </span>
               <select
@@ -82,7 +82,7 @@ export default function HeroSearch() {
             </label>
             <label className="rounded-md border border-border bg-white px-4 py-3">
               <span className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-text-secondary">
-                <CalendarDays className="h-3.5 w-3.5 text-primary" />
+                <CalendarDays className="size-3.5 text-primary" />
                 {t('searchForm.checkIn')}
               </span>
               <input type="date" value={checkIn} onChange={e => setCheckIn(e.target.value)}
@@ -90,7 +90,7 @@ export default function HeroSearch() {
             </label>
             <label className="rounded-md border border-border bg-white px-4 py-3">
               <span className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-text-secondary">
-                <CalendarDays className="h-3.5 w-3.5 text-primary" />
+                <CalendarDays className="size-3.5 text-primary" />
                 {t('searchForm.checkOut')}
               </span>
               <input type="date" value={checkOut} onChange={e => setCheckOut(e.target.value)}
@@ -98,7 +98,7 @@ export default function HeroSearch() {
             </label>
             <label className="rounded-md border border-border bg-white px-4 py-3">
               <span className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-text-secondary">
-                <UsersRound className="h-3.5 w-3.5 text-primary" />
+                <UsersRound className="size-3.5 text-primary" />
                 {t('searchForm.guests')}
               </span>
               <select value={guests} onChange={e => setGuests(Number(e.target.value))}
@@ -112,9 +112,9 @@ export default function HeroSearch() {
                 ))}
               </select>
             </label>
-            <button onClick={handleSearch}
+            <button type="button" onClick={handleSearch}
               className="inline-flex min-h-[66px] items-center justify-center gap-2 rounded-md bg-primary px-6 py-4 text-sm font-bold text-white transition-colors hover:bg-[#0b5f59]">
-              <Search className="h-4 w-4" />
+              <Search className="size-4" />
               {t('common.search')}
             </button>
           </div>
