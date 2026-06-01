@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { useParams, useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../shared/contexts/AuthContext';
-import { type RoomType, type Hotel } from '../../shared/api/hotels';
+import { hotelsApi } from '../../shared/api/hotels';
 import { bookingsApi } from '../../shared/api/bookings';
-import { useI18n } from '../../shared/i18n';
+import { useI18n } from '../../shared/i18n/useI18n';
 import BookingForm from '../components/booking/BookingForm';
 import PriceSummary from '../components/booking/PriceSummary';
 
@@ -21,29 +21,9 @@ export default function BookingPage() {
   const checkOut = searchParams.get('check_out') || '';
   const guestsParam = searchParams.get('guests') || '1';
 
-  // We need to get room type info. Since we don't have a direct room type API,
-  // we'll compute what we can. In a real app, the API would return room type details.
-  // For now, we create a simple structure.
-  // We'll use a placeholder room until the backend is ready.
   const { data: roomData, isLoading } = useQuery({
-    queryKey: ['room-type', roomTypeId],
-    queryFn: async () => {
-      // The backend may not have a direct room type endpoint.
-      // For now, return a placeholder. The actual data will come from the API.
-      return {
-        id: Number(roomTypeId),
-        name: t('booking.defaultRoomName'),
-        description: null,
-        max_guests: 4,
-        bed_type: 'double',
-        size_sqm: 25,
-        price_per_night: '500000',
-        amenities: null,
-        total_rooms: 10,
-        images: [],
-        hotel: { name: t('booking.defaultHotelName'), slug: 'hotel' } as Hotel,
-      } as RoomType & { hotel: Hotel };
-    },
+    queryKey: ['room-type', roomTypeId, checkIn, checkOut],
+    queryFn: () => hotelsApi.getRoomType(roomTypeId!, { check_in: checkIn, check_out: checkOut }).then((response) => response.data),
     enabled: !!roomTypeId,
   });
 
@@ -55,7 +35,7 @@ export default function BookingPage() {
         <h2 className="text-xl font-bold text-text mb-2">{t('auth.requiredTitle')}</h2>
         <p className="text-sm text-text-secondary mb-4">{t('auth.requiredBookingBody')}</p>
         <Link
-          to={`/login?redirect=/booking/${roomTypeId}`}
+          to={`/login?redirect=${encodeURIComponent(`/booking/${roomTypeId}${window.location.search}`)}`}
           className="inline-block bg-primary text-white px-6 py-2.5 rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors"
         >
           {t('auth.loginAction')}
@@ -86,7 +66,7 @@ export default function BookingPage() {
 
   if (isLoading) {
     return (
-      <div className="max-w-5xl mx-auto px-4 md:px-8 py-8" role="status" aria-label={t('common.loading')}>
+      <output className="block max-w-5xl mx-auto px-4 md:px-8 py-8" aria-label={t('common.loading')}>
         <span className="sr-only">{t('common.loading')}</span>
         <div className="animate-pulse space-y-6">
           <div className="h-8 bg-tab rounded w-1/4" />
@@ -95,11 +75,23 @@ export default function BookingPage() {
             <div className="h-64 bg-tab rounded-2xl" />
           </div>
         </div>
+      </output>
+    );
+  }
+
+  if (!roomData) {
+    return (
+      <div className="max-w-lg mx-auto px-4 py-16 text-center">
+        <h2 className="text-xl font-bold text-text">{t('booking.defaultRoomName')}</h2>
+        <p className="mt-2 text-sm text-text-secondary">{t('common.error')}</p>
+        <Link to="/search" className="mt-4 inline-block rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white">
+          {t('hotel.backToSearch')}
+        </Link>
       </div>
     );
   }
 
-  const room = roomData!;
+  const room = roomData;
   const nights = checkIn && checkOut
     ? Math.max(1, Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24)))
     : 1;

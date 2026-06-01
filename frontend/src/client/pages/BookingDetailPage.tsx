@@ -1,7 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, Link } from 'react-router-dom';
+import { useState } from 'react';
 import { bookingsApi } from '../../shared/api/bookings';
-import { useI18n } from '../../shared/i18n';
+import { refundsApi } from '../../shared/api/refunds';
+import { useI18n } from '../../shared/i18n/useI18n';
 import { formatDateForLocale, formatVndForLocale } from '../../shared/i18n/format';
 
 const statusColors: Record<string, string> = {
@@ -22,6 +24,8 @@ export default function BookingDetailPage() {
   const { bookingCode } = useParams<{ bookingCode: string }>();
   const queryClient = useQueryClient();
   const { locale, t } = useI18n();
+  const [reason, setReason] = useState('');
+  const [showRefundForm, setShowRefundForm] = useState(false);
 
   const { data: booking, isLoading, isError } = useQuery({
     queryKey: ['booking', bookingCode],
@@ -34,6 +38,16 @@ export default function BookingDetailPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['booking', bookingCode] });
       queryClient.invalidateQueries({ queryKey: ['my-bookings'] });
+    },
+  });
+
+  const refundMutation = useMutation({
+    mutationFn: () => refundsApi.requestCancel(bookingCode!, { reason }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['booking', bookingCode] });
+      queryClient.invalidateQueries({ queryKey: ['my-bookings'] });
+      setShowRefundForm(false);
+      setReason('');
     },
   });
 
@@ -51,6 +65,13 @@ export default function BookingDetailPage() {
     refunded: t('status.refunded'),
   };
 
+  const refundStatusLabels = {
+    pending: t('booking.refundPending'),
+    approved: t('booking.refundApproved'),
+    rejected: t('booking.refundRejected'),
+    processed: t('booking.refundProcessed'),
+  };
+
   const getBookingStatusLabel = (status: string) =>
     Object.prototype.hasOwnProperty.call(bookingStatusLabels, status)
       ? bookingStatusLabels[status as keyof typeof bookingStatusLabels]
@@ -60,6 +81,11 @@ export default function BookingDetailPage() {
     Object.prototype.hasOwnProperty.call(paymentStatusLabels, status)
       ? paymentStatusLabels[status as keyof typeof paymentStatusLabels]
       : t('status.unknown');
+
+  const getRefundStatusLabel = (status: string) =>
+    Object.prototype.hasOwnProperty.call(refundStatusLabels, status)
+      ? refundStatusLabels[status as keyof typeof refundStatusLabels]
+      : status;
 
   if (isLoading) {
     return (
@@ -86,6 +112,13 @@ export default function BookingDetailPage() {
   }
 
   const latestPayment = booking.payments?.[0];
+  const cancellation = booking.cancellation;
+  const latestRefund = booking.refunds?.[0];
+  const hasActiveRefund = booking.refunds?.some((refund) => ['pending', 'approved', 'processed'].includes(refund.status)) ?? false;
+  const canCancelByPolicy = cancellation?.can_cancel ?? false;
+  const canCancelPending = booking.status === 'pending' && canCancelByPolicy && !hasActiveRefund;
+  const canRequestRefund = booking.status === 'confirmed' && canCancelByPolicy && !hasActiveRefund;
+  const showNotEligible = ['pending', 'confirmed'].includes(booking.status) && !canCancelByPolicy;
 
   return (
     <div className="max-w-3xl mx-auto px-4 md:px-8 py-8">
@@ -153,6 +186,51 @@ export default function BookingDetailPage() {
         </div>
       </div>
 
+      {/* Cancellation Policy Card */}
+      <div className="bg-surface rounded-2xl shadow-sm p-6 mb-4">
+        <h3 className="font-bold text-text mb-3">{t('booking.cancellationPolicy')}</h3>
+        {cancellation ? (
+          <div className="space-y-2 text-sm">
+            {cancellation.policy?.is_non_refundable ? (
+              <p className="text-red-600 font-medium">{t('booking.nonRefundable')}</p>
+            ) : (
+              <>
+                <p className="text-text-secondary">{t('booking.cancellationPolicyDesc')}</p>
+                {cancellation.policy && (
+                  <p className="text-text">
+                    {cancellation.policy.free_cancellation_hours > 0
+                      ? t('booking.freeCancelBefore', { hours: cancellation.policy.free_cancellation_hours })
+                      : t('booking.nonRefundable')}
+                  </p>
+                )}
+                {cancellation.fee_amount !== null && Number(cancellation.fee_amount) > 0 && (
+                  <p className="text-amber-600">{t('booking.cancellationFee', { fee: formatVndForLocale(cancellation.fee_amount, locale) })}</p>
+                )}
+              </>
+            )}
+            {cancellation.reason && <p className="text-text-secondary">{cancellation.reason}</p>}
+            {cancellation.refund_amount !== null && (
+              <p className="text-text">
+                {t('booking.refundStatus')}: {formatVndForLocale(cancellation.refund_amount, locale)}
+              </p>
+            )}
+          </div>
+        ) : (
+          <p className="text-sm text-text-secondary">{t('booking.cancellationPolicyDesc')}</p>
+        )}
+      </div>
+
+      {latestRefund && (
+        <div className="bg-surface rounded-2xl shadow-sm p-6 mb-4">
+          <h3 className="font-bold text-text mb-3">{t('booking.refundStatus')}</h3>
+          <div className="space-y-1 text-sm">
+            <p className="font-medium text-text">{getRefundStatusLabel(latestRefund.status)}</p>
+            <p className="text-text-secondary">{formatVndForLocale(latestRefund.amount, locale)}</p>
+            {latestRefund.reason && <p className="text-text-secondary">{latestRefund.reason}</p>}
+          </div>
+        </div>
+      )}
+
       {/* Payment Info Card */}
       {latestPayment && (
         <div className="bg-surface rounded-2xl shadow-sm p-6 mb-4">
@@ -180,9 +258,54 @@ export default function BookingDetailPage() {
         </div>
       )}
 
+      {/* Refund Request Form */}
+      {showRefundForm && canRequestRefund && (
+        <div className="bg-surface rounded-2xl shadow-sm p-6 mb-4 border border-amber-200">
+          <h3 className="font-bold text-text mb-3">{t('booking.requestRefund')}</h3>
+          <div className="space-y-3">
+            <div>
+              <label htmlFor="refund-reason" className="block text-sm font-medium text-text mb-1">
+                {t('booking.refundReason')}
+              </label>
+              <textarea
+                id="refund-reason"
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                placeholder={t('booking.refundReasonPlaceholder')}
+                rows={3}
+                className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+              />
+            </div>
+            {refundMutation.isError && (
+              <p role="alert" className="text-sm text-red-600">{t('booking.refundRequestFailure')}</p>
+            )}
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  if (!reason.trim()) return;
+                  refundMutation.mutate();
+                }}
+                disabled={refundMutation.isPending || !reason.trim()}
+                className="bg-red-600 text-white px-5 py-2 rounded-lg font-semibold text-sm hover:bg-red-700 transition-colors disabled:opacity-50"
+              >
+                {refundMutation.isPending ? t('booking.submittingRefund') : t('booking.submitRefundRequest')}
+              </button>
+              <button
+                type="button"
+                onClick={() => { setShowRefundForm(false); setReason(''); }}
+                className="bg-tab text-text-secondary px-5 py-2 rounded-lg font-semibold text-sm hover:bg-border transition-colors"
+              >
+                {t('common.close')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Actions */}
       <div className="flex gap-3 mt-6">
-        {booking.status === 'pending' && (
+        {booking.status === 'pending' && !showRefundForm && (
           <>
             <Link
               to={`/payment/${booking.booking_code}`}
@@ -190,19 +313,33 @@ export default function BookingDetailPage() {
             >
               {t('booking.payNow')}
             </Link>
-            <button
-              type="button"
-              onClick={() => {
-                if (confirm(t('booking.cancelConfirm'))) {
-                  cancelMutation.mutate();
-                }
-              }}
-              disabled={cancelMutation.isPending}
-              className="bg-red-50 text-red-600 border border-red-200 px-6 py-2.5 rounded-lg font-semibold text-sm hover:bg-red-100 transition-colors disabled:opacity-50"
-            >
-              {cancelMutation.isPending ? t('booking.cancelling') : t('booking.cancel')}
-            </button>
+            {canCancelPending && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (confirm(t('booking.cancelConfirm'))) {
+                    cancelMutation.mutate();
+                  }
+                }}
+                disabled={cancelMutation.isPending}
+                className="bg-red-50 text-red-600 border border-red-200 px-6 py-2.5 rounded-lg font-semibold text-sm hover:bg-red-100 transition-colors disabled:opacity-50"
+              >
+                {cancelMutation.isPending ? t('booking.cancelling') : t('booking.cancel')}
+              </button>
+            )}
           </>
+        )}
+        {canRequestRefund && !showRefundForm && (
+          <button
+            type="button"
+            onClick={() => setShowRefundForm(true)}
+            className="bg-amber-50 text-amber-700 border border-amber-200 px-6 py-2.5 rounded-lg font-semibold text-sm hover:bg-amber-100 transition-colors"
+          >
+            {t('booking.requestRefund')}
+          </button>
+        )}
+        {showNotEligible && (
+          <p className="text-sm text-text-secondary">{t('booking.notEligibleForCancel')}</p>
         )}
         <Link
           to="/bookings"

@@ -1,4 +1,4 @@
-import { BarChart3, BedDouble, Building2, CreditCard, Home, LogOut, MapPinned, Menu, Users } from 'lucide-react';
+import { BarChart3, BedDouble, Building2, CreditCard, Home, LogOut, MapPinned, Menu, RotateCcw, ScrollText, Users } from 'lucide-react';
 import { useState } from 'react';
 import { Link, NavLink, Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../../../shared/contexts/AuthContext';
@@ -9,6 +9,8 @@ const navItems = [
   { to: '/admin/hotels', label: 'Hotels', icon: Building2 },
   { to: '/admin/bookings', label: 'Bookings', icon: BedDouble },
   { to: '/admin/payments', label: 'Payments', icon: CreditCard },
+  { to: '/admin/refunds', label: 'Refunds', icon: RotateCcw },
+  { to: '/admin/policies', label: 'Policies', icon: ScrollText },
   { to: '/admin/users', label: 'Users', icon: Users },
 ];
 

@@ -127,7 +127,7 @@ export default function RoomTypeListPage() {
               <input aria-label="Total rooms" type="number" value={form.total_rooms} onChange={(event) => setForm({ ...form, total_rooms: Number(event.target.value) })} className={fieldClass} />
             </Field>
             <Field label="Size (sqm)">
-              <input aria-label="Size in square meters" type="number" value={String(form.size_sqm ?? '')} onChange={(event) => setForm({ ...form, size_sqm: event.target.value })} placeholder="30" className={fieldClass} />
+              <input aria-label="Size in square meters" type="number" value={String(form.size_sqm ?? '')} onChange={(event) => setForm({ ...form, size_sqm: event.target.value ? Number(event.target.value) : null })} placeholder="30" className={fieldClass} />
             </Field>
           </div>
           <Field label="Description">

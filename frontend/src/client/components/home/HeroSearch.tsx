@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { CalendarDays, MapPin, Search, Sparkles, UsersRound } from 'lucide-react';
+import { MapPin, Search, Sparkles, UsersRound } from 'lucide-react';
 import { getCollectionData, hotelsApi, type Location } from '../../../shared/api/hotels';
-import { useI18n } from '../../../shared/i18n';
+import { useI18n } from '../../../shared/i18n/useI18n';
+import DateField, { nextDateString, todayDateString } from '../common/DateField';
 
 export default function HeroSearch() {
   const navigate = useNavigate();
-  const { t } = useI18n();
+  const { locale, t } = useI18n();
   const [location, setLocation] = useState('');
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
@@ -17,6 +18,16 @@ export default function HeroSearch() {
     queryKey: ['locations'],
     queryFn: () => hotelsApi.getLocations().then(r => getCollectionData<Location>(r.data)),
   });
+
+  const today = todayDateString();
+  const minCheckOut = checkIn ? nextDateString(checkIn) : today;
+
+  const handleCheckInChange = (value: string) => {
+    setCheckIn(value);
+    if (checkOut && checkOut <= value) {
+      setCheckOut(nextDateString(value));
+    }
+  };
 
   const handleSearch = () => {
     const params = new URLSearchParams();
@@ -29,7 +40,15 @@ export default function HeroSearch() {
 
   return (
     <section className="relative overflow-hidden bg-[#10201d] px-4 pb-10 pt-8 text-white md:px-8 md:pb-16 md:pt-12">
-      <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(16,32,29,.98),rgba(16,32,29,.78)_48%,rgba(97,73,44,.48)),linear-gradient(150deg,#10201d_0%,#21473f_46%,#d6a760_100%)]" />
+      <div className="absolute inset-0">
+        <img
+          src="https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=1800&q=85"
+          alt=""
+          aria-hidden="true"
+          className="h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(16,32,29,.96),rgba(16,32,29,.82)_48%,rgba(97,73,44,.58)),linear-gradient(150deg,rgba(16,32,29,.92)_0%,rgba(33,71,63,.72)_46%,rgba(214,167,96,.42)_100%)]" />
+      </div>
       <div className="relative mx-auto max-w-7xl">
         <div className="grid gap-8 lg:grid-cols-[1fr_380px] lg:items-end">
           <div className="max-w-3xl py-8 md:py-14">
@@ -47,10 +66,17 @@ export default function HeroSearch() {
 
           <div className="hidden rounded-lg border border-white/20 bg-white/10 p-4 shadow-2xl backdrop-blur lg:block">
             <div className="relative aspect-[4/3] overflow-hidden rounded-md bg-[linear-gradient(135deg,#20352f_0%,#597c70_48%,#d5a65d_100%)]">
-              <div className="absolute inset-x-0 bottom-0 h-24 bg-[linear-gradient(180deg,transparent,rgba(16,32,29,.62))]" />
-              <div className="absolute left-6 top-6 h-24 w-36 rounded-md border border-white/20 bg-white/15" />
-              <div className="absolute bottom-8 right-6 h-20 w-44 rounded-md border border-white/20 bg-[#f6f1e9]/25" />
-              <div className="absolute bottom-6 left-6 text-sm font-semibold text-white">{t('home.featuredTitle')}</div>
+              <img
+                src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=85"
+                alt={t('home.featuredTitle')}
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-[linear-gradient(145deg,rgba(16,32,29,.18),rgba(16,32,29,.08)_42%,rgba(16,32,29,.56))]" />
+              <div className="absolute inset-x-0 bottom-0 h-28 bg-[linear-gradient(180deg,transparent,rgba(16,32,29,.74))]" />
+              <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between gap-4">
+                <div className="text-sm font-semibold text-white">{t('home.featuredTitle')}</div>
+                <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-navy shadow-sm">GoStay</span>
+              </div>
             </div>
             <div className="mt-4 flex items-center justify-between text-sm">
               <div>
@@ -62,7 +88,7 @@ export default function HeroSearch() {
           </div>
         </div>
 
-        <div className="relative -mb-20 mt-4 rounded-lg border border-[#eadfce] bg-[#fffaf2] p-3 text-text shadow-[0_22px_60px_rgba(16,32,29,.24)] md:p-4">
+        <div className="relative mx-auto mb-4 mt-8 max-w-6xl rounded-lg border border-[#eadfce] bg-[#fffaf2] p-3 text-text shadow-[0_22px_60px_rgba(16,32,29,.24)] md:mb-6 md:mt-10 md:p-4">
           <div className="grid gap-2 md:grid-cols-[1.35fr_1fr_1fr_.8fr_auto]">
             <label className="rounded-md border border-border bg-white px-4 py-3">
               <span className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-text-secondary">
@@ -80,22 +106,8 @@ export default function HeroSearch() {
                 ))}
               </select>
             </label>
-            <label className="rounded-md border border-border bg-white px-4 py-3">
-              <span className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-text-secondary">
-                <CalendarDays className="size-3.5 text-primary" />
-                {t('searchForm.checkIn')}
-              </span>
-              <input type="date" value={checkIn} onChange={e => setCheckIn(e.target.value)}
-                className="mt-1 block w-full bg-transparent text-sm font-semibold text-text outline-none" />
-            </label>
-            <label className="rounded-md border border-border bg-white px-4 py-3">
-              <span className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-text-secondary">
-                <CalendarDays className="size-3.5 text-primary" />
-                {t('searchForm.checkOut')}
-              </span>
-              <input type="date" value={checkOut} onChange={e => setCheckOut(e.target.value)}
-                className="mt-1 block w-full bg-transparent text-sm font-semibold text-text outline-none" />
-            </label>
+            <DateField id="hero-check-in" label={t('searchForm.checkIn')} value={checkIn} min={today} locale={locale} onChange={handleCheckInChange} />
+            <DateField id="hero-check-out" label={t('searchForm.checkOut')} value={checkOut} min={minCheckOut} locale={locale} onChange={setCheckOut} />
             <label className="rounded-md border border-border bg-white px-4 py-3">
               <span className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-text-secondary">
                 <UsersRound className="size-3.5 text-primary" />

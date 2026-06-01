@@ -19,7 +19,7 @@ class RoomTypeFactory extends Factory
             'max_guests' => fake()->numberBetween(1, 4),
             'bed_type' => fake()->randomElement(['single', 'double', 'twin', 'king']),
             'size_sqm' => fake()->numberBetween(20, 80),
-            'price_per_night' => fake()->randomFloat(2, 30, 500),
+            'price_per_night' => fake()->numberBetween(1000, 10000),
             'amenities' => ['wifi', 'ac', 'tv'],
             'total_rooms' => fake()->numberBetween(3, 20),
         ];

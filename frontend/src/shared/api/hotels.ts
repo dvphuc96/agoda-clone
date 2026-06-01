@@ -28,6 +28,7 @@ export interface RoomType {
   amenities: string[] | null;
   total_rooms: number;
   images: HotelImage[];
+  hotel?: Hotel;
   available_rooms?: number;
 }
 
@@ -35,6 +36,7 @@ export interface Hotel {
   id: number;
   name: string;
   slug: string;
+  property_type: 'hotel' | 'villa' | 'resort' | 'apartment';
   description: string | null;
   address: string;
   star_rating: number;
@@ -50,6 +52,7 @@ export interface Hotel {
   images: HotelImage[];
   room_types: RoomType[];
   min_price?: string;
+  max_price?: string;
 }
 
 export interface PaginatedResponse<T> {
@@ -71,6 +74,15 @@ export interface ResourceCollection<T> {
 }
 
 type CollectionPayload<T> = T[] | ResourceCollection<T> | { data: ResourceCollection<T> };
+type ApiResource<T> = T | { data: T };
+
+function unwrapResource<T>(payload: ApiResource<T>): T {
+  if (payload && typeof payload === 'object' && 'data' in payload) {
+    return payload.data;
+  }
+
+  return payload;
+}
 
 export function getCollectionData<T>(payload: CollectionPayload<T> | unknown): T[] {
   if (Array.isArray(payload)) {
@@ -103,6 +115,8 @@ export interface HotelSearchParams {
   star?: number;
   price_min?: number;
   price_max?: number;
+  types?: string;
+  amenities?: string;
   sort?: string;
   page?: number;
 }
@@ -116,8 +130,14 @@ export const hotelsApi = {
 
   getFeatured: () => apiClient.get<ResourceCollection<Hotel> | Hotel[]>('/hotels/featured'),
 
-  getHotel: (slug: string) => apiClient.get<Hotel>(`/hotels/${slug}`),
+  getHotel: (slug: string) =>
+    apiClient.get<ApiResource<Hotel>>(`/hotels/${slug}`)
+      .then((response) => ({ ...response, data: unwrapResource(response.data) })),
 
   getRooms: (slug: string, checkIn: string, checkOut: string) =>
     apiClient.get<ResourceCollection<RoomType> | RoomType[]>(`/hotels/${slug}/rooms`, { params: { check_in: checkIn, check_out: checkOut } }),
+
+  getRoomType: (roomTypeId: number | string, params?: { check_in?: string; check_out?: string }) =>
+    apiClient.get<ApiResource<RoomType>>(`/room-types/${roomTypeId}`, { params })
+      .then((response) => ({ ...response, data: unwrapResource(response.data) })),
 };

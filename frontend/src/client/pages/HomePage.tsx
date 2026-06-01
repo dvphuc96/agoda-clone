@@ -6,7 +6,7 @@ export default function HomePage() {
   return (
     <div className="bg-bg">
       <HeroSearch />
-      <div className="pt-24">
+      <div className="pt-8 md:pt-10">
         <LocationGrid />
         <FeaturedHotels />
       </div>

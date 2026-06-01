@@ -9,6 +9,9 @@ use Illuminate\Support\Str;
 
 class PaymentService
 {
+    public function __construct(
+        private NotificationService $notificationService,
+    ) {}
     public function createPayment(Booking $booking, string $method): array
     {
         $payment = Payment::create([
@@ -166,6 +169,7 @@ class PaymentService
                 'gateway_response' => $this->gatewayResponseWithOrigin($payment, $data),
             ]);
             $payment->booking->update(['status' => 'confirmed']);
+            $this->notificationService->notifyBookingConfirmed($payment->booking);
         } else {
             $payment->update([
                 'status' => 'failed',
@@ -193,6 +197,7 @@ class PaymentService
                 'gateway_response' => $this->gatewayResponseWithOrigin($payment, $data),
             ]);
             $payment->booking->update(['status' => 'confirmed']);
+            $this->notificationService->notifyBookingConfirmed($payment->booking);
         } else {
             $payment->update([
                 'status' => 'failed',
@@ -227,6 +232,7 @@ class PaymentService
             ],
         ]);
         $payment->booking->update(['status' => 'confirmed']);
+        $this->notificationService->notifyBookingConfirmed($payment->booking);
 
         $frontendUrl = rtrim($this->frontendOrigin(), '/');
 

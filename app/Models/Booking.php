@@ -47,4 +47,14 @@ class Booking extends Model
     {
         return $this->hasMany(Payment::class);
     }
+
+    public function refunds(): HasMany
+    {
+        return $this->hasMany(Refund::class);
+    }
+
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(NotificationRecord::class);
+    }
 }

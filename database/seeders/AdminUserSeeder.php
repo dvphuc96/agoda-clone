@@ -15,7 +15,7 @@ class AdminUserSeeder extends Seeder
             [
                 'name' => 'GoStay Admin',
                 'phone' => '0900000000',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('123456'),
                 'role' => 'admin',
                 'is_active' => true,
             ],

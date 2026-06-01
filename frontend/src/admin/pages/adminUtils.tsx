@@ -9,8 +9,6 @@ export const formatDate = (value: string | null | undefined) => {
   return dateFormatter.format(new Date(value));
 };
 
-const numberValue = (value: string | number | null | undefined) => Number(value ?? 0);
-
 export const pageTitle = (title: string, subtitle: string) => (
   <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
     <div>

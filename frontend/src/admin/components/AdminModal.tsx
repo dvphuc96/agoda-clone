@@ -5,11 +5,12 @@ type Props = {
   open: boolean;
   title: string;
   children: ReactNode;
-  width?: 'md' | 'lg' | 'xl';
+  width?: 'sm' | 'md' | 'lg' | 'xl';
   onClose: () => void;
 };
 
 const widthClass = {
+  sm: 'max-w-sm',
   md: 'max-w-lg',
   lg: 'max-w-2xl',
   xl: 'max-w-4xl',

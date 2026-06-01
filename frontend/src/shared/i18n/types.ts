@@ -167,6 +167,25 @@ export type Messages = {
     emptyTitle: string;
     emptyBody: string;
     exploreHotels: string;
+    cancellationPolicy: string;
+    cancellationPolicyDesc: string;
+    nonRefundable: string;
+    freeCancelBefore: string;
+    cancellationFee: string;
+    requestRefund: string;
+    refundReason: string;
+    refundReasonPlaceholder: string;
+    refundReasonRequired: string;
+    submitRefundRequest: string;
+    submittingRefund: string;
+    refundRequestSuccess: string;
+    refundRequestFailure: string;
+    refundStatus: string;
+    refundPending: string;
+    refundApproved: string;
+    refundRejected: string;
+    refundProcessed: string;
+    notEligibleForCancel: string;
   };
   payment: {
     title: string;
@@ -189,6 +208,16 @@ export type Messages = {
     backHome: string;
     info: string;
     paidAt: string;
+  };
+  notifications: {
+    title: string;
+    emptyTitle: string;
+    emptyBody: string;
+    type: string;
+    message: string;
+    status: string;
+    sentAt: string;
+    noDate: string;
   };
   footer: {
     tagline: string;

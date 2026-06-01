@@ -2,8 +2,8 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { ArrowRight, MapPin } from 'lucide-react';
 import { getCollectionData, hotelsApi, type Location } from '../../../shared/api/hotels';
-import { useI18n } from '../../../shared/i18n';
-import { locationBackdrop, locationImage } from '../../../shared/ui/travel';
+import { useI18n } from '../../../shared/i18n/useI18n';
+import { destinationFallbackImage, locationBackdrop, locationImage } from '../../../shared/ui/travel';
 
 function regionLabel(region: string, t: ReturnType<typeof useI18n>['t']) {
   const key = `regions.${region}` as const;
@@ -40,7 +40,10 @@ export default function LocationGrid() {
                 src={locationImage(loc)}
                 alt={loc.name}
                 onError={event => {
-                  event.currentTarget.style.display = 'none';
+                  const fallback = destinationFallbackImage('da-nang');
+                  if (event.currentTarget.src !== fallback) {
+                    event.currentTarget.src = fallback;
+                  }
                 }}
                 className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
               />

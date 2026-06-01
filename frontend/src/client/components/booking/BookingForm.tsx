@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useI18n } from '../../../shared/i18n';
+import { useI18n } from '../../../shared/i18n/useI18n';
+import DateField, { nextDateString, todayDateString } from '../common/DateField';
 
 interface BookingFormProps {
   maxGuests: number;
@@ -9,12 +10,21 @@ interface BookingFormProps {
 }
 
 export default function BookingForm({ maxGuests, onSubmit, loading }: BookingFormProps) {
-  const { t } = useI18n();
+  const { locale, t } = useI18n();
   const [searchParams] = useSearchParams();
   const [checkIn, setCheckIn] = useState(searchParams.get('check_in') || '');
   const [checkOut, setCheckOut] = useState(searchParams.get('check_out') || '');
   const [guests, setGuests] = useState(Number(searchParams.get('guests')) || 1);
   const [specialRequests, setSpecialRequests] = useState('');
+  const today = todayDateString();
+  const minCheckOut = checkIn ? nextDateString(checkIn) : today;
+
+  const handleCheckInChange = (value: string) => {
+    setCheckIn(value);
+    if (checkOut && checkOut <= value) {
+      setCheckOut(nextDateString(value));
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,28 +41,8 @@ export default function BookingForm({ maxGuests, onSubmit, loading }: BookingFor
       <h2 className="text-lg font-bold text-text">{t('booking.guestInfo')}</h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="booking-check-in" className="block text-sm font-medium text-text mb-1.5">{t('searchForm.checkIn')}</label>
-          <input
-            id="booking-check-in"
-            type="date"
-            value={checkIn}
-            onChange={e => setCheckIn(e.target.value)}
-            required
-            className="w-full px-4 py-2.5 border border-border rounded-lg text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-colors"
-          />
-        </div>
-        <div>
-          <label htmlFor="booking-check-out" className="block text-sm font-medium text-text mb-1.5">{t('searchForm.checkOut')}</label>
-          <input
-            id="booking-check-out"
-            type="date"
-            value={checkOut}
-            onChange={e => setCheckOut(e.target.value)}
-            required
-            className="w-full px-4 py-2.5 border border-border rounded-lg text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-colors"
-          />
-        </div>
+        <DateField id="booking-check-in" label={t('searchForm.checkIn')} value={checkIn} min={today} locale={locale} required onChange={handleCheckInChange} />
+        <DateField id="booking-check-out" label={t('searchForm.checkOut')} value={checkOut} min={minCheckOut} locale={locale} required onChange={setCheckOut} />
       </div>
 
       <div>

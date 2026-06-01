@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { getCollectionData, hotelsApi, type Hotel } from '../../../shared/api/hotels';
-import { useI18n } from '../../../shared/i18n';
+import { useI18n } from '../../../shared/i18n/useI18n';
 import HotelCard from './HotelCard';
 
 export default function FeaturedHotels() {

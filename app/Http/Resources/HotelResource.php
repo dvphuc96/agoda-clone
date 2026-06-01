@@ -13,6 +13,7 @@ class HotelResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'slug' => $this->slug,
+            'property_type' => $this->property_type,
             'description' => $this->description,
             'address' => $this->address,
             'star_rating' => $this->star_rating,
@@ -29,6 +30,9 @@ class HotelResource extends JsonResource
             'room_types' => RoomTypeResource::collection($this->whenLoaded('roomTypes')),
             'min_price' => $this->whenLoaded('roomTypes', function () {
                 return $this->roomTypes->min('price_per_night');
+            }),
+            'max_price' => $this->whenLoaded('roomTypes', function () {
+                return $this->roomTypes->max('price_per_night');
             }),
         ];
     }

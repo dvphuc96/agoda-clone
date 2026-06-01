@@ -1,7 +1,7 @@
 import { Link, useSearchParams } from 'react-router-dom';
 import type { RoomType } from '../../../shared/api/hotels';
 import { formatVndForLocale } from '../../../shared/i18n/format';
-import { useI18n } from '../../../shared/i18n';
+import { useI18n } from '../../../shared/i18n/useI18n';
 import { amenityLabel } from '../../../shared/ui/travel';
 
 const gradients = [
@@ -16,6 +16,7 @@ export default function RoomTypeCard({ room, index }: { room: RoomType; index: n
   const [searchParams] = useSearchParams();
   const checkIn = searchParams.get('check_in') || '';
   const checkOut = searchParams.get('check_out') || '';
+  const guests = searchParams.get('guests') || '';
   const numericPrice = Number(room.price_per_night);
   const hasPrice = Number.isFinite(numericPrice) && numericPrice > 0;
   const displayPrice = formatVndForLocale(room.price_per_night, locale);
@@ -31,9 +32,12 @@ export default function RoomTypeCard({ room, index }: { room: RoomType; index: n
     breakfast: t('amenities.breakfast'),
   };
 
-  const bookingLink = checkIn && checkOut
-    ? `/booking/${room.id}?check_in=${checkIn}&check_out=${checkOut}`
-    : `/booking/${room.id}`;
+  const bookingParams = new URLSearchParams();
+  if (checkIn) bookingParams.set('check_in', checkIn);
+  if (checkOut) bookingParams.set('check_out', checkOut);
+  if (guests) bookingParams.set('guests', guests);
+  const bookingQuery = bookingParams.toString();
+  const bookingLink = `/booking/${room.id}${bookingQuery ? `?${bookingQuery}` : ''}`;
 
   return (
     <div className="bg-surface rounded-2xl shadow-sm border border-border/50 overflow-hidden">

@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useReducer } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { RotateCcw, SlidersHorizontal, Star } from 'lucide-react';
-import { useI18n } from '../../../shared/i18n';
+import { useI18n } from '../../../shared/i18n/useI18n';
 
 const starOptions = [1, 2, 3, 4, 5];
 const propertyTypes = [
@@ -11,49 +11,109 @@ const propertyTypes = [
   { value: 'apartment', labelKey: 'search.typeApartment' },
 ] as const;
 const amenitiesList = ['wifi', 'pool', 'spa', 'restaurant', 'parking', 'gym', 'air_conditioning', 'breakfast'] as const;
+const priceBounds = { min: 1000, max: 10000, step: 500 };
+const priceFormatter = new Intl.NumberFormat('vi-VN');
+
+function clampPrice(value: number): number {
+  return Math.min(priceBounds.max, Math.max(priceBounds.min, value));
+}
+
+function priceValue(value: string, fallback: number): number {
+  const numericValue = Number(value);
+  return Number.isFinite(numericValue) ? clampPrice(numericValue) : fallback;
+}
+
+function formatPrice(value: string, fallback: number): string {
+  return priceFormatter.format(priceValue(value, fallback)) + 'đ';
+}
+
+interface FilterState {
+  priceMin: string;
+  priceMax: string;
+  star: number;
+  selectedTypes: string[];
+  selectedAmenities: string[];
+}
+
+type FilterAction =
+  | { type: 'setPriceMin'; value: string }
+  | { type: 'setPriceMax'; value: string }
+  | { type: 'toggleStar'; value: number }
+  | { type: 'toggleType'; value: string }
+  | { type: 'toggleAmenity'; value: string }
+  | { type: 'clear' };
+
+function filterReducer(state: FilterState, action: FilterAction): FilterState {
+  switch (action.type) {
+    case 'setPriceMin':
+      return { ...state, priceMin: action.value };
+    case 'setPriceMax':
+      return { ...state, priceMax: action.value };
+    case 'toggleStar':
+      return { ...state, star: state.star === action.value ? 0 : action.value };
+    case 'toggleType':
+      return {
+        ...state,
+        selectedTypes: state.selectedTypes.includes(action.value)
+          ? state.selectedTypes.filter((type) => type !== action.value)
+          : [...state.selectedTypes, action.value],
+      };
+    case 'toggleAmenity':
+      return {
+        ...state,
+        selectedAmenities: state.selectedAmenities.includes(action.value)
+          ? state.selectedAmenities.filter((amenity) => amenity !== action.value)
+          : [...state.selectedAmenities, action.value],
+      };
+    case 'clear':
+      return {
+        priceMin: String(priceBounds.min),
+        priceMax: String(priceBounds.max),
+        star: 0,
+        selectedTypes: [],
+        selectedAmenities: [],
+      };
+    default:
+      return state;
+  }
+}
 
 export default function SearchFilters() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { t } = useI18n();
-  const [priceMin, setPriceMin] = useState(searchParams.get('price_min') || '');
-  const [priceMax, setPriceMax] = useState(searchParams.get('price_max') || '');
-  const [star, setStar] = useState(Number(searchParams.get('star')) || 0);
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
-
-  const toggleType = (type: string) => {
-    setSelectedTypes(prev =>
-      prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
-    );
-  };
-
-  const toggleAmenity = (amenity: string) => {
-    setSelectedAmenities(prev =>
-      prev.includes(amenity) ? prev.filter(a => a !== amenity) : [...prev, amenity]
-    );
-  };
+  const [state, dispatch] = useReducer(filterReducer, {
+    priceMin: searchParams.get('price_min') || String(priceBounds.min),
+    priceMax: searchParams.get('price_max') || String(priceBounds.max),
+    star: Number(searchParams.get('star')) || 0,
+    selectedTypes: searchParams.get('types')?.split(',').filter(Boolean) ?? [],
+    selectedAmenities: searchParams.get('amenities')?.split(',').filter(Boolean) ?? [],
+  });
+  const minPriceValue = priceValue(state.priceMin, priceBounds.min);
+  const maxPriceValue = priceValue(state.priceMax, priceBounds.max);
 
   const applyFilters = () => {
     const params = new URLSearchParams(searchParams);
-    if (priceMin) params.set('price_min', priceMin);
-    else params.delete('price_min');
-    if (priceMax) params.set('price_max', priceMax);
-    else params.delete('price_max');
-    if (star) params.set('star', String(star));
+    params.delete('page');
+    params.set('price_min', String(minPriceValue));
+    params.set('price_max', String(maxPriceValue));
+    if (state.star) params.set('star', String(state.star));
     else params.delete('star');
+    if (state.selectedTypes.length > 0) params.set('types', state.selectedTypes.join(','));
+    else params.delete('types');
+    if (state.selectedAmenities.length > 0) params.set('amenities', state.selectedAmenities.join(','));
+    else params.delete('amenities');
     setSearchParams(params);
   };
 
   const clearFilters = () => {
-    setPriceMin('');
-    setPriceMax('');
-    setStar(0);
-    setSelectedTypes([]);
-    setSelectedAmenities([]);
+    dispatch({ type: 'clear' });
     const params = new URLSearchParams(searchParams);
     params.delete('price_min');
     params.delete('price_max');
     params.delete('star');
+    params.delete('types');
+    params.delete('amenities');
+    params.delete('page');
     setSearchParams(params);
   };
 
@@ -71,25 +131,53 @@ export default function SearchFilters() {
           </button>
         </div>
         <div className="border-t border-border pt-4">
-        <h4 className="mb-3 text-xs font-bold uppercase tracking-[0.14em] text-text-secondary">{t('search.priceRange')}</h4>
-        <div className="flex gap-2 items-center">
-          <input
-            aria-label="Giá tối thiểu"
-            type="number"
-            placeholder={t('search.minPrice')}
-            value={priceMin}
-            onChange={e => setPriceMin(e.target.value)}
-            className="w-full rounded-md border border-border bg-[#fffaf2] px-3 py-2 text-sm outline-none focus:border-primary"
-          />
-          <span className="text-text-secondary">-</span>
-          <input
-            aria-label="Giá tối đa"
-            type="number"
-            placeholder={t('search.maxPrice')}
-            value={priceMax}
-            onChange={e => setPriceMax(e.target.value)}
-            className="w-full rounded-md border border-border bg-[#fffaf2] px-3 py-2 text-sm outline-none focus:border-primary"
-          />
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <h4 className="text-xs font-bold uppercase tracking-[0.14em] text-text-secondary">{t('search.priceRange')}</h4>
+          <span className="text-xs font-semibold text-primary">
+            {formatPrice(state.priceMin, priceBounds.min)} - {formatPrice(state.priceMax, priceBounds.max)}
+          </span>
+        </div>
+        <div className="space-y-4 rounded-md border border-border bg-[#fffaf2] px-3 py-4">
+          <div>
+            <label htmlFor="price-min-range" className="mb-2 flex items-center justify-between text-xs font-semibold text-text-secondary">
+              <span>{t('search.minPrice')}</span>
+              <span className="text-text">{formatPrice(state.priceMin, priceBounds.min)}</span>
+            </label>
+            <input
+              id="price-min-range"
+              aria-label="Giá tối thiểu"
+              type="range"
+              min={priceBounds.min}
+              max={priceBounds.max}
+              step={priceBounds.step}
+              value={minPriceValue}
+              onChange={e => {
+                const nextValue = Math.min(Number(e.target.value), maxPriceValue);
+                dispatch({ type: 'setPriceMin', value: String(nextValue) });
+              }}
+              className="w-full accent-primary"
+            />
+          </div>
+          <div>
+            <label htmlFor="price-max-range" className="mb-2 flex items-center justify-between text-xs font-semibold text-text-secondary">
+              <span>{t('search.maxPrice')}</span>
+              <span className="text-text">{formatPrice(state.priceMax, priceBounds.max)}</span>
+            </label>
+            <input
+              id="price-max-range"
+              aria-label="Giá tối đa"
+              type="range"
+              min={priceBounds.min}
+              max={priceBounds.max}
+              step={priceBounds.step}
+              value={maxPriceValue}
+              onChange={e => {
+                const nextValue = Math.max(Number(e.target.value), minPriceValue);
+                dispatch({ type: 'setPriceMax', value: String(nextValue) });
+              }}
+              className="w-full accent-primary"
+            />
+          </div>
         </div>
       </div>
 
@@ -100,9 +188,9 @@ export default function SearchFilters() {
             <button
               type="button"
               key={s}
-              onClick={() => setStar(star === s ? 0 : s)}
+              onClick={() => dispatch({ type: 'toggleStar', value: s })}
               className={`inline-flex items-center justify-center gap-1 rounded-md px-3 py-2 text-xs font-semibold transition-colors ${
-                star === s
+                state.star === s
                   ? 'bg-navy text-white'
                   : 'border border-border bg-[#fffaf2] text-text-secondary hover:border-primary hover:text-primary'
               }`}
@@ -121,8 +209,8 @@ export default function SearchFilters() {
             <label key={type.value} className="flex cursor-pointer items-center gap-2 text-sm text-text">
               <input
                 type="checkbox"
-                checked={selectedTypes.includes(type.value)}
-                onChange={() => toggleType(type.value)}
+                checked={state.selectedTypes.includes(type.value)}
+                onChange={() => dispatch({ type: 'toggleType', value: type.value })}
                 className="accent-primary"
               />
               {t(type.labelKey)}
@@ -138,9 +226,9 @@ export default function SearchFilters() {
             <button
               type="button"
               key={amenity}
-              onClick={() => toggleAmenity(amenity)}
+              onClick={() => dispatch({ type: 'toggleAmenity', value: amenity })}
               className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
-                selectedAmenities.includes(amenity)
+                state.selectedAmenities.includes(amenity)
                   ? 'bg-primary text-white'
                   : 'bg-[#fffaf2] text-text-secondary ring-1 ring-border hover:text-primary'
               }`}

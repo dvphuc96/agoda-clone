@@ -1,7 +1,7 @@
 import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { lazy, Suspense } from 'react';
-import { I18nProvider } from './shared/i18n';
+import { I18nProvider } from './shared/i18n/I18nProvider';
 import { AuthProvider } from './shared/contexts/AuthContext';
 import ClientLayout from './client/layouts/ClientLayout';
 import HomePage from './client/pages/HomePage';
@@ -13,6 +13,7 @@ import LoginPage from './client/pages/LoginPage';
 import RegisterPage from './client/pages/RegisterPage';
 import MyBookingsPage from './client/pages/MyBookingsPage';
 import BookingDetailPage from './client/pages/BookingDetailPage';
+import NotificationsPage from './client/pages/NotificationsPage';
 
 const AdminLayout = lazy(() => import('./admin/components/layout/AdminLayout'));
 const AdminDashboardPage = lazy(() => import('./admin/pages/DashboardPage'));
@@ -21,6 +22,8 @@ const AdminHotelListPage = lazy(() => import('./admin/pages/hotels/HotelListPage
 const AdminRoomTypeListPage = lazy(() => import('./admin/pages/hotels/RoomTypeListPage'));
 const AdminBookingListPage = lazy(() => import('./admin/pages/bookings/BookingListPage'));
 const AdminPaymentListPage = lazy(() => import('./admin/pages/payments/PaymentListPage'));
+const AdminRefundListPage = lazy(() => import('./admin/pages/refunds/RefundListPage'));
+const AdminPolicyListPage = lazy(() => import('./admin/pages/policies/PolicyListPage'));
 const AdminUserListPage = lazy(() => import('./admin/pages/users/UserListPage'));
 
 const adminFallback = <div className="flex min-h-screen items-center justify-center bg-slate-100 text-slate-600">Loading admin…</div>;
@@ -51,6 +54,7 @@ export default function App() {
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/bookings" element={<MyBookingsPage />} />
                 <Route path="/bookings/:bookingCode" element={<BookingDetailPage />} />
+                <Route path="/notifications" element={<NotificationsPage />} />
               </Route>
               <Route path="/admin" element={<Suspense fallback={adminFallback}><AdminLayout /></Suspense>}>
                 <Route index element={<Navigate to="/admin/dashboard" replace />} />
@@ -60,6 +64,8 @@ export default function App() {
                 <Route path="hotels/:hotelId/rooms" element={<Suspense fallback={adminFallback}><AdminRoomTypeListPage /></Suspense>} />
                 <Route path="bookings" element={<Suspense fallback={adminFallback}><AdminBookingListPage /></Suspense>} />
                 <Route path="payments" element={<Suspense fallback={adminFallback}><AdminPaymentListPage /></Suspense>} />
+                <Route path="refunds" element={<Suspense fallback={adminFallback}><AdminRefundListPage /></Suspense>} />
+                <Route path="policies" element={<Suspense fallback={adminFallback}><AdminPolicyListPage /></Suspense>} />
                 <Route path="users" element={<Suspense fallback={adminFallback}><AdminUserListPage /></Suspense>} />
               </Route>
             </Routes>

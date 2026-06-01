@@ -13,6 +13,7 @@ return new class extends Migration
             $table->foreignId('location_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->string('slug')->unique();
+            $table->enum('property_type', ['hotel', 'villa', 'resort', 'apartment'])->default('hotel');
             $table->text('description')->nullable();
             $table->string('address');
             $table->tinyInteger('star_rating')->unsigned();

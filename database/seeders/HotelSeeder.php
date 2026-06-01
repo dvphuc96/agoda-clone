@@ -45,8 +45,29 @@ class HotelSeeder extends Seeder
             ['location_id' => 8, 'name' => 'Novotel Phu Quoc Resort', 'address' => 'Duong Dong, Phu Quoc', 'star_rating' => 4, 'phone' => '029-7384-9999', 'email' => 'info@novotel-phuquoc.com', 'amenities' => ['wifi','pool','restaurant','gym','beach'], 'checkin_time' => '14:00', 'checkout_time' => '12:00'],
         ];
 
-        foreach ($hotels as $hotel) {
+        foreach ($hotels as $index => $hotel) {
+            $hotel['property_type'] = $this->propertyTypeFor($hotel['name'], $index);
             Hotel::create($hotel);
         }
+    }
+
+    private function propertyTypeFor(string $name, int $index): string
+    {
+        $lowerName = strtolower($name);
+        if (str_contains($lowerName, 'resort')) {
+            return 'resort';
+        }
+        if (str_contains($lowerName, 'apartment')) {
+            return 'apartment';
+        }
+        if (str_contains($lowerName, 'villa')) {
+            return 'villa';
+        }
+
+        return match ($index % 7) {
+            2 => 'apartment',
+            5 => 'villa',
+            default => 'hotel',
+        };
     }
 }

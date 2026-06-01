@@ -35,7 +35,7 @@ class RoomTypeSeeder extends Seeder
                     'max_guests' => $template['bed_type'] === 'king' ? 3 : 2,
                     'bed_type' => $template['bed_type'],
                     'size_sqm' => $template['size_sqm'],
-                    'price_per_night' => round($template['price_base'] * $starMultiplier),
+                    'price_per_night' => rand(1000, 10000),
                     'amenities' => $template['amenities'],
                     'total_rooms' => $template['total_rooms'],
                 ]);

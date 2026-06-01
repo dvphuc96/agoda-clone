@@ -1,5 +1,7 @@
 import apiClient from './client';
 import type { Hotel, RoomType } from './hotels';
+import type { CancellationPolicySummary } from './policies';
+import type { Refund } from './refunds';
 
 export interface Payment {
   id: number;
@@ -23,8 +25,10 @@ export interface Booking {
   total_price: string;
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
   nights: number;
+  cancellation: CancellationPolicySummary | null;
   room_type: RoomType & { hotel: Hotel };
   payments: Payment[];
+  refunds: Refund[];
   created_at: string;
 }
 
@@ -36,12 +40,26 @@ export interface CreateBookingData {
   special_requests?: string;
 }
 
+type ApiResource<T> = T | { data: T };
+
+function unwrapResource<T>(payload: ApiResource<T>): T {
+  if (payload && typeof payload === 'object' && 'data' in payload) {
+    return payload.data;
+  }
+
+  return payload;
+}
+
 export const bookingsApi = {
   list: () => apiClient.get<{ data: Booking[] }>('/bookings'),
 
-  get: (bookingCode: string) => apiClient.get<Booking>(`/bookings/${bookingCode}`),
+  get: (bookingCode: string) =>
+    apiClient.get<ApiResource<Booking>>(`/bookings/${bookingCode}`)
+      .then((response) => ({ ...response, data: unwrapResource(response.data) })),
 
-  create: (data: CreateBookingData) => apiClient.post<Booking>('/bookings', data),
+  create: (data: CreateBookingData) =>
+    apiClient.post<ApiResource<Booking>>('/bookings', data)
+      .then((response) => ({ ...response, data: unwrapResource(response.data) })),
 
   cancel: (bookingCode: string) => apiClient.delete(`/bookings/${bookingCode}`),
 };

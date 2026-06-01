@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, BadgeCheck, BedDouble, MapPin, Star, UsersRound } from 'lucide-react';
 import type { Hotel } from '../../../shared/api/hotels';
 import { formatVndForLocale } from '../../../shared/i18n/format';
-import { useI18n } from '../../../shared/i18n';
+import { useI18n } from '../../../shared/i18n/useI18n';
 import { amenityLabel, hotelBackdrop, hotelImage } from '../../../shared/ui/travel';
 
 export default function HotelSearchCard({ hotel, index }: { hotel: Hotel; index: number }) {
@@ -10,10 +10,15 @@ export default function HotelSearchCard({ hotel, index }: { hotel: Hotel; index:
   const checkIn = new URLSearchParams(window.location.search).get('check_in') || '';
   const checkOut = new URLSearchParams(window.location.search).get('check_out') || '';
   const room = hotel.room_types?.[0];
-  const price = hotel.min_price ?? room?.price_per_night;
-  const numericPrice = Number(price);
-  const hasPrice = Number.isFinite(numericPrice) && numericPrice > 0;
-  const displayPrice = formatVndForLocale(price, locale);
+  const minPrice = hotel.min_price ?? room?.price_per_night;
+  const maxPrice = hotel.max_price ?? minPrice;
+  const numericMinPrice = Number(minPrice);
+  const numericMaxPrice = Number(maxPrice);
+  const hasPrice = Number.isFinite(numericMinPrice) && numericMinPrice > 0;
+  const hasPriceRange = hasPrice && Number.isFinite(numericMaxPrice) && numericMaxPrice > numericMinPrice;
+  const displayPrice = hasPriceRange
+    ? `${formatVndForLocale(minPrice, locale)} - ${formatVndForLocale(maxPrice, locale)}`
+    : formatVndForLocale(minPrice, locale);
   const amenityLabels = {
     wifi: t('amenities.wifi'),
     pool: t('amenities.pool'),

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class HotelSearchRequest extends FormRequest
 {
@@ -15,7 +16,9 @@ class HotelSearchRequest extends FormRequest
             'guests' => ['nullable', 'integer', 'min:1'],
             'star' => ['nullable', 'integer', 'between:1,5'],
             'price_min' => ['nullable', 'numeric', 'min:0'],
-            'price_max' => ['nullable', 'numeric', 'gt:price_min'],
+            'price_max' => ['nullable', 'numeric', Rule::when($this->filled('price_min'), 'gt:price_min')],
+            'types' => ['nullable', 'string'],
+            'amenities' => ['nullable', 'string'],
             'sort' => ['nullable', 'in:popular,price_asc,price_desc,rating'],
             'page' => ['nullable', 'integer', 'min:1'],
         ];

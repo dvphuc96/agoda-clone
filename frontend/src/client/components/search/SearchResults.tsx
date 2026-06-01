@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { SearchX } from 'lucide-react';
 import { hotelsApi, type HotelSearchParams } from '../../../shared/api/hotels';
-import { useI18n } from '../../../shared/i18n';
+import { useI18n } from '../../../shared/i18n/useI18n';
 import HotelSearchCard from './HotelSearchCard';
 import SortBar from './SortBar';
 
@@ -18,6 +18,8 @@ export default function SearchResults() {
     star: searchParams.get('star') ? Number(searchParams.get('star')) : undefined,
     price_min: searchParams.get('price_min') ? Number(searchParams.get('price_min')) : undefined,
     price_max: searchParams.get('price_max') ? Number(searchParams.get('price_max')) : undefined,
+    types: searchParams.get('types') || undefined,
+    amenities: searchParams.get('amenities') || undefined,
     sort: searchParams.get('sort') || undefined,
     page: searchParams.get('page') ? Number(searchParams.get('page')) : 1,
   };

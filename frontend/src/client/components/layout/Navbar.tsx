@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Globe2, Menu, UserRound, X } from 'lucide-react';
+import { Globe2, Menu, UserRound, X, Bell } from 'lucide-react';
 import { useAuth } from '../../../shared/contexts/AuthContext';
-import { useI18n, type Locale } from '../../../shared/i18n';
+import type { Locale } from '../../../shared/i18n/types';
+import { useI18n } from '../../../shared/i18n/useI18n';
 
 const localeItems: Locale[] = ['vi', 'en'];
 
@@ -56,6 +57,9 @@ export default function Navbar() {
           {isAuthenticated ? (
             <>
               <Link to="/bookings" className="text-sm font-medium text-text-secondary transition-colors hover:text-primary">{t('nav.myBookings')}</Link>
+              <Link to="/notifications" className="relative text-text-secondary transition-colors hover:text-primary" aria-label={t('notifications.title')}>
+                <Bell className="size-5" />
+              </Link>
               <Link
                 to={user?.role === 'admin' ? '/admin/dashboard' : '/bookings'}
                 className="inline-flex min-w-0 items-center gap-2 rounded-md border border-border bg-white px-3 py-2 text-sm text-text transition-colors hover:bg-tab"
@@ -110,6 +114,9 @@ export default function Navbar() {
             {isAuthenticated ? (
               <>
                 <Link to="/bookings" className="rounded-md p-2 font-medium text-text hover:bg-tab" onClick={() => setMenuOpen(false)}>{t('nav.myBookings')}</Link>
+                <Link to="/notifications" className="flex items-center gap-2 rounded-md p-2 font-medium text-text hover:bg-tab" onClick={() => setMenuOpen(false)}>
+                  <Bell className="size-4" /> {t('notifications.title')}
+                </Link>
                 <Link
                   to={user?.role === 'admin' ? '/admin/dashboard' : '/bookings'}
                   className="w-fit rounded-md border border-border bg-white px-4 py-2 font-semibold text-navy"

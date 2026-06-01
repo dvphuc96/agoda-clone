@@ -57,8 +57,3 @@ export function formatDateForLocale(value: string | null | undefined, locale: Lo
 
   return getDateFormatter(locale).format(date);
 }
-
-function statusLabel(status: string | null | undefined, labels: Record<string, string>) {
-  if (!status) return '';
-  return labels[status] || status;
-}

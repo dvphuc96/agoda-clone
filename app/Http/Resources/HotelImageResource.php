@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Support\ImageUrl;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -11,7 +12,7 @@ class HotelImageResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'image_path' => $this->image_path,
+            'image_path' => ImageUrl::resolve($this->image_path),
             'caption' => $this->caption,
             'sort_order' => $this->sort_order,
         ];

@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Api\HotelController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\RoomTypeController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Api\Admin\LocationController as AdminLocationController;
 use App\Http\Controllers\Api\Admin\HotelController as AdminHotelController;
@@ -13,6 +14,8 @@ use App\Http\Controllers\Api\Admin\RoomTypeController as AdminRoomTypeController
 use App\Http\Controllers\Api\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\Api\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Api\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Api\Admin\RefundController as AdminRefundController;
+use App\Http\Controllers\Api\Admin\BookingPolicyController as AdminBookingPolicyController;
 use Illuminate\Support\Facades\Route;
 
 // Auth routes
@@ -46,10 +49,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/bookings', [BookingController::class, 'index']);
     Route::post('/bookings', [BookingController::class, 'store']);
     Route::get('/bookings/{bookingCode}', [BookingController::class, 'show']);
+    Route::post('/bookings/{bookingCode}/cancel-request', [BookingController::class, 'cancelRequest']);
     Route::delete('/bookings/{bookingCode}', [BookingController::class, 'destroy']);
 
     Route::post('/payments/create', [PaymentController::class, 'create']);
     Route::get('/payments/{id}', [PaymentController::class, 'show']);
+
+    Route::get('/notifications', [NotificationController::class, 'index']);
 });
 
 Route::middleware(['auth:sanctum', 'isAdmin'])->prefix('admin')->group(function () {
@@ -84,4 +90,14 @@ Route::middleware(['auth:sanctum', 'isAdmin'])->prefix('admin')->group(function 
     Route::get('/users/{user}', [AdminUserController::class, 'show']);
     Route::patch('/users/{user}/role', [AdminUserController::class, 'updateRole']);
     Route::patch('/users/{user}/toggle-active', [AdminUserController::class, 'toggleActive']);
+
+    Route::get('/refunds', [AdminRefundController::class, 'index']);
+    Route::get('/refunds/{refund}', [AdminRefundController::class, 'show']);
+    Route::patch('/refunds/{refund}/status', [AdminRefundController::class, 'updateStatus']);
+
+    Route::get('/booking-policies', [AdminBookingPolicyController::class, 'index']);
+    Route::post('/booking-policies', [AdminBookingPolicyController::class, 'store']);
+    Route::get('/booking-policies/{bookingPolicy}', [AdminBookingPolicyController::class, 'show']);
+    Route::put('/booking-policies/{bookingPolicy}', [AdminBookingPolicyController::class, 'update']);
+    Route::delete('/booking-policies/{bookingPolicy}', [AdminBookingPolicyController::class, 'destroy']);
 });

@@ -2,7 +2,7 @@ import type { Hotel, Location } from '../api/hotels';
 
 const destinationImages: Record<string, string> = {
   'ha-noi': 'https://images.unsplash.com/photo-1509030450996-dd1a26dda07a?auto=format&fit=crop&w=900&q=80',
-  sapa: 'https://images.unsplash.com/photo-1531867330787-86dbbcd8b6d8?auto=format&fit=crop&w=900&q=80',
+  sapa: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80',
   hue: 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=900&q=80',
   'da-nang': 'https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=900&q=80',
   'hoi-an': 'https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=900&q=80',
@@ -38,11 +38,6 @@ const hotelBackdrops = [
   'linear-gradient(135deg, #1e293b 0%, #6d7280 52%, #d8ad6a 100%)',
 ];
 
-function formatVnd(price: string | number | null | undefined) {
-  const value = Number(price ?? 0);
-  return Number.isFinite(value) && value > 0 ? `${value.toLocaleString('vi-VN')}đ` : 'Liên hệ';
-}
-
 export function locationImage(location: Location) {
   return location.image || destinationImages[location.slug] || destinationImages['da-nang'];
 }
@@ -61,8 +56,12 @@ export function hotelImage(hotel: Hotel, index = 0) {
   return hotelFallbacks[index % hotelFallbacks.length];
 }
 
-function fallbackHotelImage(index = 0) {
+export function hotelFallbackImage(index = 0) {
   return hotelFallbacks[index % hotelFallbacks.length];
+}
+
+export function destinationFallbackImage(slug = 'da-nang') {
+  return destinationImages[slug] || destinationImages['da-nang'];
 }
 
 export function locationBackdrop(index = 0) {

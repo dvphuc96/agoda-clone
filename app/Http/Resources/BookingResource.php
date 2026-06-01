@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Services\BookingPolicyService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -9,6 +10,27 @@ class BookingResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $cancellation = null;
+        if ($this->relationLoaded('roomType') && $this->roomType) {
+            $policyService = app(BookingPolicyService::class);
+            $eligibility = $policyService->getCancellationEligibility($this->resource);
+            $policy = $eligibility['policy'] ?? null;
+
+            $cancellation = [
+                'can_cancel' => $eligibility['can_cancel'],
+                'is_free' => $eligibility['is_free'] ?? null,
+                'fee_amount' => $eligibility['fee_amount'] ?? null,
+                'refund_amount' => $eligibility['refund_amount'] ?? null,
+                'reason' => $eligibility['reason'] ?? null,
+                'policy' => $policy ? [
+                    'name' => $policy->name,
+                    'free_cancellation_hours' => $policy->free_cancellation_hours,
+                    'cancellation_fee_percent' => (float) $policy->cancellation_fee_percent,
+                    'is_non_refundable' => $policy->is_non_refundable,
+                ] : null,
+            ];
+        }
+
         return [
             'id' => $this->id,
             'booking_code' => $this->booking_code,
@@ -19,6 +41,7 @@ class BookingResource extends JsonResource
             'total_price' => $this->total_price,
             'status' => $this->status,
             'nights' => $this->check_in->diffInDays($this->check_out),
+            'cancellation' => $cancellation,
             'user' => $this->whenLoaded('user', fn () => [
                 'id' => $this->user->id,
                 'name' => $this->user->name,
@@ -28,6 +51,7 @@ class BookingResource extends JsonResource
             ]),
             'room_type' => new RoomTypeResource($this->whenLoaded('roomType')),
             'payments' => PaymentResource::collection($this->whenLoaded('payments')),
+            'refunds' => RefundResource::collection($this->whenLoaded('refunds')),
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
         ];
     }

@@ -16,6 +16,7 @@ const blank: HotelPayload = {
   location_id: 0,
   name: '',
   slug: '',
+  property_type: 'hotel',
   description: '',
   address: '',
   star_rating: 4,
@@ -44,6 +45,7 @@ const toPayload = (hotel: Hotel): HotelPayload => ({
   location_id: hotel.location.id,
   name: hotel.name,
   slug: hotel.slug,
+  property_type: hotel.property_type,
   description: hotel.description ?? '',
   address: hotel.address,
   star_rating: hotel.star_rating,
@@ -213,6 +215,14 @@ export default function HotelListPage() {
             </Field>
             <Field label="Slug">
               <input aria-label="Slug" value={String(form.slug ?? '')} onChange={(event) => setForm({ ...form, slug: event.target.value })} placeholder="gostay-grand-hotel" className={fieldClass} />
+            </Field>
+            <Field label="Property type">
+              <select aria-label="Property type" value={form.property_type ?? 'hotel'} onChange={(event) => setForm({ ...form, property_type: event.target.value as Hotel['property_type'] })} className={fieldClass}>
+                <option value="hotel">Hotel</option>
+                <option value="resort">Resort</option>
+                <option value="villa">Villa</option>
+                <option value="apartment">Apartment</option>
+              </select>
             </Field>
             <Field label="Address">
               <input aria-label="Address" value={form.address} onChange={(event) => setForm({ ...form, address: event.target.value })} placeholder="Street, district, city" className={fieldClass} />

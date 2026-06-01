@@ -14,8 +14,21 @@ class HotelController extends Controller
 {
     public function index(HotelSearchRequest $request)
     {
+        $hasRoomTypeFilters = $request->filled('guests')
+            || $request->filled('price_min')
+            || $request->filled('price_max')
+            || $request->filled(['check_in', 'check_out']);
+
         $query = Hotel::where('status', 'active')
-            ->with(['location', 'images']);
+            ->with([
+                'location',
+                'images',
+                'roomTypes' => function ($q) use ($request, $hasRoomTypeFilters) {
+                    if ($hasRoomTypeFilters) {
+                        $this->applyRoomTypeSearchFilters($q, $request);
+                    }
+                },
+            ]);
 
         if ($request->location) {
             $query->whereHas('location', function ($q) use ($request) {
@@ -28,10 +41,38 @@ class HotelController extends Controller
             $query->where('star_rating', $request->star);
         }
 
-        if ($request->filled(['price_min', 'price_max'])) {
+        if ($hasRoomTypeFilters) {
             $query->whereHas('roomTypes', function ($q) use ($request) {
-                $q->whereBetween('price_per_night', [$request->price_min, $request->price_max]);
+                $this->applyRoomTypeSearchFilters($q, $request);
             });
+        }
+
+        if ($request->types) {
+            $types = collect(explode(',', $request->types))
+                ->map(fn ($type) => trim($type))
+                ->intersect(['hotel', 'villa', 'resort', 'apartment'])
+                ->filter()
+                ->values();
+
+            if ($types->isNotEmpty()) {
+                $query->whereIn('property_type', $types);
+            }
+        }
+
+        if ($request->amenities) {
+            $amenities = collect(explode(',', $request->amenities))
+                ->map(fn ($amenity) => trim($amenity))
+                ->filter()
+                ->values();
+
+            foreach ($amenities as $amenity) {
+                $query->where(function ($q) use ($amenity) {
+                    $q->whereJsonContains('amenities', $amenity)
+                        ->orWhereHas('roomTypes', function ($roomQuery) use ($amenity) {
+                            $roomQuery->whereJsonContains('amenities', $amenity);
+                        });
+                });
+            }
         }
 
         match ($request->sort) {
@@ -45,6 +86,29 @@ class HotelController extends Controller
 
         $hotels = $query->paginate(12);
         return HotelResource::collection($hotels->appends($request->query()));
+    }
+
+    private function applyRoomTypeSearchFilters($query, HotelSearchRequest $request): void
+    {
+        if ($request->filled('guests')) {
+            $query->where('max_guests', '>=', $request->guests);
+        }
+
+        if ($request->filled('price_min')) {
+            $query->where('price_per_night', '>=', $request->price_min);
+        }
+
+        if ($request->filled('price_max')) {
+            $query->where('price_per_night', '<=', $request->price_max);
+        }
+
+        if ($request->filled(['check_in', 'check_out'])) {
+            $query->whereDoesntHave('bookings', function ($bookingQuery) use ($request) {
+                $bookingQuery->where('status', '!=', 'cancelled')
+                    ->where('check_in', '<', $request->check_out)
+                    ->where('check_out', '>', $request->check_in);
+            });
+        }
     }
 
     public function show(string $slug)
@@ -78,7 +142,7 @@ class HotelController extends Controller
     public function featured()
     {
         $hotels = Hotel::where('status', 'active')
-            ->with(['location', 'images'])
+            ->with(['location', 'images', 'roomTypes'])
             ->inRandomOrder()
             ->limit(6)
             ->get();

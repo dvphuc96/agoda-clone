@@ -116,6 +116,7 @@ class HotelController extends Controller
             'location_id' => ['required', 'exists:locations,id'],
             'name' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', $uniqueSlug],
+            'property_type' => ['required', 'in:hotel,villa,resort,apartment'],
             'description' => ['nullable', 'string'],
             'address' => ['required', 'string', 'max:255'],
             'star_rating' => ['required', 'integer', 'min:1', 'max:5'],

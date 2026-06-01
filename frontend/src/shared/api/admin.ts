@@ -2,6 +2,8 @@ import apiClient from './client';
 import type { Booking, Payment } from './bookings';
 import type { Hotel, Location, RoomType } from './hotels';
 import type { User } from './auth';
+import type { Refund } from './refunds';
+import type { BookingPolicy, BookingPolicyPayload } from './policies';
 
 export interface Paginated<T> {
   data: T[];
@@ -40,7 +42,7 @@ export type AdminUser = User & {
 };
 
 export type LocationPayload = Pick<Location, 'name' | 'slug' | 'image' | 'description' | 'region'>;
-export type HotelPayload = Omit<Partial<Hotel>, 'id' | 'location' | 'images' | 'room_types' | 'min_price'> & {
+export type HotelPayload = Omit<Partial<Hotel>, 'id' | 'location' | 'images' | 'room_types' | 'min_price' | 'max_price'> & {
   location_id: number;
   name: string;
   address: string;
@@ -107,4 +109,14 @@ export const adminApi = {
   user: (id: number) => apiClient.get<AdminUser>(`/admin/users/${id}`),
   updateUserRole: (id: number, role: 'user' | 'admin') => apiClient.patch<AdminUser>(`/admin/users/${id}/role`, { role }),
   toggleUserActive: (id: number) => apiClient.patch<AdminUser>(`/admin/users/${id}/toggle-active`),
+
+  refunds: (params?: Record<string, string | number>) => apiClient.get<Paginated<Refund>>('/admin/refunds', { params }),
+  refund: (id: number) => apiClient.get<Refund>(`/admin/refunds/${id}`),
+  updateRefundStatus: (id: number, status: Refund['status']) => apiClient.patch<Refund>(`/admin/refunds/${id}/status`, { status }),
+
+  bookingPolicies: (params?: Record<string, string | number>) => apiClient.get<Paginated<BookingPolicy>>('/admin/booking-policies', { params }),
+  bookingPolicy: (id: number) => apiClient.get<BookingPolicy>(`/admin/booking-policies/${id}`),
+  createBookingPolicy: (data: BookingPolicyPayload) => apiClient.post<BookingPolicy>('/admin/booking-policies', data),
+  updateBookingPolicy: (id: number, data: BookingPolicyPayload) => apiClient.put<BookingPolicy>(`/admin/booking-policies/${id}`, data),
+  deleteBookingPolicy: (id: number) => apiClient.delete(`/admin/booking-policies/${id}`),
 };

@@ -1,16 +1,23 @@
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useSearchParams, Link } from 'react-router-dom';
 import { CalendarDays, Filter, MapPin, PencilLine, UsersRound, X } from 'lucide-react';
 import SearchFilters from '../components/search/SearchFilters';
 import SearchResults from '../components/search/SearchResults';
-import { useI18n } from '../../shared/i18n';
+import { getCollectionData, hotelsApi, type Location } from '../../shared/api/hotels';
+import { useI18n } from '../../shared/i18n/useI18n';
 
 export default function SearchPage() {
   const [searchParams] = useSearchParams();
   const [showFilters, setShowFilters] = useState(false);
   const { t } = useI18n();
+  const { data: locations = [] } = useQuery({
+    queryKey: ['locations'],
+    queryFn: () => hotelsApi.getLocations().then(r => getCollectionData<Location>(r.data)),
+  });
 
   const location = searchParams.get('location') || '';
+  const locationLabel = locations.find(item => item.slug === location)?.name ?? location;
   const checkIn = searchParams.get('check_in') || '';
   const checkOut = searchParams.get('check_out') || '';
   const guests = searchParams.get('guests') || '';
@@ -30,7 +37,7 @@ export default function SearchPage() {
             {location && (
               <span className="inline-flex items-center gap-1.5 rounded-md border border-border bg-white px-3 py-2 text-xs font-semibold text-text">
                 <MapPin className="size-3.5 text-primary" />
-                {location}
+                {locationLabel}
               </span>
             )}
             {checkIn && checkOut && (

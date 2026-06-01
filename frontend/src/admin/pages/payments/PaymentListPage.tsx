@@ -9,7 +9,7 @@ import Pagination from '../../components/Pagination';
 import StatusBadge from '../../components/StatusBadge';
 import { formatCurrency, formatDate, pageTitle } from '../adminUtils';
 
-type AdminPayment = Payment & { booking?: Booking };
+type AdminPayment = Payment & { booking?: Booking; gateway_response?: unknown };
 
 export default function PaymentListPage() {
   const [filters, setFilters] = useState({ status: '', payment_method: '', date_from: '', date_to: '', page: 1 });
@@ -110,7 +110,7 @@ export default function PaymentListPage() {
               <DetailField label="Transaction ID" value={paymentDetail.transaction_id ?? '-'} />
               <DetailField label="Created" value={formatDate(paymentDetail.created_at)} />
             </div>
-            {paymentDetail.gateway_response && (
+            {Boolean(paymentDetail.gateway_response) && (
               <div>
                 <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Gateway Response</span>
                 <pre className="overflow-x-auto rounded-md bg-slate-50 p-3 text-xs text-slate-700">

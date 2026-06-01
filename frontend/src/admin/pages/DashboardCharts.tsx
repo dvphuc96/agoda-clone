@@ -1,6 +1,7 @@
 import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 const statusColors = ['#0f172a', '#2563eb', '#f59e0b', '#10b981', '#ef4444'];
+type ChartDatum = { date?: string; revenue?: number; status?: string; count?: number };
 
 export default function DashboardCharts({
   type,
@@ -8,7 +9,7 @@ export default function DashboardCharts({
   formatCurrency,
 }: {
   type: 'bar' | 'pie';
-  data: Record<string, unknown>[];
+  data: ChartDatum[];
   formatCurrency?: (v: number | string | undefined) => string;
 }) {
   if (type === 'bar') {

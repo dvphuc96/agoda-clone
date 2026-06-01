@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\BookingPolicyService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -41,12 +42,16 @@ class RoomType extends Model
 
     public function getAvailableRoomsCount(string $checkIn, string $checkOut): int
     {
+        $policyService = app(BookingPolicyService::class);
+
         $bookedCount = Booking::where('room_type_id', $this->id)
             ->where('status', '!=', 'cancelled')
             ->where(function ($query) use ($checkIn, $checkOut) {
                 $query->where('check_in', '<', $checkOut)
                       ->where('check_out', '>', $checkIn);
             })
+            ->get()
+            ->reject(fn (Booking $booking) => $policyService->isPendingExpired($booking))
             ->sum('guests');
 
         return max(0, $this->total_rooms - $bookedCount);

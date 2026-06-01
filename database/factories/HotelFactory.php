@@ -16,6 +16,7 @@ class HotelFactory extends Factory
             'location_id' => Location::factory(),
             'name' => fake()->company() . ' Hotel',
             'slug' => fake()->unique()->slug(),
+            'property_type' => 'hotel',
             'description' => fake()->paragraph(),
             'address' => fake()->address(),
             'star_rating' => fake()->numberBetween(1, 5),

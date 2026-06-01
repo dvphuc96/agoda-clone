@@ -1,4 +1,3 @@
-// Shared type re-exports
 export type { User, AuthResponse } from '../api/auth';
 export type {
   Location,
@@ -13,3 +12,6 @@ export type {
   Booking,
   CreateBookingData,
 } from '../api/bookings';
+export type { Refund, CancelRequestData } from '../api/refunds';
+export type { Notification } from '../api/notifications';
+export type { BookingPolicy, BookingPolicyPayload, CancellationPolicySummary } from '../api/policies';

@@ -2,15 +2,20 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, MapPin, Star } from 'lucide-react';
 import type { Hotel } from '../../../shared/api/hotels';
 import { formatVndForLocale } from '../../../shared/i18n/format';
-import { useI18n } from '../../../shared/i18n';
-import { amenityLabel, hotelBackdrop, hotelImage } from '../../../shared/ui/travel';
+import { useI18n } from '../../../shared/i18n/useI18n';
+import { amenityLabel, hotelBackdrop, hotelFallbackImage, hotelImage } from '../../../shared/ui/travel';
 
 export default function HotelCard({ hotel, index }: { hotel: Hotel; index: number }) {
   const { locale, t } = useI18n();
-  const displayPrice = hotel.min_price ?? hotel.room_types?.[0]?.price_per_night;
-  const numericPrice = Number(displayPrice);
-  const hasPrice = Number.isFinite(numericPrice) && numericPrice > 0;
-  const price = formatVndForLocale(displayPrice, locale);
+  const minPrice = hotel.min_price ?? hotel.room_types?.[0]?.price_per_night;
+  const maxPrice = hotel.max_price ?? minPrice;
+  const numericMinPrice = Number(minPrice);
+  const numericMaxPrice = Number(maxPrice);
+  const hasPrice = Number.isFinite(numericMinPrice) && numericMinPrice > 0;
+  const hasPriceRange = hasPrice && Number.isFinite(numericMaxPrice) && numericMaxPrice > numericMinPrice;
+  const price = hasPriceRange
+    ? `${formatVndForLocale(minPrice, locale)} - ${formatVndForLocale(maxPrice, locale)}`
+    : formatVndForLocale(minPrice, locale);
   const amenityLabels = {
     wifi: t('amenities.wifi'),
     pool: t('amenities.pool'),
@@ -29,7 +34,10 @@ export default function HotelCard({ hotel, index }: { hotel: Hotel; index: numbe
           src={hotelImage(hotel, index)}
           alt={hotel.name}
           onError={event => {
-            event.currentTarget.style.display = 'none';
+            const fallback = hotelFallbackImage(index);
+            if (event.currentTarget.src !== fallback) {
+              event.currentTarget.src = fallback;
+            }
           }}
           className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
         />

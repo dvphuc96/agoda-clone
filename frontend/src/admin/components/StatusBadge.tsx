@@ -8,6 +8,9 @@ const colors: Record<string, string> = {
   success: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
   failed: 'bg-rose-50 text-rose-700 ring-rose-200',
   refunded: 'bg-purple-50 text-purple-700 ring-purple-200',
+  approved: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
+  rejected: 'bg-rose-50 text-rose-700 ring-rose-200',
+  processed: 'bg-blue-50 text-blue-700 ring-blue-200',
   admin: 'bg-indigo-50 text-indigo-700 ring-indigo-200',
   user: 'bg-slate-100 text-slate-700 ring-slate-200',
 };
