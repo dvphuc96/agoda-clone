@@ -36,8 +36,8 @@ export default function HotelSearchCard({ hotel, index }: { hotel: Hotel; index:
     : `/hotel/${hotel.slug}`;
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-lg border border-border bg-white shadow-sm transition duration-300 hover:shadow-xl md:flex-row">
-      <div className="relative h-52 w-full shrink-0 bg-cover bg-center md:h-auto md:w-64" style={hotelBackdrop(index)}>
+    <div className="group flex flex-col overflow-hidden rounded-2xl bg-shadow/5 p-1.5 ring-1 ring-black/5 transition-spring hover:-translate-y-1.5 hover:shadow-2xl md:flex-row">
+      <div className="relative h-52 w-full shrink-0 overflow-hidden rounded-t-[calc(1rem-6px)] md:h-auto md:w-64 md:rounded-l-[calc(1rem-6px)] md:rounded-tr-none bg-cover bg-center" style={hotelBackdrop(index)}>
         <img
           src={hotelImage(hotel, index)}
           alt={hotel.name}
@@ -47,24 +47,24 @@ export default function HotelSearchCard({ hotel, index }: { hotel: Hotel; index:
           className="h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,.16),transparent_34%,rgba(0,0,0,.22))]" />
-        <div className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-navy shadow-sm">
+        <div className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-navy shadow-sm backdrop-blur">
           {hotel.location?.name}
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col justify-between p-4 md:p-5">
+      <div className="flex flex-1 flex-col justify-between rounded-tr-[calc(1rem-6px)] bg-surface p-4 md:p-5">
         <div>
           <div className="mb-2 flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1 rounded-md bg-[#fff5df] px-2 py-1 text-xs font-bold text-[#9a5d12]">
+            <span className="inline-flex items-center gap-1 rounded-full bg-warm-gold-surface px-2.5 py-1 text-xs font-bold text-gold-dark">
               <Star className="size-3.5 fill-current" />
               {hotel.star_rating}
             </span>
-            <span className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-2 py-1 text-xs font-semibold text-primary">
+            <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
               <BadgeCheck className="size-3.5" />
               {t('search.recommended')}
             </span>
           </div>
-          <Link to={viewRoomLink} className="text-lg font-semibold leading-6 text-text transition-colors hover:text-primary">
+          <Link to={viewRoomLink} className="text-lg font-semibold leading-6 text-text transition-spring-fast hover:text-primary">
             {hotel.name}
           </Link>
           <div className="mt-2 flex items-center gap-1.5 text-sm text-text-secondary">
@@ -81,12 +81,20 @@ export default function HotelSearchCard({ hotel, index }: { hotel: Hotel; index:
           <div className="mt-4 flex flex-wrap gap-3 text-xs text-text-secondary">
             {room?.bed_type && <span className="inline-flex items-center gap-1.5"><BedDouble className="size-3.5 text-primary" />{room.bed_type}</span>}
             {room?.max_guests && <span className="inline-flex items-center gap-1.5"><UsersRound className="size-3.5 text-primary" />{t('hotel.maxGuests', { count: room.max_guests })}</span>}
-            {room?.available_rooms !== undefined && <span className="font-semibold text-success">{t('hotel.availableRooms', { count: room.available_rooms })}</span>}
+            {room?.available_rooms !== undefined && (
+              room.available_rooms <= 3 ? (
+                <span className="inline-flex items-center gap-1 rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-bold text-destructive animate-pulse">
+                  {t('hotel.onlyRoomsLeft', { count: room.available_rooms })}
+                </span>
+              ) : (
+                <span className="font-semibold text-success">{t('hotel.availableRooms', { count: room.available_rooms })}</span>
+              )
+            )}
           </div>
         </div>
       </div>
 
-      <div className="flex items-center justify-between gap-4 border-t border-border bg-[#fffaf2] p-4 md:w-56 md:flex-col md:items-end md:border-l md:border-t-0 md:bg-white md:p-5">
+      <div className="flex items-center justify-between gap-4 rounded-br-[calc(1rem-6px)] border-t border-border bg-surface p-4 md:w-56 md:flex-col md:items-end md:border-l md:border-t-0 md:p-5">
         <div className="text-left md:text-right">
           <div className="mb-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-text-secondary">{t('common.from')}</div>
           <div className="text-2xl font-semibold text-navy">{displayPrice}</div>
@@ -98,10 +106,10 @@ export default function HotelSearchCard({ hotel, index }: { hotel: Hotel; index:
         </div>
         <Link
           to={viewRoomLink}
-          className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[#0b5f59]"
+          className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-white transition-spring-fast active:scale-[0.97] hover:bg-primary-hover"
         >
           {t('hotel.chooseRoom')}
-          <ArrowRight className="size-4" />
+          <span className="inline-flex size-6 items-center justify-center rounded-full bg-white/20"><ArrowRight className="size-3" /></span>
         </Link>
       </div>
     </div>

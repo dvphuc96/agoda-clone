@@ -1,10 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { MapPin, Search, Sparkles, UsersRound } from 'lucide-react';
+import { MapPin, Search, UsersRound, Shield, Star, Clock, ArrowRight } from 'lucide-react';
 import { getCollectionData, hotelsApi, type Location } from '../../../shared/api/hotels';
 import { useI18n } from '../../../shared/i18n/useI18n';
 import DateField, { nextDateString, todayDateString } from '../common/DateField';
+
+const heroImages = [
+  'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1920&q=80',
+  'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1920&q=80',
+  'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1920&q=80',
+];
 
 export default function HeroSearch() {
   const navigate = useNavigate();
@@ -13,6 +19,7 @@ export default function HeroSearch() {
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [guests, setGuests] = useState(2);
+  const [currentImage, setCurrentImage] = useState(0);
 
   const { data: locations = [] } = useQuery({
     queryKey: ['locations'],
@@ -38,97 +45,163 @@ export default function HeroSearch() {
     navigate(`/search?${params.toString()}`);
   };
 
+  // Auto-rotate hero images
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImage(i => (i + 1) % heroImages.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <section className="relative overflow-hidden bg-[#10201d] px-4 pb-10 pt-8 text-white md:px-8 md:pb-16 md:pt-12">
+    <section className="relative min-h-[100dvh] overflow-hidden bg-bg">
+      {/* Background image with soft gradient */}
       <div className="absolute inset-0">
-        <img
-          src="https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=1800&q=85"
-          alt=""
-          aria-hidden="true"
-          className="h-full w-full object-cover"
-        />
-        <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(16,32,29,.96),rgba(16,32,29,.82)_48%,rgba(97,73,44,.58)),linear-gradient(150deg,rgba(16,32,29,.92)_0%,rgba(33,71,63,.72)_46%,rgba(214,167,96,.42)_100%)]" />
+        <div className="absolute inset-0 bg-bg/30" />
+        {heroImages.map((img, idx) => (
+          <img
+            key={img}
+            src={img}
+            alt=""
+            aria-hidden="true"
+            className={`absolute inset-0 h-full w-full object-cover transition-all duration-[2000ms] ease-[cubic-bezier(0.32,0.72,0,1)] ${
+              idx === currentImage ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
+            }`}
+          />
+        ))}
+        {/* Elegant gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-bg/95 via-bg/70 to-transparent" />
       </div>
-      <div className="relative mx-auto max-w-7xl">
-        <div className="grid gap-8 lg:grid-cols-[1fr_380px] lg:items-end">
-          <div className="max-w-3xl py-8 md:py-14">
-            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-[#f6e9d2]">
-              <Sparkles className="size-3.5" />
-              {t('home.eyebrow')}
+
+      {/* Subtle grain overlay for paper feel */}
+      <div className="pointer-events-none absolute inset-0 opacity-[0.03]" style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+      }} />
+
+      {/* Content — Editorial Split */}
+      <div className="relative z-10 mx-auto flex min-h-[100dvh] max-w-7xl flex-col justify-center px-4 py-24 md:px-8 md:py-32 lg:px-16 lg:py-40">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1fr_0.8fr] lg:items-center">
+          {/* Left: Typography */}
+          <div className="max-w-xl">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-primary/5 border border-primary/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
+              <Star className="size-3 fill-gold-light text-gold-light" />
+              GoStay
             </div>
-            <h1 className="max-w-2xl text-4xl font-semibold leading-[1.02] tracking-tight md:text-6xl">
+            <h1 className="text-5xl font-bold leading-[1.05] tracking-tight text-navy md:text-6xl lg:text-[4rem]">
               {t('home.title')}
             </h1>
-            <p className="mt-5 max-w-xl text-base leading-7 text-[#efe2ce] md:text-lg">
+            <p className="mt-6 max-w-lg text-lg leading-[1.7] text-text-secondary md:text-xl">
               {t('home.subtitle')}
             </p>
-          </div>
 
-          <div className="hidden rounded-lg border border-white/20 bg-white/10 p-4 shadow-2xl backdrop-blur lg:block">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-md bg-[linear-gradient(135deg,#20352f_0%,#597c70_48%,#d5a65d_100%)]">
-              <img
-                src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=85"
-                alt={t('home.featuredTitle')}
-                className="h-full w-full object-cover"
-              />
-              <div className="absolute inset-0 bg-[linear-gradient(145deg,rgba(16,32,29,.18),rgba(16,32,29,.08)_42%,rgba(16,32,29,.56))]" />
-              <div className="absolute inset-x-0 bottom-0 h-28 bg-[linear-gradient(180deg,transparent,rgba(16,32,29,.74))]" />
-              <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between gap-4">
-                <div className="text-sm font-semibold text-white">{t('home.featuredTitle')}</div>
-                <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-navy shadow-sm">GoStay</span>
+            {/* Trust badges */}
+            <div className="mt-10 flex flex-wrap gap-3">
+              <div className="flex items-center gap-2 rounded-full bg-white/80 border border-border/50 px-5 py-2.5 text-sm font-medium text-text shadow-sm backdrop-blur-sm">
+                <Shield className="size-4 text-success" />
+                {t('home.trustFreeCancel')}
+              </div>
+              <div className="flex items-center gap-2 rounded-full bg-white/80 border border-border/50 px-5 py-2.5 text-sm font-medium text-text shadow-sm backdrop-blur-sm">
+                <Star className="size-4 fill-gold-light text-gold-light" />
+                {t('home.trustBestPrice')}
+              </div>
+              <div className="flex items-center gap-2 rounded-full bg-white/80 border border-border/50 px-5 py-2.5 text-sm font-medium text-text shadow-sm backdrop-blur-sm">
+                <Clock className="size-4 text-primary" />
+                {t('home.trustSupport')}
               </div>
             </div>
-            <div className="mt-4 flex items-center justify-between text-sm">
+
+            {/* Social proof */}
+            <div className="mt-12 flex items-center gap-4 border-t border-border/30 pt-6">
+              <div className="flex gap-x-2">
+                {['A', 'B', 'C', 'D'].map((initial, i) => (
+                  <div key={i} className="flex size-10 items-center justify-center rounded-full border-2 border-white shadow-lg bg-gradient-to-br from-primary to-gold text-xs font-bold text-white">
+                    {initial}
+                  </div>
+                ))}
+              </div>
               <div>
-                <p className="text-[#f6e9d2]">{t('home.eyebrow')}</p>
-                <p className="font-semibold">{t('home.destinationTitle')}</p>
+                <div className="flex items-center gap-1">
+                  {[1, 2, 3, 4, 5].map(i => (
+                    <Star key={i} className="size-3 fill-gold-light text-gold-light" />
+                  ))}
+                  <span className="ml-1.5 text-sm font-semibold text-navy">4.8</span>
+                </div>
+                <div className="text-xs text-text-secondary mt-0.5">{t('home.reviewCount')}</div>
               </div>
-              <span className="rounded-full bg-[#e4a853] px-3 py-1 text-xs font-bold text-navy">-18%</span>
             </div>
           </div>
-        </div>
 
-        <div className="relative mx-auto mb-4 mt-8 max-w-6xl rounded-lg border border-[#eadfce] bg-[#fffaf2] p-3 text-text shadow-[0_22px_60px_rgba(16,32,29,.24)] md:mb-6 md:mt-10 md:p-4">
-          <div className="grid gap-2 md:grid-cols-[1.35fr_1fr_1fr_.8fr_auto]">
-            <label className="rounded-md border border-border bg-white px-4 py-3">
-              <span className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-text-secondary">
-                <MapPin className="size-3.5 text-primary" />
-                {t('searchForm.destination')}
-              </span>
-              <select
-                value={location}
-                onChange={e => setLocation(e.target.value)}
-                className="mt-1 block w-full bg-transparent text-sm font-semibold text-text outline-none"
-              >
-                <option value="">{t('searchForm.destinationPlaceholder')}</option>
-                {locations?.map((d: Location) => (
-                  <option key={d.id} value={d.slug}>{d.name}</option>
-                ))}
-              </select>
-            </label>
-            <DateField id="hero-check-in" label={t('searchForm.checkIn')} value={checkIn} min={today} locale={locale} onChange={handleCheckInChange} />
-            <DateField id="hero-check-out" label={t('searchForm.checkOut')} value={checkOut} min={minCheckOut} locale={locale} onChange={setCheckOut} />
-            <label className="rounded-md border border-border bg-white px-4 py-3">
-              <span className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-text-secondary">
-                <UsersRound className="size-3.5 text-primary" />
-                {t('searchForm.guests')}
-              </span>
-              <select value={guests} onChange={e => setGuests(Number(e.target.value))}
-                className="mt-1 block w-full bg-transparent text-sm font-semibold text-text outline-none">
-                {[1, 2, 3, 4].map(guestCount => (
-                  <option key={guestCount} value={guestCount}>
-                    {guestCount === 1
-                      ? t('searchForm.guestsSingular')
-                      : t('searchForm.guestsPlural', { count: guestCount })}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <button type="button" onClick={handleSearch}
-              className="inline-flex min-h-[66px] items-center justify-center gap-2 rounded-md bg-primary px-6 py-4 text-sm font-bold text-white transition-colors hover:bg-[#0b5f59]">
-              <Search className="size-4" />
-              {t('common.search')}
-            </button>
+          {/* Right: Glass Search Card with Double-Bezel */}
+          <div className="relative">
+            {/* Outer Shell */}
+            <div className="relative bg-shadow/5 p-1.5 rounded-[2rem] ring-1 ring-black/5 shadow-[0_32px_64px_rgba(16,32,29,.15)]">
+              {/* Inner Core */}
+              <div className="overflow-hidden rounded-[calc(2rem-6px)] bg-white/95 backdrop-blur-xl">
+                <div className="p-6 md:p-8">
+                  <h3 className="text-sm font-semibold uppercase tracking-[0.15em] text-text-secondary mb-6">
+                    {t('search.editSearch')}
+                  </h3>
+
+                  <div className="space-y-4">
+                    {/* Destination */}
+                    <div className="rounded-xl border border-border/50 bg-warm-surface/50 px-5 py-4 transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] focus-within:border-primary/50 focus-within:bg-white focus-within:shadow-[0_0_0_3px_rgba(15,118,110,0.1)]">
+                      <label className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-text-secondary mb-1">
+                        <MapPin className="size-3.5 text-primary" />
+                        {t('searchForm.destination')}
+                      </label>
+                      <select
+                        value={location}
+                        onChange={e => setLocation(e.target.value)}
+                        className="block w-full bg-transparent text-sm font-semibold text-text outline-none appearance-none cursor-pointer"
+                      >
+                        <option value="">{t('searchForm.destinationPlaceholder')}</option>
+                        {locations?.map((d: Location) => (
+                          <option key={d.id} value={d.slug}>{d.name}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Dates Row */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <DateField id="hero-check-in" label={t('searchForm.checkIn')} value={checkIn} min={today} locale={locale} onChange={handleCheckInChange} />
+                      <DateField id="hero-check-out" label={t('searchForm.checkOut')} value={checkOut} min={minCheckOut} locale={locale} onChange={setCheckOut} />
+                    </div>
+
+                    {/* Guests */}
+                    <div className="rounded-xl border border-border/50 bg-warm-surface/50 px-5 py-4 transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] focus-within:border-primary/50 focus-within:bg-white focus-within:shadow-[0_0_0_3px_rgba(15,118,110,0.1)]">
+                      <label className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-text-secondary mb-1">
+                        <UsersRound className="size-3.5 text-primary" />
+                        {t('searchForm.guests')}
+                      </label>
+                      <select value={guests} onChange={e => setGuests(Number(e.target.value))}
+                        className="block w-full bg-transparent text-sm font-semibold text-text outline-none appearance-none cursor-pointer">
+                        {[1, 2, 3, 4].map(guestCount => (
+                          <option key={guestCount} value={guestCount}>
+                            {guestCount === 1
+                              ? t('searchForm.guestsSingular')
+                              : t('searchForm.guestsPlural', { count: guestCount })}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* CTA Button with Button-in-Button */}
+                    <button
+                      type="button"
+                      onClick={handleSearch}
+                      className="group relative inline-flex w-full items-center justify-center gap-3 rounded-full bg-primary px-8 py-4 text-sm font-bold text-white transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.97] hover:bg-primary-hover hover:shadow-[0_8px_24px_rgba(15,118,110,0.25)]"
+                    >
+                      <Search className="size-4" />
+                      <span>{t('common.search')}</span>
+                      {/* Trailing icon in its own circle */}
+                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-1 group-hover:scale-110">
+                        <ArrowRight className="size-3.5" />
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

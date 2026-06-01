@@ -1,15 +1,9 @@
 import { Link, useSearchParams } from 'react-router-dom';
+import { BedDouble, Users, Maximize, Check } from 'lucide-react';
 import type { RoomType } from '../../../shared/api/hotels';
 import { formatVndForLocale } from '../../../shared/i18n/format';
 import { useI18n } from '../../../shared/i18n/useI18n';
 import { amenityLabel } from '../../../shared/ui/travel';
-
-const gradients = [
-  'from-blue-50 to-blue-200',
-  'from-sky-50 to-sky-200',
-  'from-amber-50 to-amber-200',
-  'from-emerald-50 to-emerald-200',
-];
 
 export default function RoomTypeCard({ room, index }: { room: RoomType; index: number }) {
   const { locale, t } = useI18n();
@@ -39,67 +33,113 @@ export default function RoomTypeCard({ room, index }: { room: RoomType; index: n
   const bookingQuery = bookingParams.toString();
   const bookingLink = `/booking/${room.id}${bookingQuery ? `?${bookingQuery}` : ''}`;
 
+  const isLowAvailability = (room.available_rooms ?? 99) <= 3;
+  const isBestDeal = index === 0;
+
   return (
-    <div className="bg-surface rounded-2xl shadow-sm border border-border/50 overflow-hidden">
+    <div className={`relative overflow-hidden rounded-2xl transition-spring hover:-translate-y-0.5 hover:shadow-xl ${
+      isBestDeal
+        ? 'ring-2 ring-primary bg-primary/[0.02]'
+        : 'bg-surface ring-1 ring-black/5'
+    }`}>
+      {/* Best deal badge */}
+      {isBestDeal && (
+        <div className="absolute left-4 top-0 z-10 rounded-b-lg bg-primary px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-white">
+          {t('hotel.highlightDeal')}
+        </div>
+      )}
+
       <div className="flex flex-col md:flex-row">
         {/* Room Image */}
-        <div className={`bg-gradient-to-br ${gradients[index % gradients.length]} w-full md:w-56 h-40 md:h-auto shrink-0 flex items-center justify-center`}>
+        <div className="relative h-48 w-full shrink-0 overflow-hidden md:h-auto md:w-64">
           {room.images?.[0]?.image_path ? (
-            <img src={room.images[0].image_path} alt={room.name} className="w-full h-full object-cover" />
+            <img src={room.images[0].image_path} alt={room.name} className="h-full w-full object-cover" />
           ) : (
-            <span className="text-4xl">🛏️</span>
+            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/5 to-primary/15">
+              <BedDouble className="size-10 text-primary/30" />
+            </div>
           )}
         </div>
 
         {/* Room Info */}
-        <div className="flex-1 p-4">
-          <h3 className="font-bold text-text">{room.name}</h3>
+        <div className="flex flex-1 flex-col justify-between p-5 md:p-6">
+          <div>
+            <h3 className="text-lg font-bold text-text">{room.name}</h3>
 
-          <div className="flex flex-wrap gap-3 mt-2 text-xs text-text-secondary">
-            {room.bed_type && (
-              <span className="bg-tab px-2 py-1 rounded">🛏 {t('hotel.bedType')}: {room.bed_type}</span>
-            )}
-            <span className="bg-tab px-2 py-1 rounded">👥 {t('hotel.maxGuests', { count: room.max_guests })}</span>
-            {room.size_sqm && (
-              <span className="bg-tab px-2 py-1 rounded">📐 {t('hotel.roomSize', { size: room.size_sqm })}</span>
-            )}
-            <span className="bg-tab px-2 py-1 rounded">🏠 {t('hotel.totalRooms', { count: room.total_rooms })}</span>
-          </div>
-
-          {room.description && (
-            <p className="text-xs text-text-secondary mt-2 line-clamp-2">{room.description}</p>
-          )}
-
-          {/* Amenities */}
-          {room.amenities && room.amenities.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 mt-2">
-              {room.amenities.slice(0, 6).map((amenity) => (
-                <span key={amenity} className="text-[10px] bg-primary/5 text-primary px-2 py-0.5 rounded-full">
-                  {amenityLabel(amenity, amenityLabels)}
+            {/* Room specs */}
+            <div className="mt-3 flex flex-wrap gap-3">
+              {room.bed_type && (
+                <span className="inline-flex items-center gap-1.5 text-xs text-text-secondary">
+                  <BedDouble className="size-3.5 text-primary" />
+                  {room.bed_type}
                 </span>
-              ))}
-            </div>
-          )}
-
-          {/* Price & CTA */}
-          <div className="flex items-center justify-between mt-4 pt-3 border-t border-border/50">
-            <div>
-              <div className="text-[11px] font-semibold uppercase text-text-secondary">{t('common.from')}</div>
-              <span className="text-xl font-bold text-primary">{displayPrice}</span>
-              {hasPrice && <span className="text-xs text-text-secondary"> {t('common.perNight')}</span>}
-              {room.available_rooms !== undefined && (
-                <div className="text-[11px] text-success font-medium mt-0.5">
-                  {t('hotel.availableRooms', { count: room.available_rooms })}
-                </div>
+              )}
+              <span className="inline-flex items-center gap-1.5 text-xs text-text-secondary">
+                <Users className="size-3.5 text-primary" />
+                {t('hotel.maxGuests', { count: room.max_guests })}
+              </span>
+              {room.size_sqm && (
+                <span className="inline-flex items-center gap-1.5 text-xs text-text-secondary">
+                  <Maximize className="size-3.5 text-primary" />
+                  {t('hotel.roomSize', { size: room.size_sqm })}
+                </span>
               )}
             </div>
-            <Link
-              to={bookingLink}
-              className="bg-gold text-white px-5 py-2.5 rounded-lg font-semibold text-sm hover:bg-amber-600 transition-colors"
-            >
-              {t('hotel.chooseRoom')}
-            </Link>
+
+            {/* Description */}
+            {room.description && (
+              <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-text-secondary">{room.description}</p>
+            )}
+
+            {/* Amenities as check list */}
+            {room.amenities && room.amenities.length > 0 && (
+              <div className="mt-3 grid grid-cols-2 gap-1.5 sm:grid-cols-3">
+                {room.amenities.slice(0, 6).map((amenity) => (
+                  <span key={amenity} className="inline-flex items-center gap-1.5 text-[11px] text-text-secondary">
+                    <Check className="size-3 shrink-0 text-success" />
+                    {amenityLabel(amenity, amenityLabels)}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
+
+          {/* Urgency */}
+          {room.available_rooms !== undefined && (
+            room.available_rooms <= 2 ? (
+              <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-destructive/10 px-3 py-1 text-xs font-bold text-destructive">
+                {t('hotel.bookQuickly', { count: room.available_rooms })}
+              </div>
+            ) : room.available_rooms <= 5 ? (
+              <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-gold-dark/10 px-3 py-1 text-xs font-semibold text-gold-dark">
+                {t('hotel.onlyRoomsLeft', { count: room.available_rooms })}
+              </div>
+            ) : null
+          )}
+        </div>
+
+        {/* Price + CTA — Agoda-style right column */}
+        <div className="flex flex-row items-center justify-between gap-4 border-t border-border/50 p-5 md:flex-col md:items-end md:justify-center md:border-l md:border-t-0 md:p-6 md:min-w-[200px]">
+          {hasPrice ? (
+            <div className="text-right">
+              <div className="text-[11px] font-medium text-text-secondary">{t('common.from')}</div>
+              <div className="text-2xl font-bold text-primary">{displayPrice}</div>
+              <div className="text-[11px] text-text-secondary">{t('hotel.perNight')}</div>
+              <div className="mt-1 text-[10px] text-success">{t('hotel.includedTaxes')}</div>
+            </div>
+          ) : (
+            <div className="text-right text-xs text-text-secondary">{t('hotel.selectDatesNotice')}</div>
+          )}
+          <Link
+            to={bookingLink}
+            className={`inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition-spring-fast active:scale-[0.97] ${
+              isLowAvailability
+                ? 'bg-destructive text-white hover:bg-destructive-hover'
+                : 'bg-primary text-white hover:bg-primary-hover'
+            }`}
+          >
+            {t('hotel.chooseRoom')}
+          </Link>
         </div>
       </div>
     </div>

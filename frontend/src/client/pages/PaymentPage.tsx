@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 import { bookingsApi } from '../../shared/api/bookings';
 import { paymentsApi } from '../../shared/api/payments';
-import { useI18n } from '../../shared/i18n';
+import { useI18n } from '../../shared/i18n/useI18n';
 import { formatDateForLocale, formatVndForLocale } from '../../shared/i18n/format';
 
 export default function PaymentPage() {
@@ -13,7 +14,6 @@ export default function PaymentPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Check if this is a callback from payment gateway
   const vnpayResponse = searchParams.get('vnp_ResponseCode');
   const momoResult = searchParams.get('resultCode');
   const paymentResult = searchParams.get('payment');
@@ -39,7 +39,6 @@ export default function PaymentPage() {
         setError(t('payment.createFailure'));
         return;
       }
-      // Redirect to payment gateway
       window.location.href = result.data.payment_url;
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
@@ -64,10 +63,10 @@ export default function PaymentPage() {
 
   if (isLoading) {
     return (
-      <div className="max-w-lg mx-auto px-4 py-16">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-tab rounded w-1/2 mx-auto" />
-          <div className="h-48 bg-tab rounded-2xl" />
+      <div className="mx-auto max-w-lg px-4 py-16">
+        <div className="space-y-4">
+          <div className="skeleton mx-auto h-8 w-1/2 rounded-full" />
+          <div className="skeleton h-48 rounded-2xl" />
         </div>
       </div>
     );
@@ -76,26 +75,28 @@ export default function PaymentPage() {
   // Payment callback result
   if (isCallback && paymentSuccess !== null) {
     return (
-      <div className="max-w-lg mx-auto px-4 py-16 text-center">
-        <div className="bg-surface rounded-2xl shadow-sm p-8">
+      <div className="mx-auto max-w-lg px-4 py-16 text-center">
+        <div className="rounded-2xl bg-surface p-8 shadow-sm ring-1 ring-black/5">
           {paymentSuccess ? (
             <>
-              <div className="text-6xl mb-4">✅</div>
-              <h1 className="text-2xl font-bold text-text mb-2">{t('payment.success')}</h1>
-              <p className="text-sm text-text-secondary mb-2">
+              <div className="mx-auto mb-5 flex size-16 items-center justify-center rounded-full bg-success/10">
+                <CheckCircle2 className="size-8 text-success" />
+              </div>
+              <h1 className="mb-2 text-2xl font-bold text-text">{t('payment.success')}</h1>
+              <p className="mb-2 text-sm text-text-secondary">
                 {t('payment.successBody', { code: bookingCode || '' })}
               </p>
-              <p className="text-sm text-text-secondary mb-6">{t('payment.successEmail')}</p>
-              <div className="flex flex-wrap gap-3 justify-center">
+              <p className="mb-6 text-sm text-text-secondary">{t('payment.successEmail')}</p>
+              <div className="flex flex-wrap justify-center gap-3">
                 <Link
                   to={`/bookings/${bookingCode}`}
-                  className="min-w-0 bg-primary text-white px-6 py-2.5 rounded-lg font-semibold text-sm break-words hover:bg-blue-700 transition-colors"
+                  className="min-w-0 rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-white transition-spring-fast hover:bg-primary-hover"
                 >
                   {t('common.viewDetails')}
                 </Link>
                 <Link
                   to="/"
-                  className="min-w-0 bg-tab text-text-secondary px-6 py-2.5 rounded-lg font-semibold text-sm break-words hover:bg-border transition-colors"
+                  className="min-w-0 rounded-full bg-tab px-6 py-2.5 text-sm font-semibold text-text-secondary transition-spring-fast hover:bg-border"
                 >
                   {t('payment.backHome')}
                 </Link>
@@ -103,22 +104,24 @@ export default function PaymentPage() {
             </>
           ) : (
             <>
-              <div className="text-6xl mb-4">❌</div>
-              <h1 className="text-2xl font-bold text-text mb-2">{t('payment.failed')}</h1>
-              <p className="text-sm text-text-secondary mb-6">
+              <div className="mx-auto mb-5 flex size-16 items-center justify-center rounded-full bg-destructive/10">
+                <XCircle className="size-8 text-destructive" />
+              </div>
+              <h1 className="mb-2 text-2xl font-bold text-text">{t('payment.failed')}</h1>
+              <p className="mb-6 text-sm text-text-secondary">
                 {t('payment.failedBody')}
               </p>
-              <div className="flex flex-wrap gap-3 justify-center">
+              <div className="flex flex-wrap justify-center gap-3">
                 <button
                   type="button"
                   onClick={() => window.location.href = `/payment/${bookingCode}`}
-                  className="min-w-0 bg-primary text-white px-6 py-2.5 rounded-lg font-semibold text-sm break-words hover:bg-blue-700 transition-colors"
+                  className="min-w-0 rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-white transition-spring-fast hover:bg-primary-hover"
                 >
                   {t('common.retry')}
                 </button>
                 <Link
                   to={`/bookings/${bookingCode}`}
-                  className="min-w-0 bg-tab text-text-secondary px-6 py-2.5 rounded-lg font-semibold text-sm break-words hover:bg-border transition-colors"
+                  className="min-w-0 rounded-full bg-tab px-6 py-2.5 text-sm font-semibold text-text-secondary transition-spring-fast hover:bg-border"
                 >
                   {t('payment.viewBooking')}
                 </Link>
@@ -132,16 +135,16 @@ export default function PaymentPage() {
 
   // Payment method selection
   return (
-    <div className="max-w-lg mx-auto px-4 py-8">
-      <div className="text-center mb-6">
-        <h1 className="text-2xl font-bold text-text tracking-tight">{t('payment.title')}</h1>
-        <p className="text-sm text-text-secondary mt-1">{t('payment.subtitle')}</p>
+    <div className="mx-auto max-w-lg px-4 py-8">
+      <div className="mb-6 text-center">
+        <h1 className="text-2xl font-bold tracking-tight text-text">{t('payment.title')}</h1>
+        <p className="mt-1 text-sm text-text-secondary">{t('payment.subtitle')}</p>
       </div>
 
       {/* Booking Summary */}
       {booking && (
-        <div className="bg-surface rounded-2xl shadow-sm p-5 mb-6">
-          <h3 className="font-bold text-text mb-3">{t('booking.summary')}</h3>
+        <div className="mb-6 rounded-2xl bg-surface p-5 shadow-sm ring-1 ring-black/5">
+          <h3 className="mb-3 font-bold text-text">{t('booking.summary')}</h3>
           <div className="space-y-2 text-sm">
             <div className="flex flex-wrap justify-between gap-x-3 gap-y-1">
               <span className="text-text-secondary">{t('booking.bookingCode')}</span>
@@ -167,7 +170,7 @@ export default function PaymentPage() {
               <span className="text-text-secondary">{t('booking.status')}</span>
               <span className="font-medium text-text">{knownStatusLabel}</span>
             </div>
-            <div className="border-t border-border/50 pt-2 mt-2 flex flex-wrap justify-between gap-x-3 gap-y-1">
+            <div className="mt-2 flex flex-wrap justify-between gap-x-3 gap-y-1 border-t border-border/50 pt-2">
               <span className="font-bold text-text">{t('booking.total')}</span>
               <span className="text-xl font-bold text-primary">{formatVndForLocale(booking.total_price, locale)}</span>
             </div>
@@ -176,30 +179,32 @@ export default function PaymentPage() {
       )}
 
       {error && (
-        <div role="alert" aria-live="polite" className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg p-3 mb-4 break-words">
+        <div role="alert" aria-live="polite" className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600 break-words">
           {error}
         </div>
       )}
 
       {/* Payment Methods */}
       <div className="space-y-3">
-        <h3 className="font-bold text-text text-sm">{t('payment.method')}</h3>
+        <h3 className="text-sm font-bold text-text">{t('payment.method')}</h3>
 
         {/* VNPay */}
         <button
           type="button"
           onClick={() => handlePayment('vnpay')}
           disabled={loading}
-          className="w-full min-w-0 bg-surface rounded-2xl shadow-sm border border-border/50 p-4 sm:p-5 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 hover:border-primary hover:shadow-md transition-all disabled:opacity-50 text-left"
+          className="w-full min-w-0 overflow-hidden rounded-2xl bg-shadow/5 p-1.5 text-left ring-1 ring-black/5 transition-spring hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50"
         >
-          <div className="size-14 bg-blue-50 rounded-xl flex items-center justify-center text-2xl shrink-0">
-            💳
+          <div className="flex flex-col items-stretch gap-3 rounded-[calc(1rem-6px)] bg-surface p-4 sm:flex-row sm:items-center sm:gap-4 sm:p-5">
+            <div className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-[#003f93]/10">
+              <span className="text-lg font-extrabold text-[#003f93]">VNPAY</span>
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="font-bold text-text break-words">{t('payment.payWithVnpay')}</div>
+              <div className="mt-0.5 text-xs text-text-secondary break-words">{t('payment.vnpayDescription')}</div>
+            </div>
+            <div className="min-w-0 text-sm font-semibold text-primary break-words sm:text-right">{t('payment.continuePayment')}</div>
           </div>
-          <div className="min-w-0 flex-1">
-            <div className="font-bold text-text break-words">{t('payment.payWithVnpay')}</div>
-            <div className="text-xs text-text-secondary mt-0.5 break-words">{t('payment.vnpayDescription')}</div>
-          </div>
-          <div className="min-w-0 text-primary font-semibold text-sm break-words sm:text-right">{t('payment.continuePayment')}</div>
         </button>
 
         {/* MoMo */}
@@ -207,21 +212,24 @@ export default function PaymentPage() {
           type="button"
           onClick={() => handlePayment('momo')}
           disabled={loading}
-          className="w-full min-w-0 bg-surface rounded-2xl shadow-sm border border-border/50 p-4 sm:p-5 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 hover:border-primary hover:shadow-md transition-all disabled:opacity-50 text-left"
+          className="w-full min-w-0 overflow-hidden rounded-2xl bg-shadow/5 p-1.5 text-left ring-1 ring-black/5 transition-spring hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50"
         >
-          <div className="size-14 bg-pink-50 rounded-xl flex items-center justify-center text-2xl shrink-0">
-            📱
+          <div className="flex flex-col items-stretch gap-3 rounded-[calc(1rem-6px)] bg-surface p-4 sm:flex-row sm:items-center sm:gap-4 sm:p-5">
+            <div className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-[#a50064]/10">
+              <span className="text-lg font-extrabold text-[#a50064]">MoMo</span>
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="font-bold text-text break-words">{t('payment.payWithMomo')}</div>
+              <div className="mt-0.5 text-xs text-text-secondary break-words">{t('payment.momoDescription')}</div>
+            </div>
+            <div className="min-w-0 text-sm font-semibold text-primary break-words sm:text-right">{t('payment.continuePayment')}</div>
           </div>
-          <div className="min-w-0 flex-1">
-            <div className="font-bold text-text break-words">{t('payment.payWithMomo')}</div>
-            <div className="text-xs text-text-secondary mt-0.5 break-words">{t('payment.momoDescription')}</div>
-          </div>
-          <div className="min-w-0 text-primary font-semibold text-sm break-words sm:text-right">{t('payment.continuePayment')}</div>
         </button>
       </div>
 
       {loading && (
-        <div className="text-center mt-4 text-sm text-text-secondary">
+        <div className="mt-4 flex items-center justify-center gap-2 text-sm text-text-secondary">
+          <Loader2 className="size-4 animate-spin" />
           {t('payment.redirecting')}
         </div>
       )}

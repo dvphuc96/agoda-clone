@@ -1,23 +1,24 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, Link } from 'react-router-dom';
 import { useState } from 'react';
+import { ArrowLeft, AlertTriangle, Clock, CreditCard, RotateCcw } from 'lucide-react';
 import { bookingsApi } from '../../shared/api/bookings';
 import { refundsApi } from '../../shared/api/refunds';
 import { useI18n } from '../../shared/i18n/useI18n';
 import { formatDateForLocale, formatVndForLocale } from '../../shared/i18n/format';
 
 const statusColors: Record<string, string> = {
-  pending: 'bg-amber-100 text-amber-700',
-  confirmed: 'bg-green-100 text-green-700',
-  cancelled: 'bg-red-100 text-red-700',
-  completed: 'bg-blue-100 text-blue-700',
+  pending: 'bg-badge-pending-bg text-badge-pending-text',
+  confirmed: 'bg-badge-confirmed-bg text-badge-confirmed-text',
+  cancelled: 'bg-badge-cancelled-bg text-badge-cancelled-text',
+  completed: 'bg-badge-confirmed-bg text-badge-confirmed-text',
 };
 
 const paymentStatusColors: Record<string, string> = {
-  pending: 'bg-amber-100 text-amber-700',
-  success: 'bg-green-100 text-green-700',
-  failed: 'bg-red-100 text-red-700',
-  refunded: 'bg-purple-100 text-purple-700',
+  pending: 'bg-badge-pending-bg text-badge-pending-text',
+  success: 'bg-badge-paid-bg text-badge-paid-text',
+  failed: 'bg-badge-cancelled-bg text-badge-cancelled-text',
+  refunded: 'bg-badge-refunded-bg text-badge-refunded-text',
 };
 
 export default function BookingDetailPage() {
@@ -89,11 +90,11 @@ export default function BookingDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="max-w-3xl mx-auto px-4 md:px-8 py-8">
+      <div className="mx-auto max-w-3xl px-4 py-12 md:px-8 md:py-16">
         <p className="sr-only">{t('common.loading')}</p>
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-tab rounded w-1/3" />
-          <div className="h-64 bg-tab rounded-2xl" />
+        <div className="space-y-4">
+          <div className="skeleton h-8 w-1/3 rounded" />
+          <div className="skeleton h-64 rounded-2xl" />
         </div>
       </div>
     );
@@ -101,10 +102,13 @@ export default function BookingDetailPage() {
 
   if (isError || !booking) {
     return (
-      <div className="max-w-3xl mx-auto px-4 md:px-8 py-16 text-center">
-        <div className="text-5xl mb-4" aria-hidden="true">😕</div>
+      <div className="mx-auto max-w-3xl px-4 py-16 text-center md:px-8">
+        <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-full bg-badge-cancelled-bg text-badge-cancelled-text">
+          <AlertTriangle className="size-6" />
+        </div>
         <h2 className="text-xl font-bold text-text">{t('booking.notFoundTitle')}</h2>
-        <Link to="/bookings" className="inline-block mt-4 bg-primary text-white px-6 py-2 rounded-lg font-semibold text-sm">
+        <Link to="/bookings" className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-2 text-sm font-semibold text-white transition-spring-fast hover:bg-primary-hover active:scale-[0.97]">
+          <ArrowLeft className="size-4" />
           {t('booking.backToList')}
         </Link>
       </div>
@@ -121,150 +125,167 @@ export default function BookingDetailPage() {
   const showNotEligible = ['pending', 'confirmed'].includes(booking.status) && !canCancelByPolicy;
 
   return (
-    <div className="max-w-3xl mx-auto px-4 md:px-8 py-8">
+    <div className="mx-auto max-w-3xl px-4 py-12 md:px-8 md:py-16">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-text-secondary mb-6">
-        <Link to="/" className="hover:text-primary transition-colors">{t('common.home')}</Link>
+      <div className="mb-6 flex items-center gap-2 text-sm text-text-secondary">
+        <Link to="/" className="transition-spring-fast hover:text-primary">{t('common.home')}</Link>
         <span>/</span>
-        <Link to="/bookings" className="hover:text-primary transition-colors">{t('nav.myBookings')}</Link>
+        <Link to="/bookings" className="transition-spring-fast hover:text-primary">{t('nav.myBookings')}</Link>
         <span>/</span>
         <span className="text-text">#{booking.booking_code}</span>
       </div>
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-text tracking-tight">{t('booking.detailTitle')}</h1>
-          <div className="text-sm text-text-secondary mt-1">{t('booking.bookingCode')}: #{booking.booking_code}</div>
+          <h1 className="text-2xl font-bold tracking-tight text-text">{t('booking.detailTitle')}</h1>
+          <div className="mt-1 text-sm text-text-secondary">{t('booking.bookingCode')}: #{booking.booking_code}</div>
         </div>
-        <span className={`px-4 py-1.5 rounded-full text-sm font-medium ${statusColors[booking.status] || 'bg-tab text-text-secondary'}`}>
+        <span className={`rounded-full px-4 py-1.5 text-sm font-medium ${statusColors[booking.status] || 'bg-tab text-text-secondary'}`}>
           {getBookingStatusLabel(booking.status)}
         </span>
       </div>
 
       {/* Booking Details Card */}
-      <div className="bg-surface rounded-2xl shadow-sm p-6 mb-4">
-        <h3 className="font-bold text-text mb-4">{t('booking.details')}</h3>
-        <div className="grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <div className="text-text-secondary">{t('booking.hotel')}</div>
-            <div className="font-medium text-text mt-0.5">{booking.room_type?.hotel?.name || t('booking.defaultHotelName')}</div>
-          </div>
-          <div>
-            <div className="text-text-secondary">{t('booking.roomType')}</div>
-            <div className="font-medium text-text mt-0.5">{booking.room_type?.name || t('booking.defaultRoomName')}</div>
-          </div>
-          <div>
-            <div className="text-text-secondary">{t('hotel.checkIn')}</div>
-            <div className="font-medium text-text mt-0.5">{formatDateForLocale(booking.check_in, locale)}</div>
-          </div>
-          <div>
-            <div className="text-text-secondary">{t('hotel.checkOut')}</div>
-            <div className="font-medium text-text mt-0.5">{formatDateForLocale(booking.check_out, locale)}</div>
-          </div>
-          <div>
-            <div className="text-text-secondary">{t('booking.nights', { count: booking.nights })}</div>
-            <div className="font-medium text-text mt-0.5">{booking.nights}</div>
-          </div>
-          <div>
-            <div className="text-text-secondary">{t('hotel.guests')}</div>
-            <div className="font-medium text-text mt-0.5">
-              {booking.guests === 1 ? t('searchForm.guestsSingular') : t('searchForm.guestsPlural', { count: booking.guests })}
+      <div className="mb-4 overflow-hidden rounded-2xl bg-shadow/5 p-1.5 ring-1 ring-black/5">
+        <div className="rounded-[calc(1rem-6px)] bg-surface p-6">
+          <h3 className="mb-4 font-bold text-text">{t('booking.details')}</h3>
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <div className="text-text-secondary">{t('booking.hotel')}</div>
+              <div className="mt-0.5 font-medium text-text">{booking.room_type?.hotel?.name || t('booking.defaultHotelName')}</div>
             </div>
-          </div>
-          {booking.special_requests && (
-            <div className="col-span-2">
-              <div className="text-text-secondary">{t('booking.specialRequests')}</div>
-              <div className="font-medium text-text mt-0.5">{booking.special_requests}</div>
+            <div>
+              <div className="text-text-secondary">{t('booking.roomType')}</div>
+              <div className="mt-0.5 font-medium text-text">{booking.room_type?.name || t('booking.defaultRoomName')}</div>
             </div>
-          )}
-        </div>
+            <div>
+              <div className="text-text-secondary">{t('hotel.checkIn')}</div>
+              <div className="mt-0.5 font-medium text-text">{formatDateForLocale(booking.check_in, locale)}</div>
+            </div>
+            <div>
+              <div className="text-text-secondary">{t('hotel.checkOut')}</div>
+              <div className="mt-0.5 font-medium text-text">{formatDateForLocale(booking.check_out, locale)}</div>
+            </div>
+            <div>
+              <div className="text-text-secondary">{t('booking.nights', { count: booking.nights })}</div>
+              <div className="mt-0.5 font-medium text-text">{booking.nights}</div>
+            </div>
+            <div>
+              <div className="text-text-secondary">{t('hotel.guests')}</div>
+              <div className="mt-0.5 font-medium text-text">
+                {booking.guests === 1 ? t('searchForm.guestsSingular') : t('searchForm.guestsPlural', { count: booking.guests })}
+              </div>
+            </div>
+            {booking.special_requests && (
+              <div className="col-span-2">
+                <div className="text-text-secondary">{t('booking.specialRequests')}</div>
+                <div className="mt-0.5 font-medium text-text">{booking.special_requests}</div>
+              </div>
+            )}
+          </div>
 
-        <div className="border-t border-border/50 mt-4 pt-4 flex justify-between items-center">
-          <span className="font-bold text-text">{t('booking.total')}</span>
-          <span className="text-xl font-bold text-primary">{formatVndForLocale(booking.total_price, locale)}</span>
+          <div className="mt-4 flex items-center justify-between border-t border-border/50 pt-4">
+            <span className="font-bold text-text">{t('booking.total')}</span>
+            <span className="text-xl font-bold text-primary">{formatVndForLocale(booking.total_price, locale)}</span>
+          </div>
         </div>
       </div>
 
       {/* Cancellation Policy Card */}
-      <div className="bg-surface rounded-2xl shadow-sm p-6 mb-4">
-        <h3 className="font-bold text-text mb-3">{t('booking.cancellationPolicy')}</h3>
-        {cancellation ? (
-          <div className="space-y-2 text-sm">
-            {cancellation.policy?.is_non_refundable ? (
-              <p className="text-red-600 font-medium">{t('booking.nonRefundable')}</p>
-            ) : (
-              <>
-                <p className="text-text-secondary">{t('booking.cancellationPolicyDesc')}</p>
-                {cancellation.policy && (
-                  <p className="text-text">
-                    {cancellation.policy.free_cancellation_hours > 0
-                      ? t('booking.freeCancelBefore', { hours: cancellation.policy.free_cancellation_hours })
-                      : t('booking.nonRefundable')}
-                  </p>
-                )}
-                {cancellation.fee_amount !== null && Number(cancellation.fee_amount) > 0 && (
-                  <p className="text-amber-600">{t('booking.cancellationFee', { fee: formatVndForLocale(cancellation.fee_amount, locale) })}</p>
-                )}
-              </>
-            )}
-            {cancellation.reason && <p className="text-text-secondary">{cancellation.reason}</p>}
-            {cancellation.refund_amount !== null && (
-              <p className="text-text">
-                {t('booking.refundStatus')}: {formatVndForLocale(cancellation.refund_amount, locale)}
-              </p>
-            )}
-          </div>
-        ) : (
-          <p className="text-sm text-text-secondary">{t('booking.cancellationPolicyDesc')}</p>
-        )}
+      <div className="mb-4 overflow-hidden rounded-2xl bg-shadow/5 p-1.5 ring-1 ring-black/5">
+        <div className="rounded-[calc(1rem-6px)] bg-surface p-6">
+          <h3 className="mb-3 flex items-center gap-2 font-bold text-text">
+            <Clock className="size-4 text-text-secondary" />
+            {t('booking.cancellationPolicy')}
+          </h3>
+          {cancellation ? (
+            <div className="space-y-2 text-sm">
+              {cancellation.policy?.is_non_refundable ? (
+                <p className="font-medium text-destructive">{t('booking.nonRefundable')}</p>
+              ) : (
+                <>
+                  <p className="text-text-secondary">{t('booking.cancellationPolicyDesc')}</p>
+                  {cancellation.policy && (
+                    <p className="text-text">
+                      {cancellation.policy.free_cancellation_hours > 0
+                        ? t('booking.freeCancelBefore', { hours: cancellation.policy.free_cancellation_hours })
+                        : t('booking.nonRefundable')}
+                    </p>
+                  )}
+                  {cancellation.fee_amount !== null && Number(cancellation.fee_amount) > 0 && (
+                    <p className="text-badge-pending-text">{t('booking.cancellationFee', { fee: formatVndForLocale(cancellation.fee_amount, locale) })}</p>
+                  )}
+                </>
+              )}
+              {cancellation.reason && <p className="text-text-secondary">{cancellation.reason}</p>}
+              {cancellation.refund_amount !== null && (
+                <p className="text-text">
+                  {t('booking.refundStatus')}: {formatVndForLocale(cancellation.refund_amount, locale)}
+                </p>
+              )}
+            </div>
+          ) : (
+            <p className="text-sm text-text-secondary">{t('booking.cancellationPolicyDesc')}</p>
+          )}
+        </div>
       </div>
 
       {latestRefund && (
-        <div className="bg-surface rounded-2xl shadow-sm p-6 mb-4">
-          <h3 className="font-bold text-text mb-3">{t('booking.refundStatus')}</h3>
-          <div className="space-y-1 text-sm">
-            <p className="font-medium text-text">{getRefundStatusLabel(latestRefund.status)}</p>
-            <p className="text-text-secondary">{formatVndForLocale(latestRefund.amount, locale)}</p>
-            {latestRefund.reason && <p className="text-text-secondary">{latestRefund.reason}</p>}
+        <div className="mb-4 overflow-hidden rounded-2xl bg-shadow/5 p-1.5 ring-1 ring-black/5">
+          <div className="rounded-[calc(1rem-6px)] bg-surface p-6">
+            <h3 className="mb-3 flex items-center gap-2 font-bold text-text">
+              <RotateCcw className="size-4 text-text-secondary" />
+              {t('booking.refundStatus')}
+            </h3>
+            <div className="space-y-1 text-sm">
+              <p className="font-medium text-text">{getRefundStatusLabel(latestRefund.status)}</p>
+              <p className="text-text-secondary">{formatVndForLocale(latestRefund.amount, locale)}</p>
+              {latestRefund.reason && <p className="text-text-secondary">{latestRefund.reason}</p>}
+            </div>
           </div>
         </div>
       )}
 
       {/* Payment Info Card */}
       {latestPayment && (
-        <div className="bg-surface rounded-2xl shadow-sm p-6 mb-4">
-          <h3 className="font-bold text-text mb-4">{t('payment.info')}</h3>
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <div className="text-text-secondary">{t('payment.method')}</div>
-              <div className="font-medium text-text mt-0.5">
-                {latestPayment.payment_method === 'vnpay' ? 'VNPAY' : 'MoMo'}
-              </div>
-            </div>
-            <div>
-              <div className="text-text-secondary">{t('booking.status')}</div>
-              <span className={`inline-block mt-0.5 px-3 py-0.5 rounded-full text-xs font-medium ${paymentStatusColors[latestPayment.status] || 'bg-tab text-text-secondary'}`}>
-                {getPaymentStatusLabel(latestPayment.status)}
-              </span>
-            </div>
-            {latestPayment.paid_at && (
+        <div className="mb-4 overflow-hidden rounded-2xl bg-shadow/5 p-1.5 ring-1 ring-black/5">
+          <div className="rounded-[calc(1rem-6px)] bg-surface p-6">
+            <h3 className="mb-4 flex items-center gap-2 font-bold text-text">
+              <CreditCard className="size-4 text-text-secondary" />
+              {t('payment.info')}
+            </h3>
+            <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <div className="text-text-secondary">{t('payment.paidAt')}</div>
-                <div className="font-medium text-text mt-0.5">{formatDateForLocale(latestPayment.paid_at, locale)}</div>
+                <div className="text-text-secondary">{t('payment.method')}</div>
+                <div className="mt-0.5 font-medium text-text">
+                  {latestPayment.payment_method === 'vnpay' ? 'VNPAY' : 'MoMo'}
+                </div>
               </div>
-            )}
+              <div>
+                <div className="text-text-secondary">{t('booking.status')}</div>
+                <span className={`mt-0.5 inline-block rounded-full px-3 py-0.5 text-xs font-medium ${paymentStatusColors[latestPayment.status] || 'bg-tab text-text-secondary'}`}>
+                  {getPaymentStatusLabel(latestPayment.status)}
+                </span>
+              </div>
+              {latestPayment.paid_at && (
+                <div>
+                  <div className="text-text-secondary">{t('payment.paidAt')}</div>
+                  <div className="mt-0.5 font-medium text-text">{formatDateForLocale(latestPayment.paid_at, locale)}</div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
 
       {/* Refund Request Form */}
       {showRefundForm && canRequestRefund && (
-        <div className="bg-surface rounded-2xl shadow-sm p-6 mb-4 border border-amber-200">
-          <h3 className="font-bold text-text mb-3">{t('booking.requestRefund')}</h3>
+        <div className="mb-4 rounded-2xl border border-badge-pending-bg bg-surface p-6">
+          <h3 className="mb-3 font-bold text-text">{t('booking.requestRefund')}</h3>
           <div className="space-y-3">
             <div>
-              <label htmlFor="refund-reason" className="block text-sm font-medium text-text mb-1">
+              <label htmlFor="refund-reason" className="mb-1 block text-sm font-medium text-text">
                 {t('booking.refundReason')}
               </label>
               <textarea
@@ -273,11 +294,11 @@ export default function BookingDetailPage() {
                 onChange={(e) => setReason(e.target.value)}
                 placeholder={t('booking.refundReasonPlaceholder')}
                 rows={3}
-                className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                className="w-full rounded-xl border border-border bg-warm-surface px-3 py-2 text-sm outline-none transition-spring-fast focus:border-primary focus:ring-1 focus:ring-primary"
               />
             </div>
             {refundMutation.isError && (
-              <p role="alert" className="text-sm text-red-600">{t('booking.refundRequestFailure')}</p>
+              <p role="alert" className="text-sm text-destructive">{t('booking.refundRequestFailure')}</p>
             )}
             <div className="flex gap-3">
               <button
@@ -287,14 +308,14 @@ export default function BookingDetailPage() {
                   refundMutation.mutate();
                 }}
                 disabled={refundMutation.isPending || !reason.trim()}
-                className="bg-red-600 text-white px-5 py-2 rounded-lg font-semibold text-sm hover:bg-red-700 transition-colors disabled:opacity-50"
+                className="rounded-full bg-destructive px-5 py-2 text-sm font-semibold text-white transition-spring-fast hover:bg-destructive-hover active:scale-[0.97] disabled:opacity-50"
               >
                 {refundMutation.isPending ? t('booking.submittingRefund') : t('booking.submitRefundRequest')}
               </button>
               <button
                 type="button"
                 onClick={() => { setShowRefundForm(false); setReason(''); }}
-                className="bg-tab text-text-secondary px-5 py-2 rounded-lg font-semibold text-sm hover:bg-border transition-colors"
+                className="rounded-full bg-tab px-5 py-2 text-sm font-semibold text-text-secondary transition-spring-fast hover:bg-border"
               >
                 {t('common.close')}
               </button>
@@ -304,12 +325,12 @@ export default function BookingDetailPage() {
       )}
 
       {/* Actions */}
-      <div className="flex gap-3 mt-6">
+      <div className="mt-6 flex gap-3">
         {booking.status === 'pending' && !showRefundForm && (
           <>
             <Link
               to={`/payment/${booking.booking_code}`}
-              className="bg-gold text-white px-6 py-2.5 rounded-lg font-semibold text-sm hover:bg-amber-600 transition-colors"
+              className="rounded-full bg-gold px-6 py-2.5 text-sm font-semibold text-white transition-spring-fast hover:bg-gold-hover active:scale-[0.97]"
             >
               {t('booking.payNow')}
             </Link>
@@ -322,7 +343,7 @@ export default function BookingDetailPage() {
                   }
                 }}
                 disabled={cancelMutation.isPending}
-                className="bg-red-50 text-red-600 border border-red-200 px-6 py-2.5 rounded-lg font-semibold text-sm hover:bg-red-100 transition-colors disabled:opacity-50"
+                className="rounded-full border border-badge-cancelled-bg bg-badge-cancelled-bg px-6 py-2.5 text-sm font-semibold text-badge-cancelled-text transition-spring-fast hover:opacity-80 active:scale-[0.97] disabled:opacity-50"
               >
                 {cancelMutation.isPending ? t('booking.cancelling') : t('booking.cancel')}
               </button>
@@ -333,7 +354,7 @@ export default function BookingDetailPage() {
           <button
             type="button"
             onClick={() => setShowRefundForm(true)}
-            className="bg-amber-50 text-amber-700 border border-amber-200 px-6 py-2.5 rounded-lg font-semibold text-sm hover:bg-amber-100 transition-colors"
+            className="rounded-full border border-badge-pending-bg bg-badge-pending-bg px-6 py-2.5 text-sm font-semibold text-badge-pending-text transition-spring-fast hover:opacity-80 active:scale-[0.97]"
           >
             {t('booking.requestRefund')}
           </button>
@@ -343,14 +364,15 @@ export default function BookingDetailPage() {
         )}
         <Link
           to="/bookings"
-          className="bg-tab text-text-secondary px-6 py-2.5 rounded-lg font-semibold text-sm hover:bg-border transition-colors"
+          className="flex items-center gap-2 rounded-full bg-tab px-6 py-2.5 text-sm font-semibold text-text-secondary transition-spring-fast hover:bg-border active:scale-[0.97]"
         >
+          <ArrowLeft className="size-4" />
           {t('booking.back')}
         </Link>
       </div>
 
       {cancelMutation.isError && (
-        <div role="alert" aria-live="polite" className="mt-4 bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg p-3 break-words">
+        <div role="alert" aria-live="polite" className="mt-4 break-words rounded-lg border border-badge-cancelled-bg bg-badge-cancelled-bg p-3 text-sm text-badge-cancelled-text">
           {t('booking.cancelFailure')}
         </div>
       )}

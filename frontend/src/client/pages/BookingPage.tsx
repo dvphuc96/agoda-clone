@@ -36,7 +36,7 @@ export default function BookingPage() {
         <p className="text-sm text-text-secondary mb-4">{t('auth.requiredBookingBody')}</p>
         <Link
           to={`/login?redirect=${encodeURIComponent(`/booking/${roomTypeId}${window.location.search}`)}`}
-          className="inline-block bg-primary text-white px-6 py-2.5 rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors"
+          className="inline-block rounded-full bg-primary px-6 py-2.5 font-semibold text-sm text-white transition-spring-fast hover:bg-primary-hover"
         >
           {t('auth.loginAction')}
         </Link>
@@ -84,7 +84,7 @@ export default function BookingPage() {
       <div className="max-w-lg mx-auto px-4 py-16 text-center">
         <h2 className="text-xl font-bold text-text">{t('booking.defaultRoomName')}</h2>
         <p className="mt-2 text-sm text-text-secondary">{t('common.error')}</p>
-        <Link to="/search" className="mt-4 inline-block rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white">
+        <Link to="/search" className="mt-4 inline-block rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-white transition-spring-fast hover:bg-primary-hover">
           {t('hotel.backToSearch')}
         </Link>
       </div>
@@ -100,9 +100,9 @@ export default function BookingPage() {
     <div className="max-w-5xl mx-auto px-4 md:px-8 py-6">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-text-secondary mb-6">
-        <Link to="/" className="hover:text-primary transition-colors">{t('common.home')}</Link>
+        <Link to="/" className="transition-spring-fast hover:text-primary">{t('common.home')}</Link>
         <span>/</span>
-        <Link to="/search" className="hover:text-primary transition-colors">{t('search.title')}</Link>
+        <Link to="/search" className="transition-spring-fast hover:text-primary">{t('search.title')}</Link>
         <span>/</span>
         <span className="text-text">{t('booking.title')}</span>
       </div>

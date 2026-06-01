@@ -28,40 +28,40 @@ export default function SearchPage() {
 
   return (
     <div className="bg-bg">
-      <div className="border-b border-border bg-[#fffaf2] px-4 py-4 md:px-8">
+      <div className="border-b border-border bg-warm-surface px-4 py-4 md:px-8">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-wrap items-center gap-2">
             <Link to="/" className="mr-2 text-lg font-semibold tracking-tight text-navy">
               Go<span className="text-primary">Stay</span>
             </Link>
             {location && (
-              <span className="inline-flex items-center gap-1.5 rounded-md border border-border bg-white px-3 py-2 text-xs font-semibold text-text">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-white px-3 py-2 text-xs font-semibold text-text">
                 <MapPin className="size-3.5 text-primary" />
                 {locationLabel}
               </span>
             )}
             {checkIn && checkOut && (
-              <span className="inline-flex items-center gap-1.5 rounded-md border border-border bg-white px-3 py-2 text-xs font-semibold text-text">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-white px-3 py-2 text-xs font-semibold text-text">
                 <CalendarDays className="size-3.5 text-primary" />
                 {checkIn} - {checkOut}
               </span>
             )}
             {guests && (
-              <span className="inline-flex items-center gap-1.5 rounded-md border border-border bg-white px-3 py-2 text-xs font-semibold text-text">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-white px-3 py-2 text-xs font-semibold text-text">
                 <UsersRound className="size-3.5 text-primary" />
                 {guestLabel}
               </span>
             )}
           </div>
-          <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-[#0b5f59]">
+          <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-primary transition-spring-fast hover:text-primary-hover">
             <PencilLine className="size-4" />
             {t('search.editSearch')}
           </Link>
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 py-6 md:px-8 md:py-8">
-        <div className="mb-5">
+      <div className="mx-auto max-w-7xl px-4 py-8 md:px-8 md:py-10">
+        <div className="mb-6">
           <h1 className="text-2xl font-semibold tracking-tight text-text">{t('search.title')}</h1>
           <p className="mt-1 text-sm text-text-secondary">{t('search.subtitle')}</p>
         </div>
@@ -69,7 +69,7 @@ export default function SearchPage() {
         <button
           type="button"
           onClick={() => setShowFilters(!showFilters)}
-          className="mb-4 inline-flex w-full items-center justify-center gap-2 rounded-md border border-border bg-white px-4 py-3 text-sm font-semibold text-text transition-colors hover:bg-tab md:hidden"
+          className="mb-4 inline-flex w-full items-center justify-center gap-2 rounded-full border border-border bg-white px-4 py-3 text-sm font-semibold text-text transition-spring-fast hover:bg-tab md:hidden"
         >
           {showFilters ? <X className="size-4" /> : <Filter className="size-4" />}
           {showFilters ? t('search.hideFilters') : t('search.showFilters')}

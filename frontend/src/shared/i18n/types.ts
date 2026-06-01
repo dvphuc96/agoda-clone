@@ -40,6 +40,24 @@ export type Messages = {
     featuredTitle: string;
     featuredSubtitle: string;
     exploreHotels: string;
+    trustFreeCancel: string;
+    trustBestPrice: string;
+    trustSupport: string;
+    reviewCount: string;
+    reviewGood: string;
+    reviewCountShort: string;
+    badgeVerified: string;
+    whyTitle: string;
+    whySubtitle: string;
+    whyFreeCancel: string;
+    whyFreeCancelDesc: string;
+    whyBestPrice: string;
+    whyBestPriceDesc: string;
+    whySupport247: string;
+    whySupport247Desc: string;
+    whySecurePayment: string;
+    whySecurePaymentDesc: string;
+    recentlyBooked: string;
   };
   regions: Record<string, string>;
   searchForm: {
@@ -102,6 +120,17 @@ export type Messages = {
     notFoundTitle: string;
     notFoundBody: string;
     backToSearch: string;
+    onlyRoomsLeft: string;
+    bookQuickly: string;
+    trustFreeCancel: string;
+    trustInstantConfirm: string;
+    trustSecurePayment: string;
+    viewAllPhotos: string;
+    perNight: string;
+    selectDatesNotice: string;
+    highlightDeal: string;
+    includedTaxes: string;
+    roomBenefits: string;
   };
   auth: {
     loginTitle: string;
@@ -225,6 +254,12 @@ export type Messages = {
     support: string;
     terms: string;
     privacy: string;
+    payment: string;
+    paymentTrust: string;
+    contact: string;
+    email: string;
+    hotline: string;
+    companyInfo: string;
   };
   status: {
     pending: string;

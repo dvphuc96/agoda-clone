@@ -9,16 +9,43 @@
 @theme {
   --color-navy: #10201d;
   --color-primary: #0f766e;
+  --color-primary-hover: #0b5f59;
+  --color-primary-deep: #0a524c;
   --color-gold: #c47a2c;
   --color-gold-light: #e4a853;
+  --color-gold-hover: #b86e23;
   --color-bg: #f6f1e9;
   --color-text: #18201d;
   --color-text-secondary: #6f756f;
   --color-surface: #ffffff;
+  --color-warm-surface: #fffaf2;
+  --color-warm-gold-surface: #fff5df;
   --color-tab: #eee7da;
   --color-border: #ded4c6;
   --color-success: #0f766e;
   --color-footer: #10201d;
+  --color-shadow: rgba(16, 32, 29, 0.08);
+  --color-shadow-lg: rgba(16, 32, 29, 0.14);
+  --color-shadow-2xl: rgba(16, 32, 29, 0.2);
+  --color-gold-dark: #9a5d12;
+  --color-navy-hover: #1d332e;
+  --color-footer-text: #c8c0b3;
+  --color-footer-muted: #9b9387;
+  --color-footer-dim: #6b6460;
+  --color-badge-pending-bg: #fef3c7;
+  --color-badge-pending-text: #92400e;
+  --color-badge-confirmed-bg: #d1fae5;
+  --color-badge-confirmed-text: #065f46;
+  --color-badge-cancelled-bg: #fee2e2;
+  --color-badge-cancelled-text: #991b1b;
+  --color-badge-refunded-bg: #e0e7ff;
+  --color-badge-refunded-text: #3730a3;
+  --color-badge-paid-bg: #d1fae5;
+  --color-badge-paid-text: #065f46;
+  --color-badge-unpaid-bg: #fef3c7;
+  --color-badge-unpaid-text: #92400e;
+  --color-destructive: #dc2626;
+  --color-destructive-hover: #b91c1c;
 }
 
 @theme inline {
@@ -171,4 +198,37 @@
   input:disabled {
     cursor: not-allowed;
   }
+}
+
+/* Scroll Reveal Animations */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 800ms cubic-bezier(0.32, 0.72, 0, 1),
+              transform 800ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Skeleton Shimmer */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--color-tab) 25%, var(--color-border) 50%, var(--color-tab) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* Spring Transition Utilities */
+@utility transition-spring {
+  transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+  transition-duration: 600ms;
+}
+@utility transition-spring-fast {
+  transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+  transition-duration: 300ms;
 }
