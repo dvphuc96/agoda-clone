@@ -24,3 +24,4 @@ export type {
   TransferStatus,
   TransferVehicleType,
 } from '../api/transfers';
+export type { Review, ReviewPayload } from '../api/reviews';

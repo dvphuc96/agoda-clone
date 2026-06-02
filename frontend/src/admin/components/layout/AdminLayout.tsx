@@ -1,4 +1,4 @@
-import { BarChart3, BedDouble, Building2, CarFront, CreditCard, Home, LogOut, MapPinned, Menu, RotateCcw, ScrollText, Users } from 'lucide-react';
+import { BarChart3, BedDouble, Building2, CarFront, CreditCard, Home, LogOut, MapPinned, Menu, MessageSquare, RotateCcw, ScrollText, Users } from 'lucide-react';
 import { useState } from 'react';
 import { Link, NavLink, Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../../../shared/contexts/AuthContext';
@@ -11,6 +11,7 @@ const navItems = [
   { to: '/admin/transfers', label: 'Transfers', icon: CarFront },
   { to: '/admin/payments', label: 'Payments', icon: CreditCard },
   { to: '/admin/refunds', label: 'Refunds', icon: RotateCcw },
+  { to: '/admin/reviews', label: 'Reviews', icon: MessageSquare },
   { to: '/admin/policies', label: 'Policies', icon: ScrollText },
   { to: '/admin/users', label: 'Users', icon: Users },
 ];

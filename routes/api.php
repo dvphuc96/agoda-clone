@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\RoomTypeController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\TransferController;
 use App\Http\Controllers\Api\TransferBookingController;
+use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Api\Admin\LocationController as AdminLocationController;
 use App\Http\Controllers\Api\Admin\HotelController as AdminHotelController;
@@ -21,6 +22,7 @@ use App\Http\Controllers\Api\Admin\BookingPolicyController as AdminBookingPolicy
 use App\Http\Controllers\Api\Admin\TransferVehicleTypeController as AdminTransferVehicleTypeController;
 use App\Http\Controllers\Api\Admin\TransferRouteController as AdminTransferRouteController;
 use App\Http\Controllers\Api\Admin\TransferBookingController as AdminTransferBookingController;
+use App\Http\Controllers\Api\Admin\ReviewController as AdminReviewController;
 use Illuminate\Support\Facades\Route;
 
 // Auth routes
@@ -41,6 +43,9 @@ Route::get('/hotels/{slug}/rooms', [HotelController::class, 'rooms']);
 
 // Room type routes
 Route::get('/room-types/{roomType}', [RoomTypeController::class, 'show']);
+
+// Review routes (public)
+Route::get('/hotels/{slug}/reviews', [ReviewController::class, 'index']);
 
 // Transfer routes
 Route::get('/transfers/search-options', [TransferController::class, 'searchOptions']);
@@ -71,6 +76,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/transfers/bookings', [TransferBookingController::class, 'store']);
     Route::get('/transfers/bookings/{bookingCode}', [TransferBookingController::class, 'show']);
     Route::post('/transfers/bookings/{bookingCode}/cancel', [TransferBookingController::class, 'cancel']);
+
+    // Review routes (auth)
+    Route::post('/reviews', [ReviewController::class, 'store']);
+    Route::put('/reviews/{review}', [ReviewController::class, 'update']);
+    Route::delete('/reviews/{review}', [ReviewController::class, 'destroy']);
 });
 
 Route::middleware(['auth:sanctum', 'isAdmin'])->prefix('admin')->group(function () {
@@ -122,4 +132,10 @@ Route::middleware(['auth:sanctum', 'isAdmin'])->prefix('admin')->group(function 
     Route::get('/transfer-bookings', [AdminTransferBookingController::class, 'index']);
     Route::get('/transfer-bookings/{transferBooking}', [AdminTransferBookingController::class, 'show']);
     Route::patch('/transfer-bookings/{transferBooking}/status', [AdminTransferBookingController::class, 'updateStatus']);
+
+    // Admin review routes
+    Route::get('/reviews', [AdminReviewController::class, 'index']);
+    Route::get('/reviews/{review}', [AdminReviewController::class, 'show']);
+    Route::patch('/reviews/{review}/status', [AdminReviewController::class, 'updateStatus']);
+    Route::delete('/reviews/{review}', [AdminReviewController::class, 'destroy']);
 });

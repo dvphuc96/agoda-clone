@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, Link } from 'react-router-dom';
 import { useState } from 'react';
-import { ArrowLeft, AlertTriangle, Clock, CreditCard, RotateCcw } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, Clock, CreditCard, RotateCcw, Star } from 'lucide-react';
 import { bookingsApi } from '../../shared/api/bookings';
 import { refundsApi } from '../../shared/api/refunds';
 import { useI18n } from '../../shared/i18n/useI18n';
@@ -326,6 +326,22 @@ export default function BookingDetailPage() {
 
       {/* Actions */}
       <div className="mt-6 flex gap-3">
+        {booking.status === 'completed' && (
+          <button
+            type="button"
+            onClick={() => {
+              const hotelId = (booking.room_type as { hotel?: { id?: number } })?.hotel?.id;
+              if (hotelId) {
+                // Navigate to hotel page where user can write a review
+                window.location.href = `/hotel/${(booking.room_type as { hotel?: { slug?: string } })?.hotel?.slug ?? ''}#reviews`;
+              }
+            }}
+            className="inline-flex items-center gap-2 rounded-full bg-amber-500 px-6 py-2.5 text-sm font-semibold text-white transition-spring-fast hover:bg-amber-600 active:scale-[0.97]"
+          >
+            <Star className="size-4" />
+            {t('reviews.writeReview')}
+          </button>
+        )}
         {booking.status === 'pending' && !showRefundForm && (
           <>
             <Link

@@ -42,4 +42,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(TransferBooking::class);
     }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
 }

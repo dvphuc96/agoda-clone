@@ -5,6 +5,7 @@ import type { User } from './auth';
 import type { Refund } from './refunds';
 import type { BookingPolicy, BookingPolicyPayload } from './policies';
 import type { TransferBooking, TransferRoute, TransferStatus, TransferVehicleType } from './transfers';
+import type { Review } from './reviews';
 
 export interface Paginated<T> {
   data: T[];
@@ -160,4 +161,9 @@ export const adminApi = {
   transferBookings: (params?: Record<string, string | number>) => apiClient.get<Paginated<TransferBooking>>('/admin/transfer-bookings', { params }),
   transferBooking: (id: number) => apiClient.get<TransferBooking>(`/admin/transfer-bookings/${id}`),
   updateTransferBookingStatus: (id: number, status: TransferStatus) => apiClient.patch<TransferBooking>(`/admin/transfer-bookings/${id}/status`, { status }),
+
+  reviews: (params?: Record<string, string | number>) => apiClient.get<Paginated<Review>>('/admin/reviews', { params }),
+  review: (id: number) => apiClient.get<Review>(`/admin/reviews/${id}`),
+  updateReviewStatus: (id: number, status: string) => apiClient.patch<Review>(`/admin/reviews/${id}/status`, { status }),
+  deleteReview: (id: number) => apiClient.delete(`/admin/reviews/${id}`),
 };
