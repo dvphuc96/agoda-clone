@@ -305,6 +305,15 @@ export const en: Messages = {
     bookingCode: 'Transfer code',
     total: 'Total',
   },
+  map: {
+    title: 'Map View',
+    listView: 'List',
+    mapView: 'Map',
+    splitView: 'Split',
+    hotelsInArea: '{{count}} hotels in this area',
+    viewDetails: 'View Details',
+    loading: 'Loading map...',
+  },
   footer: {
     tagline: 'A stay-booking platform for thoughtful trips across Vietnam.',
     company: 'Company',

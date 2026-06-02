@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\HotelController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\RoomTypeController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\MapController;
 use App\Http\Controllers\Api\TransferController;
 use App\Http\Controllers\Api\TransferBookingController;
 use App\Http\Controllers\Api\Admin\DashboardController as AdminDashboardController;
@@ -41,6 +42,9 @@ Route::get('/hotels/{slug}/rooms', [HotelController::class, 'rooms']);
 
 // Room type routes
 Route::get('/room-types/{roomType}', [RoomTypeController::class, 'show']);
+
+// Map routes
+Route::get('/map/hotels', [MapController::class, 'hotels']);
 
 // Transfer routes
 Route::get('/transfers/search-options', [TransferController::class, 'searchOptions']);

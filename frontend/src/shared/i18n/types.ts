@@ -316,6 +316,15 @@ export type Messages = {
     hotline: string;
     companyInfo: string;
   };
+  map: {
+    title: string;
+    listView: string;
+    mapView: string;
+    splitView: string;
+    hotelsInArea: string;
+    viewDetails: string;
+    loading: string;
+  };
   status: {
     pending: string;
     confirmed: string;

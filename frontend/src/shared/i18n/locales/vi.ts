@@ -305,6 +305,15 @@ export const vi: Messages = {
     bookingCode: 'Mã đặt xe',
     total: 'Tổng cộng',
   },
+  map: {
+    title: 'Xem Bản Đồ',
+    listView: 'Danh Sách',
+    mapView: 'Bản Đồ',
+    splitView: 'Chia Màn Hình',
+    hotelsInArea: '{{count}} khách sạn trong khu vực',
+    viewDetails: 'Xem Chi Tiết',
+    loading: 'Đang tải bản đồ...',
+  },
   footer: {
     tagline: 'Nền tảng đặt lưu trú dành cho những chuyến đi chỉn chu tại Việt Nam.',
     company: 'Công ty',
