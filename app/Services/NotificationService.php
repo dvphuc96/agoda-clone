@@ -6,6 +6,10 @@ use App\Models\Booking;
 use App\Models\NotificationRecord;
 use App\Models\Refund;
 use App\Models\User;
+use App\Notifications\BookingCancelledNotification;
+use App\Notifications\BookingConfirmedNotification;
+use App\Notifications\CancellationRequestedNotification;
+use App\Notifications\RefundProcessedNotification;
 
 class NotificationService
 {
@@ -24,7 +28,7 @@ class NotificationService
 
     public function notifyBookingConfirmed(Booking $booking): NotificationRecord
     {
-        return $this->create(
+        $record = $this->create(
             $booking->user,
             $booking,
             'booking_confirmed',
@@ -36,11 +40,16 @@ class NotificationService
                 'check_out' => $booking->check_out?->format('Y-m-d'),
             ]
         );
+
+        $booking->user->notify(new BookingConfirmedNotification($booking));
+        $record->update(['email_sent_at' => now()]);
+
+        return $record;
     }
 
     public function notifyBookingCancelled(Booking $booking): NotificationRecord
     {
-        return $this->create(
+        $record = $this->create(
             $booking->user,
             $booking,
             'booking_cancelled',
@@ -50,11 +59,16 @@ class NotificationService
                 'hotel_name' => $booking->roomType?->hotel?->name,
             ]
         );
+
+        $booking->user->notify(new BookingCancelledNotification($booking));
+        $record->update(['email_sent_at' => now()]);
+
+        return $record;
     }
 
     public function notifyCancellationRequested(Booking $booking): NotificationRecord
     {
-        return $this->create(
+        $record = $this->create(
             $booking->user,
             $booking,
             'cancellation_requested',
@@ -64,11 +78,16 @@ class NotificationService
                 'hotel_name' => $booking->roomType?->hotel?->name,
             ]
         );
+
+        $booking->user->notify(new CancellationRequestedNotification($booking));
+        $record->update(['email_sent_at' => now()]);
+
+        return $record;
     }
 
     public function notifyRefundApproved(Booking $booking, Refund $refund): NotificationRecord
     {
-        return $this->create(
+        $record = $this->create(
             $booking->user,
             $booking,
             'refund_approved',
@@ -78,6 +97,11 @@ class NotificationService
                 'refund_amount' => (float) $refund->amount,
             ]
         );
+
+        $booking->user->notify(new RefundProcessedNotification($refund));
+        $record->update(['email_sent_at' => now()]);
+
+        return $record;
     }
 
     public function notifyRefundRejected(Booking $booking, Refund $refund): NotificationRecord

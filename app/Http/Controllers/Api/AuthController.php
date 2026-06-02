@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
+use App\Notifications\WelcomeNotification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +17,8 @@ class AuthController extends Controller
     {
         $user = User::create($request->validated());
         $token = $user->createToken('auth-token')->plainTextToken;
+
+        $user->notify(new WelcomeNotification());
 
         return response()->json([
             'user' => $user,

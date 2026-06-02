@@ -6,6 +6,7 @@ use App\Models\Booking;
 use App\Models\RoomType;
 use App\Models\TransferRoute;
 use App\Models\User;
+use App\Notifications\BookingConfirmedNotification;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -56,6 +57,9 @@ class BookingService
                 ];
                 $this->transferBookingService->createBooking($user, $transferData, $booking);
             }
+
+            $booking->load('roomType.hotel');
+            $user->notify(new BookingConfirmedNotification($booking));
 
             return $booking;
         });

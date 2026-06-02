@@ -11,7 +11,7 @@ class NotificationRecord extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'booking_id', 'type', 'channel', 'status', 'payload', 'sent_at',
+        'user_id', 'booking_id', 'type', 'channel', 'status', 'payload', 'sent_at', 'email_sent_at',
     ];
 
     protected function casts(): array
@@ -19,6 +19,7 @@ class NotificationRecord extends Model
         return [
             'payload' => 'array',
             'sent_at' => 'datetime',
+            'email_sent_at' => 'datetime',
         ];
     }
 

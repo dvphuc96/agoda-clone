@@ -11,7 +11,7 @@ class NotificationController extends Controller
     public function index(Request $request)
     {
         $notifications = $request->user()
-            ->notifications()
+            ->notificationRecords()
             ->with(['booking'])
             ->latest()
             ->paginate((int) $request->input('per_page', 15));
