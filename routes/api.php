@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\RoomTypeController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\TransferController;
 use App\Http\Controllers\Api\TransferBookingController;
+use App\Http\Controllers\Api\CouponController;
 use App\Http\Controllers\Api\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Api\Admin\LocationController as AdminLocationController;
 use App\Http\Controllers\Api\Admin\HotelController as AdminHotelController;
@@ -21,6 +22,7 @@ use App\Http\Controllers\Api\Admin\BookingPolicyController as AdminBookingPolicy
 use App\Http\Controllers\Api\Admin\TransferVehicleTypeController as AdminTransferVehicleTypeController;
 use App\Http\Controllers\Api\Admin\TransferRouteController as AdminTransferRouteController;
 use App\Http\Controllers\Api\Admin\TransferBookingController as AdminTransferBookingController;
+use App\Http\Controllers\Api\Admin\CouponController as AdminCouponController;
 use Illuminate\Support\Facades\Route;
 
 // Auth routes
@@ -55,6 +57,9 @@ Route::get('/payments/momo/callback', [PaymentController::class, 'momoCallback']
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/me', [AuthController::class, 'me']);
+
+    // Coupon validation
+    Route::post('/coupons/validate', [CouponController::class, 'validate']);
 
     Route::get('/bookings', [BookingController::class, 'index']);
     Route::post('/bookings', [BookingController::class, 'store']);
@@ -122,4 +127,7 @@ Route::middleware(['auth:sanctum', 'isAdmin'])->prefix('admin')->group(function 
     Route::get('/transfer-bookings', [AdminTransferBookingController::class, 'index']);
     Route::get('/transfer-bookings/{transferBooking}', [AdminTransferBookingController::class, 'show']);
     Route::patch('/transfer-bookings/{transferBooking}/status', [AdminTransferBookingController::class, 'updateStatus']);
+
+    Route::apiResource('coupons', AdminCouponController::class);
+    Route::patch('/coupons/{coupon}/toggle-active', [AdminCouponController::class, 'toggleActive']);
 });

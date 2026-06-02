@@ -20,6 +20,8 @@ export type Messages = {
     language: string;
     previous: string;
     next: string;
+    cancel: string;
+    status: string;
   };
   nav: {
     hotels: string;
@@ -229,6 +231,46 @@ export type Messages = {
     refundRejected: string;
     refundProcessed: string;
     notEligibleForCancel: string;
+  };
+  coupons: {
+    enterCode: string;
+    enterCouponCode: string;
+    apply: string;
+    remove: string;
+    applied: string;
+    invalid: string;
+    discount: string;
+    discountAmount: string;
+    off: string;
+    code: string;
+    discountType: string;
+    percentage: string;
+    fixedAmount: string;
+    discountValue: string;
+    minBookingValue: string;
+    maxUses: string;
+    usedCount: string;
+    maxUsesPerUser: string;
+    startsAt: string;
+    expiresAt: string;
+    isActive: string;
+    applicableHotels: string;
+    status: string;
+    actions: string;
+    create: string;
+    edit: string;
+    delete: string;
+    title: string;
+    subtitle: string;
+    description: string;
+    noCoupons: string;
+    createSuccess: string;
+    updateSuccess: string;
+    deleteSuccess: string;
+    deleteConfirm: string;
+    deleteError: string;
+    active: string;
+    inactive: string;
   };
   payment: {
     title: string;

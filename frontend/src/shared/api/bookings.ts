@@ -3,6 +3,7 @@ import type { Hotel, RoomType } from './hotels';
 import type { CancellationPolicySummary } from './policies';
 import type { Refund } from './refunds';
 import type { TransferBooking } from './transfers';
+import type { Coupon } from './coupons';
 
 export interface Payment {
   id: number;
@@ -24,10 +25,12 @@ export interface Booking {
   guests: number;
   special_requests: string | null;
   total_price: string;
+  discount_amount: number;
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
   nights: number;
   cancellation: CancellationPolicySummary | null;
   room_type: RoomType & { hotel: Hotel };
+  coupon?: Coupon;
   payments: Payment[];
   refunds: Refund[];
   transfer_bookings?: TransferBooking[];
@@ -40,6 +43,7 @@ export interface CreateBookingData {
   check_out: string;
   guests: number;
   special_requests?: string;
+  coupon_code?: string;
   transfer_add_on?: {
     transfer_route_id: number;
     pickup_datetime: string;

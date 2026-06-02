@@ -11,7 +11,10 @@ use Illuminate\Support\Facades\DB;
 
 class BookingService
 {
-    public function __construct(private TransferBookingService $transferBookingService) {}
+    public function __construct(
+        private TransferBookingService $transferBookingService,
+        private CouponService $couponService,
+    ) {}
 
     public function createBooking(User $user, array $data): Booking
     {
@@ -33,6 +36,25 @@ class BookingService
 
             $totalPrice = $roomType->price_per_night * $nights;
 
+            $discountAmount = 0;
+            $coupon = null;
+
+            if (! empty($data['coupon_code'])) {
+                try {
+                    $coupon = $this->couponService->validateCoupon(
+                        $data['coupon_code'],
+                        $user->id,
+                        $totalPrice,
+                        $roomType->hotel_id,
+                    );
+                    $discountAmount = $this->couponService->calculateDiscount($coupon, $totalPrice);
+                } catch (\InvalidArgumentException $e) {
+                    throw new \InvalidArgumentException('Invalid coupon: ' . $e->getMessage());
+                }
+            }
+
+            $finalPrice = $totalPrice - $discountAmount;
+
             $booking = Booking::create([
                 'user_id' => $user->id,
                 'room_type_id' => $roomType->id,
@@ -40,9 +62,14 @@ class BookingService
                 'check_out' => $data['check_out'],
                 'guests' => $data['guests'] ?? 1,
                 'special_requests' => $data['special_requests'] ?? null,
-                'total_price' => $totalPrice,
+                'total_price' => $finalPrice,
+                'discount_amount' => $discountAmount,
                 'status' => 'pending',
             ]);
+
+            if ($coupon && $discountAmount > 0) {
+                $this->couponService->applyCoupon($coupon, $booking, $discountAmount);
+            }
 
             if (! empty($data['transfer_add_on'])) {
                 $route = TransferRoute::findOrFail($data['transfer_add_on']['transfer_route_id']);

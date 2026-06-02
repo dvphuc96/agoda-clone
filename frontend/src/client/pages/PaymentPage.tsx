@@ -174,6 +174,12 @@ export default function PaymentPage() {
               <span className="font-bold text-text">{t('booking.total')}</span>
               <span className="text-xl font-bold text-primary">{formatVndForLocale(booking.total_price, locale)}</span>
             </div>
+            {booking.discount_amount > 0 && (
+              <div className="flex flex-wrap justify-between gap-x-3 gap-y-1 text-emerald-600 dark:text-emerald-400">
+                <span className="font-medium">{t('coupons.discount')}</span>
+                <span className="font-medium">-{formatVndForLocale(booking.discount_amount, locale)}</span>
+              </div>
+            )}
           </div>
         </div>
       )}

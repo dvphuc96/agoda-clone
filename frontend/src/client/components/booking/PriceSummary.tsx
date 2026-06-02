@@ -12,9 +12,10 @@ interface PriceSummaryProps {
   nights: number;
   guests: number;
   transferQuote?: TransferQuote | null;
+  discount?: number;
 }
 
-export default function PriceSummary({ room, hotelName, checkIn, checkOut, nights, guests, transferQuote }: PriceSummaryProps) {
+export default function PriceSummary({ room, hotelName, checkIn, checkOut, nights, guests, transferQuote, discount = 0 }: PriceSummaryProps) {
   const { locale, t } = useI18n();
   const formatPrice = (price: string | number) => formatVndForLocale(price, locale);
   const formatZeroPrice = () => formatVndForLocale(0, locale);
@@ -23,6 +24,7 @@ export default function PriceSummary({ room, hotelName, checkIn, checkOut, night
     roomPricePerNight: room.price_per_night,
     nights,
     transferQuote,
+    discount,
   });
   const guestLabel = guests === 1
     ? t('searchForm.guestsSingular')
@@ -62,6 +64,12 @@ export default function PriceSummary({ room, hotelName, checkIn, checkOut, night
           <span className="text-text-secondary">{t('booking.taxes')}</span>
           <span className="text-text">{formatZeroPrice()}</span>
         </div>
+        {discount > 0 && (
+          <div className="flex flex-wrap justify-between gap-x-3 gap-y-1 text-sm text-emerald-600 dark:text-emerald-400">
+            <span className="font-medium">{t('coupons.discount')}</span>
+            <span className="font-medium">-{formatPrice(totals.discountAmount)}</span>
+          </div>
+        )}
       </div>
 
       {/* Total */}
