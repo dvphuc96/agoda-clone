@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Api\HotelController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\RoomTypeController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\TransferController;
@@ -55,6 +56,11 @@ Route::get('/payments/momo/callback', [PaymentController::class, 'momoCallback']
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/me', [AuthController::class, 'me']);
+
+    Route::get('/profile', [ProfileController::class, 'show']);
+    Route::put('/profile', [ProfileController::class, 'update']);
+    Route::post('/profile/avatar', [ProfileController::class, 'uploadAvatar']);
+    Route::put('/profile/password', [ProfileController::class, 'changePassword']);
 
     Route::get('/bookings', [BookingController::class, 'index']);
     Route::post('/bookings', [BookingController::class, 'store']);

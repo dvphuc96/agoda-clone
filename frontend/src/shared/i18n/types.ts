@@ -26,6 +26,7 @@ export type Messages = {
     destinations: string;
     deals: string;
     myBookings: string;
+    wishlist: string;
     login: string;
     logout: string;
   };
@@ -252,6 +253,26 @@ export type Messages = {
     info: string;
     paidAt: string;
   };
+  forgotPassword: {
+    title: string;
+    subtitle: string;
+    email: string;
+    sendLink: string;
+    sending: string;
+    sent: string;
+    checkEmail: string;
+    newPassword: string;
+    confirmPassword: string;
+    newPasswordPlaceholder: string;
+    confirmPasswordPlaceholder: string;
+    resetButton: string;
+    resetting: string;
+    success: string;
+    loginNow: string;
+    forgotPassword: string;
+    backToLogin: string;
+    invalidToken: string;
+  };
   notifications: {
     title: string;
     emptyTitle: string;
@@ -327,6 +348,32 @@ export type Messages = {
     unknown: string;
   };
   amenities: Record<string, string>;
+  wishlist: {
+    title: string;
+    empty: string;
+    emptyDesc: string;
+    explore: string;
+    removed: string;
+    added: string;
+    removeFromWishlist: string;
+  };
+  profile: {
+    title: string;
+    personalInfo: string;
+    changePassword: string;
+    name: string;
+    email: string;
+    phone: string;
+    avatar: string;
+    uploadAvatar: string;
+    save: string;
+    saved: string;
+    currentPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+    passwordChanged: string;
+    wrongPassword: string;
+  };
 };
 
 type Join<K, P> = K extends string

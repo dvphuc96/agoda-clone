@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Globe2, Menu, UserRound, X, Bell } from 'lucide-react';
+import { Globe2, Heart, Menu, UserRound, X, Bell } from 'lucide-react';
 import { useAuth } from '../../../shared/contexts/AuthContext';
 import type { Locale } from '../../../shared/i18n/types';
 import { useI18n } from '../../../shared/i18n/useI18n';
@@ -57,11 +57,14 @@ export default function Navbar() {
           {isAuthenticated ? (
             <>
               <Link to="/bookings" className="text-sm font-medium text-text-secondary transition-spring-fast hover:text-primary">{t('nav.myBookings')}</Link>
+              <Link to="/wishlist" className="relative text-text-secondary transition-spring-fast hover:text-primary" aria-label={t('nav.wishlist')}>
+                <Heart className="size-5" />
+              </Link>
               <Link to="/notifications" className="relative text-text-secondary transition-spring-fast hover:text-primary" aria-label={t('notifications.title')}>
                 <Bell className="size-5" />
               </Link>
               <Link
-                to={user?.role === 'admin' ? '/admin/dashboard' : '/bookings'}
+                to="/profile"
                 className="inline-flex min-w-0 items-center gap-2 rounded-full border border-border bg-white px-3.5 py-2 text-sm text-text transition-spring-fast hover:bg-tab"
               >
                 <UserRound className="size-4 shrink-0 text-primary" />
@@ -114,11 +117,14 @@ export default function Navbar() {
             {isAuthenticated ? (
               <>
                 <Link to="/bookings" className="rounded-xl p-2.5 font-medium text-text transition-spring-fast hover:bg-tab" onClick={() => setMenuOpen(false)}>{t('nav.myBookings')}</Link>
+                <Link to="/wishlist" className="flex items-center gap-2 rounded-xl p-2.5 font-medium text-text transition-spring-fast hover:bg-tab" onClick={() => setMenuOpen(false)}>
+                  <Heart className="size-4" /> {t('nav.wishlist')}
+                </Link>
                 <Link to="/notifications" className="flex items-center gap-2 rounded-xl p-2.5 font-medium text-text transition-spring-fast hover:bg-tab" onClick={() => setMenuOpen(false)}>
                   <Bell className="size-4" /> {t('notifications.title')}
                 </Link>
                 <Link
-                  to={user?.role === 'admin' ? '/admin/dashboard' : '/bookings'}
+                  to="/profile"
                   className="w-fit rounded-full border border-border bg-white px-4 py-2 font-semibold text-navy transition-spring-fast"
                   onClick={() => setMenuOpen(false)}
                 >
