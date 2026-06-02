@@ -4,6 +4,7 @@ import type { Hotel } from '../../../shared/api/hotels';
 import { formatVndForLocale } from '../../../shared/i18n/format';
 import { useI18n } from '../../../shared/i18n/useI18n';
 import { amenityLabel, hotelBackdrop, hotelImage } from '../../../shared/ui/travel';
+import WishlistButton from '../hotel/WishlistButton';
 
 export default function HotelSearchCard({ hotel, index }: { hotel: Hotel; index: number }) {
   const { locale, t } = useI18n();
@@ -49,6 +50,9 @@ export default function HotelSearchCard({ hotel, index }: { hotel: Hotel; index:
         <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,.16),transparent_34%,rgba(0,0,0,.22))]" />
         <div className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-navy shadow-sm backdrop-blur">
           {hotel.location?.name}
+        </div>
+        <div className="absolute right-3 top-3">
+          <WishlistButton hotelId={hotel.id} initialWishlisted={hotel.is_wishlisted} size="sm" />
         </div>
       </div>
 

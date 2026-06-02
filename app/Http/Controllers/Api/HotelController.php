@@ -30,6 +30,14 @@ class HotelController extends Controller
                 },
             ]);
 
+        if ($request->user()) {
+            $query->withCount([
+                'wishlists as user_has_wishlisted' => function ($q) use ($request) {
+                    $q->where('user_id', $request->user()->id);
+                },
+            ]);
+        }
+
         if ($request->location) {
             $query->whereHas('location', function ($q) use ($request) {
                 $q->where('slug', $request->location)
@@ -116,6 +124,11 @@ class HotelController extends Controller
         $hotel = Hotel::where('slug', $slug)
             ->where('status', 'active')
             ->with(['location', 'images', 'roomTypes.images'])
+            ->when(auth()->check(), function ($q) {
+                $q->with(['wishlists' => function ($q) {
+                    $q->where('user_id', auth()->id());
+                }]);
+            })
             ->firstOrFail();
 
         return response()->json(new HotelResource($hotel));

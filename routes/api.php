@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\RoomTypeController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\TransferController;
 use App\Http\Controllers\Api\TransferBookingController;
+use App\Http\Controllers\Api\WishlistController;
 use App\Http\Controllers\Api\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Api\Admin\LocationController as AdminLocationController;
 use App\Http\Controllers\Api\Admin\HotelController as AdminHotelController;
@@ -71,6 +72,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/transfers/bookings', [TransferBookingController::class, 'store']);
     Route::get('/transfers/bookings/{bookingCode}', [TransferBookingController::class, 'show']);
     Route::post('/transfers/bookings/{bookingCode}/cancel', [TransferBookingController::class, 'cancel']);
+
+    Route::get('/wishlists', [WishlistController::class, 'index']);
+    Route::post('/wishlists/toggle', [WishlistController::class, 'toggle']);
+    Route::delete('/wishlists/{hotel}', [WishlistController::class, 'destroy']);
+    Route::get('/wishlists/check/{hotel}', [WishlistController::class, 'check']);
 });
 
 Route::middleware(['auth:sanctum', 'isAdmin'])->prefix('admin')->group(function () {

@@ -53,6 +53,7 @@ export interface Hotel {
   room_types: RoomType[];
   min_price?: string;
   max_price?: string;
+  is_wishlisted?: boolean;
 }
 
 export interface PaginatedResponse<T> {

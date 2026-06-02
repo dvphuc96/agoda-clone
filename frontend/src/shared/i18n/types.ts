@@ -262,6 +262,13 @@ export type Messages = {
     sentAt: string;
     noDate: string;
   };
+  wishlist: {
+    title: string;
+    subtitle: string;
+    emptyTitle: string;
+    emptyBody: string;
+    exploreHotels: string;
+  };
   transfers: {
     nav: string;
     title: string;

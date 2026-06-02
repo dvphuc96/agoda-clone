@@ -14,6 +14,7 @@ import RegisterPage from './client/pages/RegisterPage';
 import MyBookingsPage from './client/pages/MyBookingsPage';
 import BookingDetailPage from './client/pages/BookingDetailPage';
 import NotificationsPage from './client/pages/NotificationsPage';
+import WishlistPage from './client/pages/WishlistPage';
 
 const AdminLayout = lazy(() => import('./admin/components/layout/AdminLayout'));
 const AdminDashboardPage = lazy(() => import('./admin/pages/DashboardPage'));
@@ -56,6 +57,7 @@ export default function App() {
                 <Route path="/bookings" element={<MyBookingsPage />} />
                 <Route path="/bookings/:bookingCode" element={<BookingDetailPage />} />
                 <Route path="/notifications" element={<NotificationsPage />} />
+                <Route path="/wishlist" element={<WishlistPage />} />
               </Route>
               <Route path="/admin" element={<Suspense fallback={adminFallback}><AdminLayout /></Suspense>}>
                 <Route index element={<Navigate to="/admin/dashboard" replace />} />

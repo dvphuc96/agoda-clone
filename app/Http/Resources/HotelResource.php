@@ -34,6 +34,15 @@ class HotelResource extends JsonResource
             'max_price' => $this->whenLoaded('roomTypes', function () {
                 return $this->roomTypes->max('price_per_night');
             }),
+            'is_wishlisted' => $this->when(auth()->check(), function () {
+                if (isset($this->user_has_wishlisted)) {
+                    return (bool) $this->user_has_wishlisted;
+                }
+                if ($this->relationLoaded('wishlists')) {
+                    return $this->wishlists->contains('user_id', auth()->id());
+                }
+                return false;
+            }),
         ];
     }
 }

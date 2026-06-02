@@ -264,6 +264,13 @@ export const en: Messages = {
     sentAt: 'Sent at',
     noDate: 'Pending',
   },
+  wishlist: {
+    title: 'My wishlist',
+    subtitle: 'Hotels you have saved for later.',
+    emptyTitle: 'Your wishlist is empty',
+    emptyBody: 'Save hotels you like and find them here anytime.',
+    exploreHotels: 'Explore hotels',
+  },
   transfers: {
     nav: 'Airport transfers',
     title: 'Book airport transfers',
