@@ -1,6 +1,8 @@
 import type { RoomType } from '../../../shared/api/hotels';
+import type { TransferQuote } from '../../../shared/api/transfers';
 import { formatDateForLocale, formatVndForLocale } from '../../../shared/i18n/format';
-import { useI18n } from '../../../shared/i18n';
+import { useI18n } from '../../../shared/i18n/useI18n';
+import { getBookingSummaryTotals } from './bookingSummaryTotals';
 
 interface PriceSummaryProps {
   room: RoomType;
@@ -9,15 +11,19 @@ interface PriceSummaryProps {
   checkOut: string;
   nights: number;
   guests: number;
+  transferQuote?: TransferQuote | null;
 }
 
-export default function PriceSummary({ room, hotelName, checkIn, checkOut, nights, guests }: PriceSummaryProps) {
+export default function PriceSummary({ room, hotelName, checkIn, checkOut, nights, guests, transferQuote }: PriceSummaryProps) {
   const { locale, t } = useI18n();
   const formatPrice = (price: string | number) => formatVndForLocale(price, locale);
   const formatZeroPrice = () => formatVndForLocale(0, locale);
 
-  const pricePerNight = Number(room.price_per_night);
-  const totalPrice = pricePerNight * nights;
+  const totals = getBookingSummaryTotals({
+    roomPricePerNight: room.price_per_night,
+    nights,
+    transferQuote,
+  });
   const guestLabel = guests === 1
     ? t('searchForm.guestsSingular')
     : t('searchForm.guestsPlural', { count: guests });
@@ -42,8 +48,16 @@ export default function PriceSummary({ room, hotelName, checkIn, checkOut, night
       <div className="space-y-2 mb-4 pb-4 border-b border-border/50">
         <div className="flex flex-wrap justify-between gap-x-3 gap-y-1 text-sm">
           <span className="text-text-secondary">{formatPrice(room.price_per_night)} x {t('booking.nights', { count: nights })}</span>
-          <span className="text-text">{formatPrice(totalPrice)}</span>
+          <span className="text-text">{formatPrice(totals.roomTotal)}</span>
         </div>
+        {transferQuote && (
+          <div className="flex flex-wrap justify-between gap-x-3 gap-y-1 text-sm">
+            <span className="text-text-secondary">
+              {t('transfers.nav')} - {transferQuote.vehicle_type.name} ({transferQuote.airport_code})
+            </span>
+            <span className="text-text">{formatPrice(totals.transferTotal)}</span>
+          </div>
+        )}
         <div className="flex flex-wrap justify-between gap-x-3 gap-y-1 text-sm">
           <span className="text-text-secondary">{t('booking.taxes')}</span>
           <span className="text-text">{formatZeroPrice()}</span>
@@ -53,7 +67,7 @@ export default function PriceSummary({ room, hotelName, checkIn, checkOut, night
       {/* Total */}
       <div className="flex flex-wrap justify-between items-center gap-x-3 gap-y-1">
         <span className="font-bold text-text">{t('booking.total')}</span>
-        <span className="text-xl font-bold text-primary">{formatPrice(totalPrice)}</span>
+        <span className="text-xl font-bold text-primary">{formatPrice(totals.grandTotal)}</span>
       </div>
     </div>
   );

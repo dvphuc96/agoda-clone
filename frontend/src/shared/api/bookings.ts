@@ -2,6 +2,7 @@ import apiClient from './client';
 import type { Hotel, RoomType } from './hotels';
 import type { CancellationPolicySummary } from './policies';
 import type { Refund } from './refunds';
+import type { TransferBooking } from './transfers';
 
 export interface Payment {
   id: number;
@@ -29,6 +30,7 @@ export interface Booking {
   room_type: RoomType & { hotel: Hotel };
   payments: Payment[];
   refunds: Refund[];
+  transfer_bookings?: TransferBooking[];
   created_at: string;
 }
 
@@ -38,6 +40,14 @@ export interface CreateBookingData {
   check_out: string;
   guests: number;
   special_requests?: string;
+  transfer_add_on?: {
+    transfer_route_id: number;
+    pickup_datetime: string;
+    contact_name: string;
+    contact_phone: string;
+    flight_number?: string;
+    special_requests?: string;
+  };
 }
 
 type ApiResource<T> = T | { data: T };

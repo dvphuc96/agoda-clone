@@ -59,6 +59,20 @@ export type Messages = {
     whySecurePaymentDesc: string;
     recentlyBooked: string;
   };
+  chat: {
+    welcome: string;
+    iWantToGo: string;
+    destinationPlaceholder: string;
+    guestsQuestion: string;
+    guestsAnswer: string;
+    datesQuestion: string;
+    checkIn: string;
+    checkOut: string;
+    budgetQuestion: string;
+    budgetAnswer: string;
+    searching: string;
+    foundResults: string;
+  };
   regions: Record<string, string>;
   searchForm: {
     destination: string;
@@ -247,6 +261,47 @@ export type Messages = {
     status: string;
     sentAt: string;
     noDate: string;
+  };
+  transfers: {
+    nav: string;
+    title: string;
+    subtitle: string;
+    airportToHotel: string;
+    hotelToAirport: string;
+    airport: string;
+    hotel: string;
+    pickupDate: string;
+    pickupTime: string;
+    passengers: string;
+    passengersLabel: string;
+    search: string;
+    searching: string;
+    quoteTitle: string;
+    noQuotesTitle: string;
+    noQuotesBody: string;
+    vehicleCapacity: string;
+    luggageCapacity: string;
+    duration: string;
+    distance: string;
+    priceFormula: string;
+    selectVehicle: string;
+    contactTitle: string;
+    contactName: string;
+    contactPhone: string;
+    flightNumber: string;
+    notes: string;
+    notesPlaceholder: string;
+    confirm: string;
+    submitting: string;
+    loginRequired: string;
+    bookingSuccess: string;
+    bookingFailure: string;
+    myTransfers: string;
+    emptyBookings: string;
+    route: string;
+    pickup: string;
+    bookingCode: string;
+    total: string;
   };
   footer: {
     tagline: string;

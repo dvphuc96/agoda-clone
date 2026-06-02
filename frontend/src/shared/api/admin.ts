@@ -4,6 +4,7 @@ import type { Hotel, Location, RoomType } from './hotels';
 import type { User } from './auth';
 import type { Refund } from './refunds';
 import type { BookingPolicy, BookingPolicyPayload } from './policies';
+import type { TransferBooking, TransferRoute, TransferStatus, TransferVehicleType } from './transfers';
 
 export interface Paginated<T> {
   data: T[];
@@ -57,6 +58,31 @@ export type RoomTypePayload = Omit<Partial<RoomType>, 'id' | 'images' | 'availab
   bed_type: string;
   price_per_night: string | number;
   total_rooms: number;
+};
+export type TransferVehicleTypePayload = Omit<Partial<TransferVehicleType>, 'id' | 'created_at'> & {
+  name: string;
+  passenger_capacity: number;
+  luggage_capacity: number;
+  is_active: boolean;
+};
+export type TransferRoutePayload = {
+  hotel_id: number;
+  transfer_vehicle_type_id: number;
+  airport_code: string;
+  airport_name: string;
+  pickup_latitude?: string | number | null;
+  pickup_longitude?: string | number | null;
+  direction: TransferRoute['direction'];
+  price: string | number;
+  currency: string;
+  duration_minutes?: number | null;
+  distance_meters?: number | null;
+  duration_seconds?: number | null;
+  base_fee: string | number;
+  price_per_km: string | number;
+  price_override?: string | number | null;
+  pricing_source?: TransferRoute['pricing_source'];
+  is_active: boolean;
 };
 
 const formDataWithFiles = (name: string, files: FileList | File[]) => {
@@ -119,4 +145,19 @@ export const adminApi = {
   createBookingPolicy: (data: BookingPolicyPayload) => apiClient.post<BookingPolicy>('/admin/booking-policies', data),
   updateBookingPolicy: (id: number, data: BookingPolicyPayload) => apiClient.put<BookingPolicy>(`/admin/booking-policies/${id}`, data),
   deleteBookingPolicy: (id: number) => apiClient.delete(`/admin/booking-policies/${id}`),
+
+  transferVehicleTypes: (params?: Record<string, string | number>) => apiClient.get<Paginated<TransferVehicleType>>('/admin/transfer-vehicle-types', { params }),
+  createTransferVehicleType: (data: TransferVehicleTypePayload) => apiClient.post<TransferVehicleType>('/admin/transfer-vehicle-types', data),
+  updateTransferVehicleType: (id: number, data: TransferVehicleTypePayload) => apiClient.put<TransferVehicleType>(`/admin/transfer-vehicle-types/${id}`, data),
+  deleteTransferVehicleType: (id: number) => apiClient.delete(`/admin/transfer-vehicle-types/${id}`),
+
+  transferRoutes: (params?: Record<string, string | number>) => apiClient.get<Paginated<TransferRoute>>('/admin/transfer-routes', { params }),
+  createTransferRoute: (data: TransferRoutePayload) => apiClient.post<TransferRoute>('/admin/transfer-routes', data),
+  updateTransferRoute: (id: number, data: TransferRoutePayload) => apiClient.put<TransferRoute>(`/admin/transfer-routes/${id}`, data),
+  deleteTransferRoute: (id: number) => apiClient.delete(`/admin/transfer-routes/${id}`),
+  refreshTransferRouteDistance: (id: number) => apiClient.post<TransferRoute>(`/admin/transfer-routes/${id}/refresh-distance`),
+
+  transferBookings: (params?: Record<string, string | number>) => apiClient.get<Paginated<TransferBooking>>('/admin/transfer-bookings', { params }),
+  transferBooking: (id: number) => apiClient.get<TransferBooking>(`/admin/transfer-bookings/${id}`),
+  updateTransferBookingStatus: (id: number, status: TransferStatus) => apiClient.patch<TransferBooking>(`/admin/transfer-bookings/${id}/status`, { status }),
 };

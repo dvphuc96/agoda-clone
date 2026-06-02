@@ -52,6 +52,7 @@ class BookingResource extends JsonResource
             'room_type' => new RoomTypeResource($this->whenLoaded('roomType')),
             'payments' => PaymentResource::collection($this->whenLoaded('payments')),
             'refunds' => RefundResource::collection($this->whenLoaded('refunds')),
+            'transfer_bookings' => TransferBookingResource::collection($this->whenLoaded('transferBookings')),
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
         ];
     }

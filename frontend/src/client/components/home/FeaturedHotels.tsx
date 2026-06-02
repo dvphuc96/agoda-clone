@@ -204,7 +204,7 @@ function FeaturedSmallCard({ hotel }: { hotel: Hotel }) {
       className="group block"
     >
       {/* Double-Bezel */}
-      <div className="relative bg-shadow/5 p-1.5 rounded-[1.75rem] ring-1 ring-black/5 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:shadow-[0_16px_48px_rgba(16,32,29,.1)] hover:-translate-y-1">
+      <div className="relative bg-shadow/5 rounded-[1.75rem] ring-1 ring-black/5 transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:shadow-[0_16px_48px_rgba(16,32,29,.1)] hover:-translate-y-1">
         <div className="overflow-hidden rounded-[calc(1.75rem-6px)] bg-white">
           <div className="relative h-48 overflow-hidden">
             <img

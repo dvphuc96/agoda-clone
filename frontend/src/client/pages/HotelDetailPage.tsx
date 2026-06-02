@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { AlertTriangle, ChevronRight } from 'lucide-react';
 import { getCollectionData, hotelsApi, type RoomType } from '../../shared/api/hotels';
@@ -6,6 +7,7 @@ import { useI18n } from '../../shared/i18n/useI18n';
 import ImageGallery from '../components/hotel/ImageGallery';
 import HotelInfo from '../components/hotel/HotelInfo';
 import RoomTypeCard from '../components/hotel/RoomTypeCard';
+import { getRoomsSectionLinkClasses } from '../components/hotel/roomsSectionState';
 
 const vndFormatter = new Intl.NumberFormat('vi-VN');
 
@@ -15,6 +17,7 @@ export default function HotelDetailPage() {
   const [searchParams] = useSearchParams();
   const checkIn = searchParams.get('check_in') || '';
   const checkOut = searchParams.get('check_out') || '';
+  const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
 
   const { data: hotel, isLoading, isError } = useQuery({
     queryKey: ['hotel', slug],
@@ -57,6 +60,7 @@ export default function HotelDetailPage() {
   }
 
   const displayRooms = rooms && rooms.length > 0 ? rooms : hotel.room_types ?? [];
+  const isRoomsSectionActive = selectedRoomId !== null;
 
   return (
     <div className="bg-bg">
@@ -85,7 +89,7 @@ export default function HotelDetailPage() {
             <HotelInfo hotel={hotel} />
 
             {/* Rooms section */}
-            <div>
+            <div id="rooms" className="scroll-mt-24">
               <div className="mb-5 flex items-center justify-between">
                 <h2 className="text-xl font-bold tracking-tight text-text">{t('hotel.rooms')}</h2>
                 <span className="text-xs text-text-secondary">{t('hotel.includedTaxes')}</span>
@@ -97,7 +101,14 @@ export default function HotelDetailPage() {
               ) : (
                 <div className="space-y-4">
                   {displayRooms.map((room, idx) => (
-                    <RoomTypeCard key={room.id} room={room} index={idx} />
+                    <RoomTypeCard
+                      key={room.id}
+                      room={room}
+                      index={idx}
+                      isSelected={selectedRoomId === String(room.id)}
+                      hasSelectedRoom={isRoomsSectionActive}
+                      onSelect={setSelectedRoomId}
+                    />
                   ))}
                 </div>
               )}
@@ -125,7 +136,8 @@ export default function HotelDetailPage() {
                 )}
                 <Link
                   to="#rooms"
-                  className="mt-4 flex w-full items-center justify-center rounded-full bg-primary py-3 text-sm font-bold text-white transition-spring-fast hover:bg-primary-hover"
+                  aria-current={isRoomsSectionActive ? 'true' : undefined}
+                  className={getRoomsSectionLinkClasses(isRoomsSectionActive)}
                 >
                   {t('hotel.rooms')}
                 </Link>
