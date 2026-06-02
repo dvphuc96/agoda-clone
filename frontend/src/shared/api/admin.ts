@@ -5,6 +5,8 @@ import type { User } from './auth';
 import type { Refund } from './refunds';
 import type { BookingPolicy, BookingPolicyPayload } from './policies';
 import type { TransferBooking, TransferRoute, TransferStatus, TransferVehicleType } from './transfers';
+import type { BookingModification } from './modifications';
+import type { Coupon, CouponPayload } from './coupons';
 
 export interface Paginated<T> {
   data: T[];
@@ -160,4 +162,16 @@ export const adminApi = {
   transferBookings: (params?: Record<string, string | number>) => apiClient.get<Paginated<TransferBooking>>('/admin/transfer-bookings', { params }),
   transferBooking: (id: number) => apiClient.get<TransferBooking>(`/admin/transfer-bookings/${id}`),
   updateTransferBookingStatus: (id: number, status: TransferStatus) => apiClient.patch<TransferBooking>(`/admin/transfer-bookings/${id}/status`, { status }),
+
+  modifications: (params?: Record<string, string | number>) => apiClient.get<Paginated<BookingModification>>('/admin/modifications', { params }),
+  modification: (id: number) => apiClient.get<BookingModification>(`/admin/modifications/${id}`),
+  approveModification: (id: number, adminNotes?: string) => apiClient.patch<BookingModification>(`/admin/modifications/${id}/approve`, { admin_notes: adminNotes }),
+  rejectModification: (id: number, adminNotes?: string) => apiClient.patch<BookingModification>(`/admin/modifications/${id}/reject`, { admin_notes: adminNotes }),
+
+  coupons: (params?: Record<string, string | number>) => apiClient.get<Paginated<Coupon>>('/admin/coupons', { params }),
+  coupon: (id: number) => apiClient.get<Coupon>(`/admin/coupons/${id}`),
+  createCoupon: (data: CouponPayload) => apiClient.post<Coupon>('/admin/coupons', data),
+  updateCoupon: (id: number, data: CouponPayload) => apiClient.put<Coupon>(`/admin/coupons/${id}`, data),
+  deleteCoupon: (id: number) => apiClient.delete(`/admin/coupons/${id}`),
+  toggleCouponActive: (id: number) => apiClient.patch<Coupon>(`/admin/coupons/${id}/toggle-active`),
 };

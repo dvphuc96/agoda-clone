@@ -21,6 +21,10 @@ use App\Http\Controllers\Api\Admin\BookingPolicyController as AdminBookingPolicy
 use App\Http\Controllers\Api\Admin\TransferVehicleTypeController as AdminTransferVehicleTypeController;
 use App\Http\Controllers\Api\Admin\TransferRouteController as AdminTransferRouteController;
 use App\Http\Controllers\Api\Admin\TransferBookingController as AdminTransferBookingController;
+use App\Http\Controllers\Api\Admin\BookingModificationController as AdminBookingModificationController;
+use App\Http\Controllers\Api\BookingModificationController;
+use App\Http\Controllers\Api\CouponController;
+use App\Http\Controllers\Api\Admin\CouponController as AdminCouponController;
 use Illuminate\Support\Facades\Route;
 
 // Auth routes
@@ -61,9 +65,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/bookings/{bookingCode}', [BookingController::class, 'show']);
     Route::post('/bookings/{bookingCode}/cancel-request', [BookingController::class, 'cancelRequest']);
     Route::delete('/bookings/{bookingCode}', [BookingController::class, 'destroy']);
+    Route::post('/bookings/{bookingCode}/modify', [BookingModificationController::class, 'store']);
+    Route::get('/bookings/{bookingCode}/modifications', [BookingModificationController::class, 'index']);
 
     Route::post('/payments/create', [PaymentController::class, 'create']);
     Route::get('/payments/{id}', [PaymentController::class, 'show']);
+
+    Route::post('/coupons/validate', [CouponController::class, 'validate']);
 
     Route::get('/notifications', [NotificationController::class, 'index']);
 
@@ -122,4 +130,12 @@ Route::middleware(['auth:sanctum', 'isAdmin'])->prefix('admin')->group(function 
     Route::get('/transfer-bookings', [AdminTransferBookingController::class, 'index']);
     Route::get('/transfer-bookings/{transferBooking}', [AdminTransferBookingController::class, 'show']);
     Route::patch('/transfer-bookings/{transferBooking}/status', [AdminTransferBookingController::class, 'updateStatus']);
+
+    Route::get('/modifications', [AdminBookingModificationController::class, 'index']);
+    Route::get('/modifications/{modification}', [AdminBookingModificationController::class, 'show']);
+    Route::patch('/modifications/{modification}/approve', [AdminBookingModificationController::class, 'approve']);
+    Route::patch('/modifications/{modification}/reject', [AdminBookingModificationController::class, 'reject']);
+
+    Route::apiResource('coupons', AdminCouponController::class);
+    Route::patch('/coupons/{coupon}/toggle-active', [AdminCouponController::class, 'toggleActive']);
 });

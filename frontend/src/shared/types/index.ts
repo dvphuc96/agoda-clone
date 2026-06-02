@@ -13,6 +13,7 @@ export type {
   CreateBookingData,
 } from '../api/bookings';
 export type { Refund, CancelRequestData } from '../api/refunds';
+export type { BookingModification, RequestModificationData } from '../api/modifications';
 export type { Notification } from '../api/notifications';
 export type { BookingPolicy, BookingPolicyPayload, CancellationPolicySummary } from '../api/policies';
 export type {
@@ -24,3 +25,4 @@ export type {
   TransferStatus,
   TransferVehicleType,
 } from '../api/transfers';
+export type { Coupon, CouponValidation, CouponPayload } from '../api/coupons';

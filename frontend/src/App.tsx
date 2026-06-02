@@ -13,6 +13,7 @@ import LoginPage from './client/pages/LoginPage';
 import RegisterPage from './client/pages/RegisterPage';
 import MyBookingsPage from './client/pages/MyBookingsPage';
 import BookingDetailPage from './client/pages/BookingDetailPage';
+import ModifyBookingPage from './client/pages/ModifyBookingPage';
 import NotificationsPage from './client/pages/NotificationsPage';
 
 const AdminLayout = lazy(() => import('./admin/components/layout/AdminLayout'));
@@ -26,6 +27,7 @@ const AdminRefundListPage = lazy(() => import('./admin/pages/refunds/RefundListP
 const AdminPolicyListPage = lazy(() => import('./admin/pages/policies/PolicyListPage'));
 const AdminUserListPage = lazy(() => import('./admin/pages/users/UserListPage'));
 const AdminTransferListPage = lazy(() => import('./admin/pages/transfers/TransferListPage'));
+const AdminModificationListPage = lazy(() => import('./admin/pages/modifications/ModificationListPage'));
 
 const adminFallback = <div className="flex min-h-screen items-center justify-center bg-slate-100 text-slate-600">Loading admin…</div>;
 
@@ -55,6 +57,7 @@ export default function App() {
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/bookings" element={<MyBookingsPage />} />
                 <Route path="/bookings/:bookingCode" element={<BookingDetailPage />} />
+                <Route path="/bookings/:bookingCode/modify" element={<ModifyBookingPage />} />
                 <Route path="/notifications" element={<NotificationsPage />} />
               </Route>
               <Route path="/admin" element={<Suspense fallback={adminFallback}><AdminLayout /></Suspense>}>
@@ -68,6 +71,7 @@ export default function App() {
                 <Route path="refunds" element={<Suspense fallback={adminFallback}><AdminRefundListPage /></Suspense>} />
                 <Route path="policies" element={<Suspense fallback={adminFallback}><AdminPolicyListPage /></Suspense>} />
                 <Route path="transfers" element={<Suspense fallback={adminFallback}><AdminTransferListPage /></Suspense>} />
+                <Route path="modifications" element={<Suspense fallback={adminFallback}><AdminModificationListPage /></Suspense>} />
                 <Route path="users" element={<Suspense fallback={adminFallback}><AdminUserListPage /></Suspense>} />
               </Route>
             </Routes>

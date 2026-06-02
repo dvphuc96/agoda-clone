@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, Link } from 'react-router-dom';
 import { useState } from 'react';
-import { ArrowLeft, AlertTriangle, Clock, CreditCard, RotateCcw } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, Clock, CreditCard, RotateCcw, PencilLine } from 'lucide-react';
 import { bookingsApi } from '../../shared/api/bookings';
 import { refundsApi } from '../../shared/api/refunds';
 import { useI18n } from '../../shared/i18n/useI18n';
@@ -123,6 +123,12 @@ export default function BookingDetailPage() {
   const canCancelPending = booking.status === 'pending' && canCancelByPolicy && !hasActiveRefund;
   const canRequestRefund = booking.status === 'confirmed' && canCancelByPolicy && !hasActiveRefund;
   const showNotEligible = ['pending', 'confirmed'].includes(booking.status) && !canCancelByPolicy;
+  const canModifyBooking = ['pending', 'confirmed'].includes(booking.status) && (() => {
+    const checkInDate = new Date(booking.check_in);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return checkInDate > today;
+  })();
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 md:px-8 md:py-16">
@@ -184,6 +190,13 @@ export default function BookingDetailPage() {
               </div>
             )}
           </div>
+
+          {booking.discount_amount > 0 && (
+            <div className="mt-3 flex items-center justify-between border-t border-border/50 pt-3">
+              <span className="text-sm text-green-700">{t('coupons.discount')} {booking.coupon ? `(${booking.coupon.code})` : ''}</span>
+              <span className="text-sm font-medium text-green-700">-{formatVndForLocale(booking.discount_amount, locale)}</span>
+            </div>
+          )}
 
           <div className="mt-4 flex items-center justify-between border-t border-border/50 pt-4">
             <span className="font-bold text-text">{t('booking.total')}</span>
@@ -361,6 +374,15 @@ export default function BookingDetailPage() {
         )}
         {showNotEligible && (
           <p className="text-sm text-text-secondary">{t('booking.notEligibleForCancel')}</p>
+        )}
+        {canModifyBooking && (
+          <Link
+            to={`/bookings/${booking.booking_code}/modify`}
+            className="flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-6 py-2.5 text-sm font-semibold text-primary transition-spring-fast hover:bg-primary/10 active:scale-[0.97]"
+          >
+            <PencilLine className="size-4" />
+            {t('bookingModification.modifyBooking')}
+          </Link>
         )}
         <Link
           to="/bookings"
