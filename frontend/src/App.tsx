@@ -11,9 +11,13 @@ import BookingPage from './client/pages/BookingPage';
 import PaymentPage from './client/pages/PaymentPage';
 import LoginPage from './client/pages/LoginPage';
 import RegisterPage from './client/pages/RegisterPage';
+import ForgotPasswordPage from './client/pages/ForgotPasswordPage';
+import ResetPasswordPage from './client/pages/ResetPasswordPage';
 import MyBookingsPage from './client/pages/MyBookingsPage';
 import BookingDetailPage from './client/pages/BookingDetailPage';
 import NotificationsPage from './client/pages/NotificationsPage';
+import ProfilePage from './client/pages/ProfilePage';
+import WishlistPage from './client/pages/WishlistPage';
 
 const AdminLayout = lazy(() => import('./admin/components/layout/AdminLayout'));
 const AdminDashboardPage = lazy(() => import('./admin/pages/DashboardPage'));
@@ -53,9 +57,13 @@ export default function App() {
                 <Route path="/payment/:bookingCode" element={<PaymentPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="/reset-password" element={<ResetPasswordPage />} />
                 <Route path="/bookings" element={<MyBookingsPage />} />
                 <Route path="/bookings/:bookingCode" element={<BookingDetailPage />} />
                 <Route path="/notifications" element={<NotificationsPage />} />
+                <Route path="/wishlist" element={<WishlistPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
               </Route>
               <Route path="/admin" element={<Suspense fallback={adminFallback}><AdminLayout /></Suspense>}>
                 <Route index element={<Navigate to="/admin/dashboard" replace />} />

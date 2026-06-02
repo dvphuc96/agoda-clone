@@ -6,6 +6,7 @@ export interface User {
   email: string;
   phone: string | null;
   avatar: string | null;
+  avatar_url: string | null;
   role: 'user' | 'admin';
   is_active?: boolean;
 }
@@ -25,4 +26,10 @@ export const authApi = {
   logout: () => apiClient.post('/auth/logout'),
 
   me: () => apiClient.get<User>('/auth/me'),
+
+  forgotPassword: (data: { email: string }) =>
+    apiClient.post('/auth/forgot-password', data),
+
+  resetPassword: (data: { email: string; token: string; password: string; password_confirmation: string }) =>
+    apiClient.post('/auth/reset-password', data),
 };

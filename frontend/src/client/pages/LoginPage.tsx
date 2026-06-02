@@ -87,7 +87,13 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="mt-7 text-center text-sm text-text-secondary">
+          <div className="mt-4 text-center text-sm">
+            <Link to="/forgot-password" className="text-text-secondary transition-spring-fast hover:text-primary hover:underline">
+              {t('forgotPassword.forgotPassword')}
+            </Link>
+          </div>
+
+          <div className="mt-5 text-center text-sm text-text-secondary">
             {t('auth.noAccount')}{' '}
             <Link to="/register" className="font-semibold text-primary transition-spring-fast hover:underline">{t('auth.createAccount')}</Link>
           </div>
