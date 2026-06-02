@@ -4,28 +4,58 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../shared/contexts/AuthContext';
 import { hotelsApi } from '../../shared/api/hotels';
 import { bookingsApi } from '../../shared/api/bookings';
+import { transfersApi, type TransferDirection } from '../../shared/api/transfers';
 import { useI18n } from '../../shared/i18n/useI18n';
 import BookingForm from '../components/booking/BookingForm';
 import PriceSummary from '../components/booking/PriceSummary';
+import { findSelectedTransferQuote } from '../components/booking/bookingTransferSelection';
+
+type BookingSummaryState = {
+  checkIn: string;
+  checkOut: string;
+  guests: number;
+  transferEnabled: boolean;
+  transferDirection: TransferDirection;
+  selectedTransferVehicleTypeId: string;
+};
 
 export default function BookingPage() {
   const { t } = useI18n();
   const { roomTypeId } = useParams<{ roomTypeId: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { isAuthenticated, loading: authLoading } = useAuth();
+  const { isAuthenticated, loading: authLoading, user } = useAuth();
   const [bookingLoading, setBookingLoading] = useState(false);
   const [error, setError] = useState('');
 
   const checkIn = searchParams.get('check_in') || '';
   const checkOut = searchParams.get('check_out') || '';
   const guestsParam = searchParams.get('guests') || '1';
+  const initialGuests = Number(guestsParam) || 1;
+  const [summary, setSummary] = useState<BookingSummaryState>({
+    checkIn,
+    checkOut,
+    guests: initialGuests,
+    transferEnabled: false,
+    transferDirection: 'airport_to_hotel',
+    selectedTransferVehicleTypeId: '',
+  });
 
   const { data: roomData, isLoading } = useQuery({
     queryKey: ['room-type', roomTypeId, checkIn, checkOut],
     queryFn: () => hotelsApi.getRoomType(roomTypeId!, { check_in: checkIn, check_out: checkOut }).then((response) => response.data),
     enabled: !!roomTypeId,
   });
+  const roomHotelId = roomData?.hotel?.id;
+  const transferQuotes = useQuery({
+    queryKey: ['booking-transfer-quotes', roomHotelId, summary.transferDirection, summary.guests],
+    queryFn: () => transfersApi.hotelQuotes(roomHotelId!, { direction: summary.transferDirection, passengers: summary.guests }).then((response) => response.data.data),
+    enabled: isAuthenticated && summary.transferEnabled && Boolean(roomHotelId),
+    placeholderData: (previousData) => previousData,
+  });
+  const selectedTransferQuote = summary.transferEnabled
+    ? findSelectedTransferQuote(transferQuotes.data, summary.selectedTransferVehicleTypeId)
+    : null;
 
   // Redirect to login if not authenticated
   if (!authLoading && !isAuthenticated) {
@@ -44,7 +74,20 @@ export default function BookingPage() {
     );
   }
 
-  const handleBooking = async (data: { check_in: string; check_out: string; guests: number; special_requests: string }) => {
+  const handleBooking = async (data: {
+    check_in: string;
+    check_out: string;
+    guests: number;
+    special_requests: string;
+    transfer_add_on?: {
+      transfer_route_id: number;
+      pickup_datetime: string;
+      contact_name: string;
+      contact_phone: string;
+      flight_number?: string;
+      special_requests?: string;
+    };
+  }) => {
     setError('');
     setBookingLoading(true);
     try {
@@ -54,6 +97,7 @@ export default function BookingPage() {
         check_out: data.check_out,
         guests: data.guests,
         special_requests: data.special_requests || undefined,
+        transfer_add_on: data.transfer_add_on,
       });
       navigate(`/payment/${booking.data.booking_code}`);
     } catch (err: unknown) {
@@ -92,8 +136,8 @@ export default function BookingPage() {
   }
 
   const room = roomData;
-  const nights = checkIn && checkOut
-    ? Math.max(1, Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24)))
+  const nights = summary.checkIn && summary.checkOut
+    ? Math.max(1, Math.ceil((new Date(summary.checkOut).getTime() - new Date(summary.checkIn).getTime()) / (1000 * 60 * 60 * 24)))
     : 1;
 
   return (
@@ -124,6 +168,12 @@ export default function BookingPage() {
           <div className="bg-surface rounded-2xl shadow-sm p-6">
             <BookingForm
               maxGuests={room.max_guests}
+              defaultContactName={user?.name}
+              defaultContactPhone={user?.phone}
+              transferQuotes={transferQuotes.data ?? []}
+              transferQuotesLoading={transferQuotes.isLoading}
+              transferQuotesFetching={transferQuotes.isFetching}
+              onSummaryChange={setSummary}
               onSubmit={handleBooking}
               loading={bookingLoading}
             />
@@ -135,10 +185,11 @@ export default function BookingPage() {
           <PriceSummary
             room={room}
             hotelName={room.hotel?.name || t('booking.defaultHotelName')}
-            checkIn={checkIn}
-            checkOut={checkOut}
+            checkIn={summary.checkIn}
+            checkOut={summary.checkOut}
             nights={nights}
-            guests={Number(guestsParam)}
+            guests={summary.guests}
+            transferQuote={selectedTransferQuote}
           />
         </div>
       </div>

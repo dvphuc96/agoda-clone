@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             HotelSeeder::class,
             RoomTypeSeeder::class,
             HotelImageSeeder::class,
+            TransferSeeder::class,
             AdminUserSeeder::class,
         ]);
     }

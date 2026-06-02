@@ -15,3 +15,12 @@ export type {
 export type { Refund, CancelRequestData } from '../api/refunds';
 export type { Notification } from '../api/notifications';
 export type { BookingPolicy, BookingPolicyPayload, CancellationPolicySummary } from '../api/policies';
+export type {
+  TransferBooking,
+  TransferBookingPayload,
+  TransferDirection,
+  TransferQuote,
+  TransferRoute,
+  TransferStatus,
+  TransferVehicleType,
+} from '../api/transfers';

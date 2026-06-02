@@ -7,6 +7,8 @@ use App\Http\Controllers\Api\HotelController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\RoomTypeController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\TransferController;
+use App\Http\Controllers\Api\TransferBookingController;
 use App\Http\Controllers\Api\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Api\Admin\LocationController as AdminLocationController;
 use App\Http\Controllers\Api\Admin\HotelController as AdminHotelController;
@@ -16,6 +18,9 @@ use App\Http\Controllers\Api\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Api\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Api\Admin\RefundController as AdminRefundController;
 use App\Http\Controllers\Api\Admin\BookingPolicyController as AdminBookingPolicyController;
+use App\Http\Controllers\Api\Admin\TransferVehicleTypeController as AdminTransferVehicleTypeController;
+use App\Http\Controllers\Api\Admin\TransferRouteController as AdminTransferRouteController;
+use App\Http\Controllers\Api\Admin\TransferBookingController as AdminTransferBookingController;
 use Illuminate\Support\Facades\Route;
 
 // Auth routes
@@ -37,6 +42,11 @@ Route::get('/hotels/{slug}/rooms', [HotelController::class, 'rooms']);
 // Room type routes
 Route::get('/room-types/{roomType}', [RoomTypeController::class, 'show']);
 
+// Transfer routes
+Route::get('/transfers/search-options', [TransferController::class, 'searchOptions']);
+Route::get('/transfers/quotes', [TransferController::class, 'quotes']);
+Route::get('/transfers/hotels/{hotel}/quotes', [TransferController::class, 'hotelQuotes']);
+
 // Payment callbacks (public - gateway redirects)
 Route::get('/payments/vnpay/callback', [PaymentController::class, 'vnpayCallback']);
 Route::get('/payments/momo/callback', [PaymentController::class, 'momoCallback']);
@@ -56,6 +66,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/payments/{id}', [PaymentController::class, 'show']);
 
     Route::get('/notifications', [NotificationController::class, 'index']);
+
+    Route::get('/transfers/bookings', [TransferBookingController::class, 'index']);
+    Route::post('/transfers/bookings', [TransferBookingController::class, 'store']);
+    Route::get('/transfers/bookings/{bookingCode}', [TransferBookingController::class, 'show']);
+    Route::post('/transfers/bookings/{bookingCode}/cancel', [TransferBookingController::class, 'cancel']);
 });
 
 Route::middleware(['auth:sanctum', 'isAdmin'])->prefix('admin')->group(function () {
@@ -100,4 +115,11 @@ Route::middleware(['auth:sanctum', 'isAdmin'])->prefix('admin')->group(function 
     Route::get('/booking-policies/{bookingPolicy}', [AdminBookingPolicyController::class, 'show']);
     Route::put('/booking-policies/{bookingPolicy}', [AdminBookingPolicyController::class, 'update']);
     Route::delete('/booking-policies/{bookingPolicy}', [AdminBookingPolicyController::class, 'destroy']);
+
+    Route::apiResource('transfer-vehicle-types', AdminTransferVehicleTypeController::class);
+    Route::post('/transfer-routes/{transferRoute}/refresh-distance', [AdminTransferRouteController::class, 'refreshDistance']);
+    Route::apiResource('transfer-routes', AdminTransferRouteController::class);
+    Route::get('/transfer-bookings', [AdminTransferBookingController::class, 'index']);
+    Route::get('/transfer-bookings/{transferBooking}', [AdminTransferBookingController::class, 'show']);
+    Route::patch('/transfer-bookings/{transferBooking}/status', [AdminTransferBookingController::class, 'updateStatus']);
 });

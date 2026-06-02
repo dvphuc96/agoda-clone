@@ -25,6 +25,7 @@ const AdminPaymentListPage = lazy(() => import('./admin/pages/payments/PaymentLi
 const AdminRefundListPage = lazy(() => import('./admin/pages/refunds/RefundListPage'));
 const AdminPolicyListPage = lazy(() => import('./admin/pages/policies/PolicyListPage'));
 const AdminUserListPage = lazy(() => import('./admin/pages/users/UserListPage'));
+const AdminTransferListPage = lazy(() => import('./admin/pages/transfers/TransferListPage'));
 
 const adminFallback = <div className="flex min-h-screen items-center justify-center bg-slate-100 text-slate-600">Loading admin…</div>;
 
@@ -66,6 +67,7 @@ export default function App() {
                 <Route path="payments" element={<Suspense fallback={adminFallback}><AdminPaymentListPage /></Suspense>} />
                 <Route path="refunds" element={<Suspense fallback={adminFallback}><AdminRefundListPage /></Suspense>} />
                 <Route path="policies" element={<Suspense fallback={adminFallback}><AdminPolicyListPage /></Suspense>} />
+                <Route path="transfers" element={<Suspense fallback={adminFallback}><AdminTransferListPage /></Suspense>} />
                 <Route path="users" element={<Suspense fallback={adminFallback}><AdminUserListPage /></Suspense>} />
               </Route>
             </Routes>

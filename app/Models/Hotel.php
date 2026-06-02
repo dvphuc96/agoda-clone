@@ -48,4 +48,14 @@ class Hotel extends Model
     {
         return $this->hasMany(HotelImage::class);
     }
+
+    public function transferRoutes(): HasMany
+    {
+        return $this->hasMany(TransferRoute::class);
+    }
+
+    public function transferBookings(): HasMany
+    {
+        return $this->hasMany(TransferBooking::class);
+    }
 }

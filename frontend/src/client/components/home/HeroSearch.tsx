@@ -134,7 +134,7 @@ export default function HeroSearch() {
           {/* Right: Glass Search Card with Double-Bezel */}
           <div className="relative">
             {/* Outer Shell */}
-            <div className="relative bg-shadow/5 p-1.5 rounded-[2rem] ring-1 ring-black/5 shadow-[0_32px_64px_rgba(16,32,29,.15)]">
+            <div className="relative bg-shadow/5 rounded-[2rem] ring-1 ring-black/5 shadow-[0_32px_64px_rgba(16,32,29,.15)]">
               {/* Inner Core */}
               <div className="overflow-hidden rounded-[calc(2rem-6px)] bg-white/95 backdrop-blur-xl">
                 <div className="p-6 md:p-8">

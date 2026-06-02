@@ -1,12 +1,26 @@
-import { Link, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { BedDouble, Users, Maximize, Check } from 'lucide-react';
 import type { RoomType } from '../../../shared/api/hotels';
 import { formatVndForLocale } from '../../../shared/i18n/format';
 import { useI18n } from '../../../shared/i18n/useI18n';
 import { amenityLabel } from '../../../shared/ui/travel';
+import { getRoomTypeCardStateClasses } from './roomTypeCardState';
 
-export default function RoomTypeCard({ room, index }: { room: RoomType; index: number }) {
+export default function RoomTypeCard({
+  room,
+  index,
+  isSelected = false,
+  hasSelectedRoom = false,
+  onSelect,
+}: {
+  room: RoomType;
+  index: number;
+  isSelected?: boolean;
+  hasSelectedRoom?: boolean;
+  onSelect?: (roomId: string) => void;
+}) {
   const { locale, t } = useI18n();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const checkIn = searchParams.get('check_in') || '';
   const checkOut = searchParams.get('check_out') || '';
@@ -35,13 +49,24 @@ export default function RoomTypeCard({ room, index }: { room: RoomType; index: n
 
   const isLowAvailability = (room.available_rooms ?? 99) <= 3;
   const isBestDeal = index === 0;
+  const stateClasses = getRoomTypeCardStateClasses({ isSelected, isBestDeal, hasSelectedRoom });
+  const roomId = String(room.id);
+  const handleRoomCardClick = () => {
+    if (isSelected) {
+      navigate(bookingLink);
+    } else {
+      onSelect?.(roomId);
+    }
+  };
 
   return (
-    <div className={`relative overflow-hidden rounded-2xl transition-spring hover:-translate-y-0.5 hover:shadow-xl ${
-      isBestDeal
-        ? 'ring-2 ring-primary bg-primary/[0.02]'
-        : 'bg-surface ring-1 ring-black/5'
-    }`}>
+    <button
+      type="button"
+      data-selected={isSelected ? 'true' : undefined}
+      aria-pressed={isSelected}
+      onClick={handleRoomCardClick}
+      className={`relative block w-full cursor-pointer overflow-hidden rounded-2xl text-left transition-spring hover:-translate-y-0.5 hover:shadow-xl ${stateClasses}`}
+    >
       {/* Best deal badge */}
       {isBestDeal && (
         <div className="absolute left-4 top-0 z-10 rounded-b-lg bg-primary px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-white">
@@ -130,18 +155,20 @@ export default function RoomTypeCard({ room, index }: { room: RoomType; index: n
           ) : (
             <div className="text-right text-xs text-text-secondary">{t('hotel.selectDatesNotice')}</div>
           )}
-          <Link
-            to={bookingLink}
+          <span
+            aria-current={isSelected ? 'true' : undefined}
             className={`inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition-spring-fast active:scale-[0.97] ${
-              isLowAvailability
+              isSelected
+                ? 'bg-primary text-white ring-2 ring-primary/20'
+                : isLowAvailability
                 ? 'bg-destructive text-white hover:bg-destructive-hover'
                 : 'bg-primary text-white hover:bg-primary-hover'
             }`}
           >
-            {t('hotel.chooseRoom')}
-          </Link>
+            {isSelected ? t('common.bookNow') : t('hotel.chooseRoom')}
+          </span>
         </div>
       </div>
-    </div>
+    </button>
   );
 }

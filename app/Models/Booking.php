@@ -57,4 +57,9 @@ class Booking extends Model
     {
         return $this->hasMany(NotificationRecord::class);
     }
+
+    public function transferBookings(): HasMany
+    {
+        return $this->hasMany(TransferBooking::class);
+    }
 }

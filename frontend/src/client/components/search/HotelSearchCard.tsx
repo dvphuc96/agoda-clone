@@ -36,7 +36,7 @@ export default function HotelSearchCard({ hotel, index }: { hotel: Hotel; index:
     : `/hotel/${hotel.slug}`;
 
   return (
-    <div className="group flex flex-col overflow-hidden rounded-2xl bg-shadow/5 p-1.5 ring-1 ring-black/5 transition-spring hover:-translate-y-1.5 hover:shadow-2xl md:flex-row">
+    <div className="group flex flex-col overflow-hidden rounded-2xl bg-shadow/5 ring-1 ring-black/5 transition-spring hover:-translate-y-1.5 hover:shadow-2xl md:flex-row">
       <div className="relative h-52 w-full shrink-0 overflow-hidden rounded-t-[calc(1rem-6px)] md:h-auto md:w-64 md:rounded-l-[calc(1rem-6px)] md:rounded-tr-none bg-cover bg-center" style={hotelBackdrop(index)}>
         <img
           src={hotelImage(hotel, index)}

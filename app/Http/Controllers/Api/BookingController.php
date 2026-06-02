@@ -33,8 +33,10 @@ class BookingController extends Controller
     {
         try {
             $booking = $this->bookingService->createBooking($request->user(), $request->validated());
-            $booking->load(['roomType.hotel.location']);
-            return response()->json(new BookingResource($booking), 201);
+            $booking->load(['roomType.hotel.location', 'transferBookings.hotel.location', 'transferBookings.vehicleType', 'transferBookings.route']);
+            return (new BookingResource($booking))
+                ->response()
+                ->setStatusCode(201);
         } catch (\InvalidArgumentException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         }

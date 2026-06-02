@@ -37,4 +37,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(NotificationRecord::class);
     }
+
+    public function transferBookings(): HasMany
+    {
+        return $this->hasMany(TransferBooking::class);
+    }
 }
