@@ -1,9 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { AlertTriangle, ChevronRight } from 'lucide-react';
 import { getCollectionData, hotelsApi, type RoomType } from '../../shared/api/hotels';
 import { useI18n } from '../../shared/i18n/useI18n';
+import { useRecentlyViewed } from '../hooks/useRecentlyViewed';
 import ImageGallery from '../components/hotel/ImageGallery';
 import HotelInfo from '../components/hotel/HotelInfo';
 import RoomTypeCard from '../components/hotel/RoomTypeCard';
@@ -18,12 +19,28 @@ export default function HotelDetailPage() {
   const checkIn = searchParams.get('check_in') || '';
   const checkOut = searchParams.get('check_out') || '';
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
+  const { addHotel } = useRecentlyViewed();
+  const recordedRef = useRef<string | null>(null);
 
   const { data: hotel, isLoading, isError } = useQuery({
     queryKey: ['hotel', slug],
     queryFn: () => hotelsApi.getHotel(slug!).then(r => r.data),
     enabled: !!slug,
   });
+
+  // Record recently viewed hotel when data loads
+  useEffect(() => {
+    if (hotel?.slug && hotel.name && recordedRef.current !== hotel.slug) {
+      recordedRef.current = hotel.slug;
+      addHotel({
+        id: hotel.id,
+        slug: hotel.slug,
+        name: hotel.name,
+        thumbnail: hotel.images?.[0]?.image_path ?? null,
+        minPrice: hotel.min_price ?? null,
+      });
+    }
+  }, [hotel, addHotel]);
 
   const { data: rooms } = useQuery({
     queryKey: ['hotel-rooms', slug, checkIn, checkOut],

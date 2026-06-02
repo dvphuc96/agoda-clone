@@ -339,4 +339,19 @@ export const vi: Messages = {
     air_conditioning: 'Điều hòa',
     breakfast: 'Bữa sáng',
   },
+  map: {
+    title: 'Xem Bản Đồ',
+    listView: 'Danh Sách',
+    mapView: 'Bản Đồ',
+    splitView: 'Chia Màn Hình',
+    hotelsInArea: 'Khách sạn trong khu vực',
+    viewDetails: 'Xem Chi Tiết',
+    loading: 'Đang tải bản đồ...',
+  },
+  recentlyViewed: {
+    title: 'Đã Xem Gần Đây',
+    empty: 'Chưa xem khách sạn nào',
+    clearAll: 'Xóa Tất Cả',
+    cleared: 'Đã xóa lịch sử',
+  },
 };

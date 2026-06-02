@@ -327,6 +327,21 @@ export type Messages = {
     unknown: string;
   };
   amenities: Record<string, string>;
+  map: {
+    title: string;
+    listView: string;
+    mapView: string;
+    splitView: string;
+    hotelsInArea: string;
+    viewDetails: string;
+    loading: string;
+  };
+  recentlyViewed: {
+    title: string;
+    empty: string;
+    clearAll: string;
+    cleared: string;
+  };
 };
 
 type Join<K, P> = K extends string

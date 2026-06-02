@@ -2,6 +2,7 @@ import HeroSearch from '../components/home/HeroSearch';
 import WhyChooseUs from '../components/home/WhyChooseUs';
 import LocationGrid from '../components/home/LocationGrid';
 import FeaturedHotels from '../components/home/FeaturedHotels';
+import RecentlyViewedSection from '../components/home/RecentlyViewedSection';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 
 export default function HomePage() {
@@ -14,6 +15,7 @@ export default function HomePage() {
         <WhyChooseUs />
         <LocationGrid />
         <FeaturedHotels />
+        <RecentlyViewedSection />
       </div>
     </div>
   );
