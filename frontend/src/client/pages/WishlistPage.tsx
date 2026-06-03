@@ -18,7 +18,7 @@ export default function WishlistPage() {
     enabled: isAuthenticated,
   });
 
-  const hotels = data ?? [];
+  const hotels = (data ?? []).map((hotel) => ({ ...hotel, is_wishlisted: true }));
 
   if (isLoading) {
     return (
