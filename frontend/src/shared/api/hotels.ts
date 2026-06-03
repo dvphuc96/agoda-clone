@@ -56,6 +56,7 @@ export interface Hotel {
   reviews_count?: number;
   avg_rating?: number | null;
   latest_reviews?: import('./reviews').Review[];
+  is_wishlisted?: boolean;
 }
 
 export interface PaginatedResponse<T> {

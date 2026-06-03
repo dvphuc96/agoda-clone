@@ -306,6 +306,13 @@ export const vi: Messages = {
     sentAt: 'Thời gian gửi',
     noDate: 'Đang chờ',
   },
+  wishlist: {
+    title: 'Yêu thích',
+    subtitle: 'Các khách sạn bạn đã lưu để xem sau.',
+    emptyTitle: 'Danh sách yêu thích trống',
+    emptyBody: 'Lưu các khách sạn bạn thích và tìm lại ở đây bất cứ lúc nào.',
+    exploreHotels: 'Khám phá khách sạn',
+  },
   transfers: {
     nav: 'Xe đưa đón',
     title: 'Đặt xe đưa đón sân bay',

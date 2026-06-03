@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Globe2, Menu, UserRound, X, Bell } from 'lucide-react';
+import { Globe2, Heart, Menu, UserRound, X, Bell } from 'lucide-react';
 import { useAuth } from '../../../shared/contexts/AuthContext';
 import type { Locale } from '../../../shared/i18n/types';
 import { useI18n } from '../../../shared/i18n/useI18n';
@@ -57,6 +57,9 @@ export default function Navbar() {
           {isAuthenticated ? (
             <>
               <Link to="/bookings" className="text-sm font-medium text-text-secondary transition-spring-fast hover:text-primary">{t('nav.myBookings')}</Link>
+              <Link to="/wishlist" className="relative text-text-secondary transition-spring-fast hover:text-primary" aria-label={t('wishlist.title')}>
+                <Heart className="size-5" />
+              </Link>
               <Link to="/notifications" className="relative text-text-secondary transition-spring-fast hover:text-primary" aria-label={t('notifications.title')}>
                 <Bell className="size-5" />
               </Link>
@@ -114,6 +117,9 @@ export default function Navbar() {
             {isAuthenticated ? (
               <>
                 <Link to="/bookings" className="rounded-xl p-2.5 font-medium text-text transition-spring-fast hover:bg-tab" onClick={() => setMenuOpen(false)}>{t('nav.myBookings')}</Link>
+                <Link to="/wishlist" className="flex items-center gap-2 rounded-xl p-2.5 font-medium text-text transition-spring-fast hover:bg-tab" onClick={() => setMenuOpen(false)}>
+                  <Heart className="size-4" /> {t('wishlist.title')}
+                </Link>
                 <Link to="/notifications" className="flex items-center gap-2 rounded-xl p-2.5 font-medium text-text transition-spring-fast hover:bg-tab" onClick={() => setMenuOpen(false)}>
                   <Bell className="size-4" /> {t('notifications.title')}
                 </Link>

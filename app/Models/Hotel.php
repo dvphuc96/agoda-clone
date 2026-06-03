@@ -70,4 +70,9 @@ class Hotel extends Model
             ->where('status', 'approved')
             ->avg('rating');
     }
+
+    public function wishlists(): HasMany
+    {
+        return $this->hasMany(Wishlist::class);
+    }
 }

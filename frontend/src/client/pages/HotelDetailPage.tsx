@@ -7,6 +7,7 @@ import { useI18n } from '../../shared/i18n/useI18n';
 import ImageGallery from '../components/hotel/ImageGallery';
 import HotelInfo from '../components/hotel/HotelInfo';
 import RoomTypeCard from '../components/hotel/RoomTypeCard';
+import WishlistButton from '../components/hotel/WishlistButton';
 import { getRoomsSectionLinkClasses } from '../components/hotel/roomsSectionState';
 import ReviewSummary from '../components/hotel/ReviewSummary';
 import ReviewList from '../components/hotel/ReviewList';
@@ -80,6 +81,9 @@ export default function HotelDetailPage() {
       {/* Gallery */}
       <div className="mx-auto max-w-6xl px-4 pt-5 md:px-8">
         <ImageGallery images={hotel.images ?? []} hotelName={hotel.name} />
+        <div className="mt-3 flex items-center justify-end gap-2">
+          <WishlistButton hotelId={hotel.id} initialWishlisted={hotel.is_wishlisted} />
+        </div>
       </div>
 
       {/* Main content */}
