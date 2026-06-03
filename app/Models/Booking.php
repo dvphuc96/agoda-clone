@@ -15,6 +15,7 @@ class Booking extends Model
     protected $fillable = [
         'user_id', 'room_type_id', 'booking_code', 'check_in', 'check_out',
         'guests', 'special_requests', 'total_price', 'status',
+        'coupon_id', 'discount_amount',
     ];
 
     protected function casts(): array
@@ -36,6 +37,11 @@ class Booking extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function coupon(): BelongsTo
+    {
+        return $this->belongsTo(Coupon::class);
     }
 
     public function roomType(): BelongsTo

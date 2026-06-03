@@ -5,10 +5,13 @@ import { useAuth } from '../../shared/contexts/AuthContext';
 import { hotelsApi } from '../../shared/api/hotels';
 import { bookingsApi } from '../../shared/api/bookings';
 import { transfersApi, type TransferDirection } from '../../shared/api/transfers';
+import { type Coupon } from '../../shared/api/coupons';
 import { useI18n } from '../../shared/i18n/useI18n';
 import BookingForm from '../components/booking/BookingForm';
 import PriceSummary from '../components/booking/PriceSummary';
+import CouponInput from '../components/booking/CouponInput';
 import { findSelectedTransferQuote } from '../components/booking/bookingTransferSelection';
+import { getBookingSummaryTotals } from '../components/booking/bookingSummaryTotals';
 
 type BookingSummaryState = {
   checkIn: string;
@@ -27,6 +30,8 @@ export default function BookingPage() {
   const { isAuthenticated, loading: authLoading, user } = useAuth();
   const [bookingLoading, setBookingLoading] = useState(false);
   const [error, setError] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+  const [discountAmount, setDiscountAmount] = useState(0);
 
   const checkIn = searchParams.get('check_in') || '';
   const checkOut = searchParams.get('check_out') || '';
@@ -53,9 +58,21 @@ export default function BookingPage() {
     enabled: isAuthenticated && summary.transferEnabled && Boolean(roomHotelId),
     placeholderData: (previousData) => previousData,
   });
+
   const selectedTransferQuote = summary.transferEnabled
     ? findSelectedTransferQuote(transferQuotes.data, summary.selectedTransferVehicleTypeId)
     : null;
+
+  const totals = roomData
+    ? getBookingSummaryTotals({
+        roomPricePerNight: roomData.price_per_night,
+        nights: summary.checkIn && summary.checkOut
+          ? Math.max(1, Math.ceil((new Date(summary.checkOut).getTime() - new Date(summary.checkIn).getTime()) / (1000 * 60 * 60 * 24)))
+          : 1,
+        transferQuote: selectedTransferQuote,
+        discount: discountAmount,
+      })
+    : { roomTotal: 0, transferTotal: 0, discountAmount: 0, grandTotal: 0 };
 
   // Redirect to login if not authenticated
   if (!authLoading && !isAuthenticated) {
@@ -97,6 +114,7 @@ export default function BookingPage() {
         check_out: data.check_out,
         guests: data.guests,
         special_requests: data.special_requests || undefined,
+        coupon_code: appliedCoupon?.code,
         transfer_add_on: data.transfer_add_on,
       });
       navigate(`/payment/${booking.data.booking_code}`);
@@ -106,6 +124,16 @@ export default function BookingPage() {
     } finally {
       setBookingLoading(false);
     }
+  };
+
+  const handleCouponApplied = (coupon: Coupon, discount: number) => {
+    setAppliedCoupon(coupon);
+    setDiscountAmount(discount);
+  };
+
+  const handleCouponRemoved = () => {
+    setAppliedCoupon(null);
+    setDiscountAmount(0);
   };
 
   if (isLoading) {
@@ -182,6 +210,14 @@ export default function BookingPage() {
 
         {/* Price Summary */}
         <div>
+          <div className="mb-4">
+            <CouponInput
+              bookingValue={totals.roomTotal + totals.transferTotal + discountAmount}
+              hotelId={roomHotelId}
+              onCouponApplied={handleCouponApplied}
+              onCouponRemoved={handleCouponRemoved}
+            />
+          </div>
           <PriceSummary
             room={room}
             hotelName={room.hotel?.name || t('booking.defaultHotelName')}
@@ -190,6 +226,7 @@ export default function BookingPage() {
             nights={nights}
             guests={summary.guests}
             transferQuote={selectedTransferQuote}
+            discount={discountAmount}
           />
         </div>
       </div>

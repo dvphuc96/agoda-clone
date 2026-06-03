@@ -5,6 +5,7 @@ import type { User } from './auth';
 import type { Refund } from './refunds';
 import type { BookingPolicy, BookingPolicyPayload } from './policies';
 import type { TransferBooking, TransferRoute, TransferStatus, TransferVehicleType } from './transfers';
+import type { Coupon } from './coupons';
 
 export interface Paginated<T> {
   data: T[];
@@ -160,4 +161,11 @@ export const adminApi = {
   transferBookings: (params?: Record<string, string | number>) => apiClient.get<Paginated<TransferBooking>>('/admin/transfer-bookings', { params }),
   transferBooking: (id: number) => apiClient.get<TransferBooking>(`/admin/transfer-bookings/${id}`),
   updateTransferBookingStatus: (id: number, status: TransferStatus) => apiClient.patch<TransferBooking>(`/admin/transfer-bookings/${id}/status`, { status }),
+
+  coupons: (params?: Record<string, string | number>) => apiClient.get<Paginated<Coupon>>('/admin/coupons', { params }),
+  coupon: (id: number) => apiClient.get<{ data: Coupon }>(`/admin/coupons/${id}`),
+  createCoupon: (data: Partial<Coupon>) => apiClient.post<{ data: Coupon; message: string }>('/admin/coupons', data),
+  updateCoupon: (id: number, data: Partial<Coupon>) => apiClient.put<{ data: Coupon; message: string }>(`/admin/coupons/${id}`, data),
+  deleteCoupon: (id: number) => apiClient.delete<{ message: string }>(`/admin/coupons/${id}`),
+  toggleCouponActive: (id: number) => apiClient.patch<{ data: Coupon; message: string }>(`/admin/coupons/${id}/toggle-active`),
 };
