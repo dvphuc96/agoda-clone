@@ -408,6 +408,15 @@ export const vi: Messages = {
     rejected: 'Bị từ chối',
     loadMore: 'Xem thêm đánh giá',
   },
+  map: {
+    title: 'Xem Bản Đồ',
+    listView: 'Danh Sách',
+    mapView: 'Bản Đồ',
+    splitView: 'Chia Màn Hình',
+    hotelsInArea: '{{count}} khách sạn trong khu vực',
+    viewDetails: 'Xem Chi Tiết',
+    loading: 'Đang tải bản đồ...',
+  },
   footer: {
     tagline: 'Nền tảng đặt lưu trú dành cho những chuyến đi chỉn chu tại Việt Nam.',
     company: 'Công ty',
@@ -441,15 +450,6 @@ export const vi: Messages = {
     beach: 'Gần biển',
     air_conditioning: 'Điều hòa',
     breakfast: 'Bữa sáng',
-  },
-  map: {
-    title: 'Xem Bản Đồ',
-    listView: 'Danh Sách',
-    mapView: 'Bản Đồ',
-    splitView: 'Chia Màn Hình',
-    hotelsInArea: 'Khách sạn trong khu vực',
-    viewDetails: 'Xem Chi Tiết',
-    loading: 'Đang tải bản đồ...',
   },
   recentlyViewed: {
     title: 'Đã Xem Gần Đây',

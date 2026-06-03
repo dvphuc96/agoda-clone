@@ -408,6 +408,15 @@ export const en: Messages = {
     rejected: 'Rejected',
     loadMore: 'Load more reviews',
   },
+  map: {
+    title: 'Map View',
+    listView: 'List',
+    mapView: 'Map',
+    splitView: 'Split',
+    hotelsInArea: '{{count}} hotels in this area',
+    viewDetails: 'View Details',
+    loading: 'Loading map...',
+  },
   footer: {
     tagline: 'A stay-booking platform for thoughtful trips across Vietnam.',
     company: 'Company',
@@ -441,15 +450,6 @@ export const en: Messages = {
     beach: 'Near beach',
     air_conditioning: 'Air conditioning',
     breakfast: 'Breakfast',
-  },
-  map: {
-    title: 'Map View',
-    listView: 'List',
-    mapView: 'Map',
-    splitView: 'Split',
-    hotelsInArea: 'Hotels in this area',
-    viewDetails: 'View Details',
-    loading: 'Loading map...',
   },
   recentlyViewed: {
     title: 'Recently Viewed',

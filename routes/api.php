@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\RoomTypeController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\MapController;
 use App\Http\Controllers\Api\TransferController;
 use App\Http\Controllers\Api\TransferBookingController;
 use App\Http\Controllers\Api\CouponController;
@@ -53,6 +54,9 @@ Route::get('/room-types/{roomType}', [RoomTypeController::class, 'show']);
 
 // Review routes (public)
 Route::get('/hotels/{slug}/reviews', [ReviewController::class, 'index']);
+
+// Map routes
+Route::get('/map/hotels', [MapController::class, 'hotels']);
 
 // Transfer routes
 Route::get('/transfers/search-options', [TransferController::class, 'searchOptions']);

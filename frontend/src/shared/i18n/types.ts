@@ -419,6 +419,15 @@ export type Messages = {
     hotline: string;
     companyInfo: string;
   };
+  map: {
+    title: string;
+    listView: string;
+    mapView: string;
+    splitView: string;
+    hotelsInArea: string;
+    viewDetails: string;
+    loading: string;
+  };
   status: {
     pending: string;
     confirmed: string;
@@ -430,15 +439,6 @@ export type Messages = {
     unknown: string;
   };
   amenities: Record<string, string>;
-  map: {
-    title: string;
-    listView: string;
-    mapView: string;
-    splitView: string;
-    hotelsInArea: string;
-    viewDetails: string;
-    loading: string;
-  };
   recentlyViewed: {
     title: string;
     empty: string;

@@ -4,12 +4,15 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { CalendarDays, Filter, MapPin, PencilLine, UsersRound, X } from 'lucide-react';
 import SearchFilters from '../components/search/SearchFilters';
 import SearchResults from '../components/search/SearchResults';
+import MapPanel from '../components/search/MapPanel';
+import MapViewToggle, { type ViewMode } from '../components/search/MapViewToggle';
 import { getCollectionData, hotelsApi, type Location } from '../../shared/api/hotels';
 import { useI18n } from '../../shared/i18n/useI18n';
 
 export default function SearchPage() {
   const [searchParams] = useSearchParams();
   const [showFilters, setShowFilters] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
   const { t } = useI18n();
   const { data: locations = [] } = useQuery({
     queryKey: ['locations'],
@@ -17,6 +20,7 @@ export default function SearchPage() {
   });
 
   const location = searchParams.get('location') || '';
+  const locationId = locations.find(item => item.slug === location)?.id;
   const locationLabel = locations.find(item => item.slug === location)?.name ?? location;
   const checkIn = searchParams.get('check_in') || '';
   const checkOut = searchParams.get('check_out') || '';
@@ -53,14 +57,18 @@ export default function SearchPage() {
               </span>
             )}
           </div>
-          <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-primary transition-spring-fast hover:text-primary-hover">
-            <PencilLine className="size-4" />
-            {t('search.editSearch')}
-          </Link>
+          <div className="flex items-center gap-3">
+            <MapViewToggle value={viewMode} onChange={setViewMode} />
+            <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-primary transition-spring-fast hover:text-primary-hover">
+              <PencilLine className="size-4" />
+              {t('search.editSearch')}
+            </Link>
+          </div>
         </div>
       </div>
 
       <div className="mx-auto max-w-7xl px-4 py-8 md:px-8 md:py-10">
+        {/* Header + mobile filter toggle */}
         <div className="mb-6">
           <h1 className="text-2xl font-semibold tracking-tight text-text">{t('search.title')}</h1>
           <p className="mt-1 text-sm text-text-secondary">{t('search.subtitle')}</p>
@@ -75,14 +83,37 @@ export default function SearchPage() {
           {showFilters ? t('search.hideFilters') : t('search.showFilters')}
         </button>
 
-        <div className="flex flex-col items-stretch gap-6 md:flex-row md:items-start">
-          <div className={`${showFilters ? 'block' : 'hidden'} w-full md:block md:w-auto md:shrink-0`}>
-            <SearchFilters />
+        {/* List view - original layout */}
+        {viewMode === 'list' && (
+          <div className="flex flex-col items-stretch gap-6 md:flex-row md:items-start">
+            <div className={`${showFilters ? 'block' : 'hidden'} w-full md:block md:w-auto md:shrink-0`}>
+              <SearchFilters />
+            </div>
+            <div className="min-w-0 w-full">
+              <SearchResults />
+            </div>
           </div>
-          <div className="min-w-0 w-full">
-            <SearchResults />
+        )}
+
+        {/* Map view - full width map */}
+        {viewMode === 'map' && (
+          <MapPanel className="h-[calc(100vh-220px)] min-h-[480px]" locationId={locationId} />
+        )}
+
+        {/* Split view - left map + right results */}
+        {viewMode === 'split' && (
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
+            <div className="flex flex-col gap-4 lg:w-1/2">
+              <div className={`${showFilters ? 'block' : 'hidden'} md:hidden`}>
+                <SearchFilters />
+              </div>
+              <MapPanel className="h-[calc(100vh-280px)] min-h-[400px] lg:min-h-[520px]" locationId={locationId} />
+            </div>
+            <div className="min-w-0 lg:w-1/2">
+              <SearchResults />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
