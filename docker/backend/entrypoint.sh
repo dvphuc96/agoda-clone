@@ -13,8 +13,13 @@ until php artisan db:show 2>/dev/null; do
 done
 echo "MySQL is up!"
 
-# Generate app key if not set
-if [ -z "$APP_KEY" ]; then
+# Ensure exactly one valid APP_KEY in .env
+if grep -q "^APP_KEY=base64:[A-Za-z0-9+/=]*base64:" .env 2>/dev/null; then
+    echo "Fixing corrupted APP_KEY in .env..."
+    FIRST_KEY=$(grep "^APP_KEY=" .env | head -1 | grep -oE "base64:[A-Za-z0-9+/=]+" | head -1)
+    sed -i '/^APP_KEY=/d' .env
+    echo "APP_KEY=${FIRST_KEY}" >> .env
+elif ! grep -q "^APP_KEY=base64:[A-Za-z0-9+/=]\{20,\}$" .env 2>/dev/null; then
     echo "Generating APP_KEY..."
     php artisan key:generate --force
 fi
@@ -24,12 +29,12 @@ echo "Running migrations..."
 php artisan migrate --force
 
 # Run seeders (only if database is empty)
-HOTEL_COUNT=$(php artisan tinker --execute="echo App\Models\Hotel::count();" 2>/dev/null)
-if [ "$HOTEL_COUNT" = "0" ]; then
+LOCATION_COUNT=$(php artisan tinker --execute="echo App\Models\Location::count();" 2>/dev/null || echo "0")
+if [ "$LOCATION_COUNT" = "0" ]; then
     echo "Seeding database..."
     php artisan db:seed --force
 else
-    echo "Database already seeded ($HOTEL_COUNT hotels). Skipping."
+    echo "Database already seeded ($LOCATION_COUNT locations). Skipping."
 fi
 
 # Cache config in production

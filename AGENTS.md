@@ -22,85 +22,86 @@ binary at `scripts/bin/harness-cli` in installed projects.
 <claude-mem-context>
 # Memory Context
 
-# [agoda-clone] recent context, 2026-06-02 8:53am GMT+7
+# [agoda-clone] recent context, 2026-06-03 8:43am GMT+7
 
 Legend: 🎯session 🔴bugfix 🟣feature 🔄refactor ✅change 🔵discovery ⚖️decision 🚨security_alert 🔐security_note
 Format: ID TIME TYPE TITLE
 Fetch details: get_observations([IDs]) | Search: mem-search skill
 
-Stats: 50 obs (11,918t read) | 4,855,331t work | 100% savings
+Stats: 50 obs (14,565t read) | 4,440,076t work | 100% savings
 
 ### May 29, 2026
-S307 tmux troubleshooting and alternative setup methods (May 29 at 10:26 AM)
-S308 tmux parallel agent execution setup troubleshooting (May 29 at 10:40 AM)
-S309 Admin MVP frontend completion - loading text standardization across admin list pages (May 29 at 10:44 AM)
-S310 Admin MVP frontend bug fixes - resolved syntax errors in detail modals (May 29 at 11:22 AM)
-S311 Frontend implementation Phase A tasks: Add notifications page, admin refunds management, admin policies management, and navigation updates (May 29 at 11:31 AM)
-683 11:45a 🔵 Task breakdown initiated for Business Phase A backend implementation
-684 " ⚖️ Business Phase A frontend tasks organized into structured task list
-685 11:46a 🔵 Service layer, validation, and controller architecture tasks defined for Business Phase A
-686 11:47a 🔵 Task 1 execution started with comprehensive pattern analysis
-687 " 🟣 Business Phase A implementation task breakdown completed
-688 11:48a 🟣 API client infrastructure created for Phase A features
-689 " 🟣 Database migrations created for Business Phase A core tables
-690 11:49a 🟣 Admin API methods and i18n infrastructure extended
-691 11:50a 🟣 Eloquent models implemented with relationships for Business Phase A
-693 11:52a 🟣 Service layer implementation completed for cancellation policy and refund workflow
-692 " 🟣 Task 1 completed with bilingual i18n infrastructure
-694 11:53a 🟣 Customer booking detail enhanced with cancellation policy and refund workflow
-695 " 🟣 Notifications page created and integrated into routing
-696 11:54a 🟣 API Resources and Form Requests implemented for Business Phase A
-S312 Backend development for Business Phase A - booking policies, refunds, and notifications (May 29 at 11:56 AM)
-697 11:56a 🟣 Controllers and routes implemented for Business Phase A admin and user workflows
-698 11:58a 🟣 Test infrastructure implemented for Business Phase A with comprehensive test coverage
-699 12:01p 🔴 RefundController updateStatus method return type corrected
-700 " 🔵 Booking policy creation tests failing with null returns
-701 12:07p 🔴 BookingPolicyController store method return type corrected
-702 12:08p 🔴 BookingPolicyTest assertions updated for store endpoint
-703 " 🔄 BookingPolicyTest cancellation assertions refactored
-704 12:10p 🔵 BookingPolicyTest cancellation test returning null data
-705 " 🔴 BookingPolicyTest create policy test assertions reverted
-706 12:12p 🔵 booking_policies table not found in database
 S313 Deploy booking policies, refunds, and notifications system to production database (May 29 at 12:12 PM)
 S314 Complete database migration and seeding for booking policies, refunds, and notifications (May 29 at 12:22 PM)
 S315 Việc cải tiến bộ lọc tìm kiếm khách sạn - nâng cấp UI bộ lọc giá từ input số sang slider kéo chọn (May 29 at 12:24 PM)
-708 1:09p 🔵 Frontend-backend contract mismatches identified in Business Phase A code review
-709 1:12p 🔴 TDD approach applied to Business Phase A code review issues - failing tests written first to identify exact problems
-710 1:15p 🔴 Business Phase A code review issues fixed with TDD approach - all critical and important items resolved
-712 1:18p 🔴 Fixed boolean truthiness check for gateway_response in payment detail
-713 " 🔄 Replaced barrel imports with direct imports for better tree-shaking
-714 " 🔵 React Doctor analysis revealed code quality opportunities
-715 1:33p 🔵 PHP syntax validation passed for all code files
-716 " 🔵 Test execution blocked by database connectivity issues
-717 " 🔵 Laravel test suite passed completely with elevated database permissions
-720 1:34p 🔵 Worker agent dispatched to fix Business Phase A code review issues
-718 1:35p 🔵 Laravel tests require both APP_KEY and database connectivity to pass
-719 " ✅ Code review fixes validated through comprehensive testing
-721 1:37p ✅ Code review fixes completed and documented in project trace system
-722 1:39p ✅ Admin user password changed for database seeding
-723 1:44p 🔴 Business Phase A code review issues successfully resolved
-724 " ✅ Admin user credentials updated and database successfully reset
-725 1:47p 🔴 API resource response handling fixed in bookings API
-726 1:49p 🔵 User requested information about obtaining 3 specific data sources
-727 3:21p 🟣 Payment gateway credentials configured and services restarted
-728 3:32p 🟣 MoMo payment gateway integration successfully functional
-729 3:49p ✅ Room price data reset to 1 đồng for testing
-730 3:52p ✅ Full database reset completed with new pricing structure
-731 3:55p 🔴 MoMo payment minimum amount constraint resolved
-732 4:17p 🔴 MoMo payment creation failing due to amounts below minimum threshold
-733 4:20p 🔴 MoMo minimum transaction amount debugging and full database reset
-734 4:27p 🟣 Enhanced hotel search filtering with types and amenities
-S316 Cải tiến bộ lọc giá tìm kiếm khách sạn - nâng cấp UI từ input số sang slider kéo chọn với hai đầu min/max (May 29 at 4:40 PM)
-**Investigated**: Đã khám phá và nâng cấp UI bộ lọc giá trong SearchFilters component từ input dạng số sang slider kéo chọn. Kiểm tra hiệu năng Intl.NumberFormat và các best practices React về hoisting constants. Tìm hiểu useReducer pattern cho managing complex state trong React components.
+S316 Cải tiến bộ lọc giá tìm kiếm khách sạn - nâng cấp UI từ input số sang slider kéo chọn với hai đầu min/max (May 29 at 4:31 PM)
+S317 Plan and implement features from FEATURE_REPORT.md with branch creation and commits for each feature (May 29 at 4:40 PM)
+### Jun 2, 2026
+S318 Parallel Backend Implementation of Batch 1 Features for GoStay (Jun 2 at 10:04 AM)
+S319 User initiated session with greeting "hi" (Jun 2 at 11:25 AM)
+813 1:12p 🔴 Fixed coupon validation API response handling
+814 " 🔴 Removed unused imports and types from admin coupon list page
+S320 Implement complete coupon/promotion system with admin management and booking integration (Jun 2 at 3:42 PM)
+817 3:47p 🔵 Coupon feature implementation staged for commit
+818 3:48p 🔵 Coupon system architecture examined for task breakdown
+819 3:50p 🔵 Coupon system API routes and frontend integration analyzed
+820 " 🟣 Coupon feature task breakdown created with 8 tasks
+821 3:52p 🔵 Coupon database migrations not yet executed
+822 3:53p 🔵 Docker database container not running or doesn't exist
+823 3:54p 🔵 Docker services started and database container healthy
+824 " 🔵 Database migrations report nothing to migrate
+825 3:55p 🟣 Coupon seed data created and populated
+826 3:58p 🟣 Coupon seeder creation and execution completed successfully
+827 4:00p 🟣 Task progression advanced to API endpoint testing phase
+828 4:01p 🔴 CouponController middleware error discovered during API testing
+829 4:02p 🔴 CouponController constructor syntax fixed
+830 4:04p 🔵 Codebase constructor patterns analyzed for consistency
+831 4:06p 🔴 CouponController middleware error persists after constructor fix
+832 4:07p 🔴 CouponController converted to traditional constructor syntax
+833 4:08p 🔵 CouponController middleware registration fundamentally non-functional
+834 4:09p 🔵 Root cause identified: Base Controller class lacks middleware functionality
+835 4:11p 🔴 CouponController refactored to work with codebase architecture
+836 4:12p 🔵 Coupon validation route lacks authentication middleware protection
+837 4:14p 🔴 Coupon validation route moved to authenticated middleware group
+838 4:15p 🔵 Authentication middleware now functional but login route not named
+839 4:18p 🔵 Authentication middleware functional across all protected routes
+840 4:19p 🔵 All coupon routes properly registered in Laravel router
+841 4:20p 🔵 Laravel 11 application configuration examined for middleware setup
+842 4:22p 🔵 Laravel Sanctum installed but not configured in auth guards
+843 4:23p 🔴 Sanctum authentication guard configuration added
+844 4:25p 🔵 Sanctum guard configuration didn't resolve authentication errors
+845 4:26p 🔵 Application code does not reference login route name
+846 4:29p 🔴 Laravel Sanctum stateful API middleware configuration added
+847 4:30p 🔵 Authentication issues persist despite Sanctum middleware configuration
+848 4:33p 🔵 Hotels API endpoint functional, isolates authentication issue to protected routes
+849 4:42p ✅ Coupon feature task breakdown completely removed for expedited completion
+850 4:44p 🔴 Admin coupon show endpoint returns incorrect response structure
+851 " 🔵 CouponSeeder successfully populates database
+852 4:54p 🔴 Fixed "Route [login] not defined" error in unauthenticated API requests
+853 " 🔵 Coupon validation API working correctly after authentication fix
+854 " 🔴 Admin coupon management API functional with proper role-based access control
+855 " 🔵 Coupon update validation error with unique rule parameter
+856 4:56p 🔴 Modified UpdateCouponRequest to handle route parameter resolution
+857 " 🔵 Database constraint violation during coupon update operations
+858 " 🔵 Unique validation still incorrectly flagging existing coupon codes
+859 4:58p 🔴 Fixed coupon update controller to handle partial field updates
+860 " 🟣 Coupon management system fully functional with complete CRUD operations
+861 " ✅ Cleaned up unnecessary middleware file
+862 5:00p 🔄 Replaced deprecated onKeyPress event handler with onKeyDown
+863 5:04p 🔵 Laravel application missing encryption key configuration
+S321 Fix Laravel authentication login error "No application encryption key has been specified" (Jun 2 at 5:04 PM)
+864 5:11p 🔵 Database constraint violation for duplicate location slug
+S322 Fix database seeding duplicate constraint violation for locations table (Jun 2 at 5:17 PM)
+**Investigated**: Investigated duplicate entry error for locations table slug constraint violation. Examined entrypoint.sh seeder logic, DatabaseSeeder.php and LocationSeeder.php structure.
 
-**Learned**: Học được rằng Intl.NumberFormat constructor tạo nhiều objects cho mỗi locale lookup, nên nên hoist lên module scope để tối ưu hiệu suất. Hiểu rõ hơn về useReducer pattern cho managing complex filter state so với multiple useState calls. Biết cách cải thiện UX với slider dual-range cho price filtering.
+**Learned**: Learned that entrypoint.sh was checking HOTEL_COUNT to determine if database is empty, but LocationSeeder runs before HotelSeeder in DatabaseSeeder, causing duplicate location entries on container restart. The logic should check LOCATION_COUNT instead since locations are seeded first.
 
-**Completed**: Hoàn thành việc chuyển đổi bộ lọc giá từ input dạng số sang slider kéo chọn với hai thanh trượt (min/max). Thêm priceFormatter constant để tối ưu hiệu suất format tiền tệ. Thêm các helper functions (clampPrice, priceValue, formatPrice) cho việc xử lý giá trị price bounds. React Doctor score duy trì ở 98/100 sau khi fix warning về Intl.NumberFormat. Build frontend thành công không lỗi.
+**Completed**: Fixed entrypoint.sh seeder logic by changing from HOTEL_COUNT to LOCATION_COUNT check. This ensures that seeder only runs if no locations exist, preventing duplicate entry violations. Successfully tested restart showing "Nothing to migrate" and no duplicate errors.
 
-**Next Steps**: Sau khi React Doctor báo kết quả tốt (98/100) và build thành công, session đang ở trạng thái chờ user request tiếp theo. Không có task đang được active làm. Các remaining warnings (3 issues) đều là pre-existing không liên quan đến work vừa làm: recharts dynamic import, RoomTypeListPage useState pattern, và BookingDetailPage component size.
+**Next Steps**: Monitor container logs to ensure no duplicate constraint violations occur on future restarts
 
 
-Access 4855k tokens of past work via get_observations([IDs]) or mem-search skill.
+Access 4440k tokens of past work via get_observations([IDs]) or mem-search skill.
 </claude-mem-context>
 
 # Rules
