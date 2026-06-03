@@ -29,6 +29,7 @@ export const vi: Messages = {
     wishlist: 'Yêu thích',
     login: 'Đăng nhập',
     logout: 'Đăng xuất',
+    profile: 'Hồ sơ',
   },
   home: {
     eyebrow: 'Lưu trú chọn lọc tại Việt Nam',

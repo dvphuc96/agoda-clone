@@ -29,6 +29,7 @@ export const en: Messages = {
     wishlist: 'Wishlist',
     login: 'Log in',
     logout: 'Log out',
+    profile: 'Profile',
   },
   home: {
     eyebrow: 'Curated stays in Vietnam',

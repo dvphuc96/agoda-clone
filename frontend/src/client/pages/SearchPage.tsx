@@ -31,7 +31,7 @@ export default function SearchPage() {
     : t('searchForm.guestsPlural', { count: Number.isFinite(guestCount) && guestCount > 0 ? guestCount : guests });
 
   return (
-    <div className="bg-bg">
+    <div className="bg-bg pt-16 md:pt-20">
       <div className="border-b border-border bg-warm-surface px-4 py-4 md:px-8">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-wrap items-center gap-2">
