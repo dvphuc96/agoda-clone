@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -14,6 +15,7 @@ export default function WishlistButton({ hotelId, initialWishlisted = false, siz
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [justToggled, setJustToggled] = useState(false);
 
   const toggleMutation = useMutation({
     mutationFn: () => wishlistApi.toggle(hotelId),
@@ -90,6 +92,8 @@ export default function WishlistButton({ hotelId, initialWishlisted = false, siz
       return;
     }
 
+    setJustToggled(true);
+    setTimeout(() => setJustToggled(false), 300);
     toggleMutation.mutate();
   };
 
@@ -115,7 +119,9 @@ export default function WishlistButton({ hotelId, initialWishlisted = false, siz
     >
       <Heart
         size={iconSize}
-        className={`transition-spring-fast ${isWishlisted ? 'fill-red-500' : 'fill-none'}`}
+        className={`transition-spring-fast ${isWishlisted ? 'fill-red-500' : 'fill-none'} ${
+          justToggled ? 'animate-[heart-pop_300ms_cubic-bezier(0.32,0.72,0,1)]' : ''
+        }`}
       />
     </button>
   );

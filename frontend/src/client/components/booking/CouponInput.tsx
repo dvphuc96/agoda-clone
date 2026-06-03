@@ -3,6 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { couponsApi, type Coupon, type ValidateCouponResponseData } from '../../../shared/api/coupons';
 import { formatVndForLocale } from '../../../shared/i18n/format';
 import { useI18n } from '../../../shared/i18n/useI18n';
+import { useToast } from '../../../shared/components/Toast';
 import { AlertCircle, Check, Tag, X, Loader2 } from 'lucide-react';
 
 interface CouponInputProps {
@@ -14,6 +15,7 @@ interface CouponInputProps {
 
 export default function CouponInput({ bookingValue, hotelId, onCouponApplied, onCouponRemoved }: CouponInputProps) {
   const { locale, t } = useI18n();
+  const { addToast } = useToast();
   const [code, setCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
   const [discountAmount, setDiscountAmount] = useState(0);
@@ -27,11 +29,13 @@ export default function CouponInput({ bookingValue, hotelId, onCouponApplied, on
       setDiscountAmount(discount_amount);
       setError('');
       onCouponApplied(coupon, discount_amount);
+      addToast('success', t('coupons.applied'));
       setCode('');
     },
     onError: (err: any) => {
       const errorMessage = err.response?.data?.message || t('coupons.invalid');
       setError(errorMessage);
+      addToast('error', errorMessage);
     },
   });
 

@@ -1,10 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { CalendarDays, Users, ArrowRight, CarFront, Plane } from 'lucide-react';
+import { CalendarDays, Users, CarFront, Plane, CalendarX } from 'lucide-react';
 import { bookingsApi } from '../../shared/api/bookings';
 import { transfersApi } from '../../shared/api/transfers';
 import { useI18n } from '../../shared/i18n/useI18n';
 import { formatDateForLocale, formatVndForLocale } from '../../shared/i18n/format';
+import ErrorState from '../components/common/ErrorState';
+import EmptyState from '../components/common/EmptyState';
 
 const statusColors: Record<string, string> = {
   pending: 'bg-badge-pending-bg text-badge-pending-text',
@@ -53,8 +55,13 @@ export default function MyBookingsPage() {
 
   if (isError || transfers.isError) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-16 text-center md:px-8">
-        <p role="alert" aria-live="polite" className="text-text-secondary">{t('common.error')}</p>
+      <div className="mx-auto max-w-3xl px-4 py-12 md:px-8 md:py-16">
+        <h1 className="mb-6 text-2xl font-bold tracking-tight text-text">{t('nav.myBookings')}</h1>
+        <ErrorState
+          title={t('common.error')}
+          onRetry={() => window.location.reload()}
+          retryLabel={t('common.retry')}
+        />
       </div>
     );
   }
@@ -64,20 +71,13 @@ export default function MyBookingsPage() {
       <h1 className="mb-6 text-2xl font-bold tracking-tight text-text">{t('nav.myBookings')}</h1>
 
       {bookings.length === 0 ? (
-        <div className="py-16 text-center">
-          <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-full bg-tab text-text-secondary">
-            <CalendarDays className="size-6" />
-          </div>
-          <p className="font-semibold text-text">{t('booking.emptyTitle')}</p>
-          <p className="mt-1 text-sm text-text-secondary">{t('booking.emptyBody')}</p>
-          <Link
-            to="/search"
-            className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-white transition-spring-fast hover:bg-primary-hover active:scale-[0.97]"
-          >
-            {t('booking.exploreHotels')}
-            <ArrowRight className="size-4" />
-          </Link>
-        </div>
+        <EmptyState
+          icon={<CalendarX className="size-7 text-primary" />}
+          title={t('booking.emptyTitle')}
+          description={t('booking.emptyBody')}
+          actionLabel={t('booking.exploreHotels')}
+          actionTo="/search"
+        />
       ) : (
         <div className="space-y-4">
           {bookings.map(booking => (

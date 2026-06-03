@@ -7,6 +7,7 @@ import { bookingsApi } from '../../shared/api/bookings';
 import { transfersApi, type TransferDirection } from '../../shared/api/transfers';
 import { type Coupon } from '../../shared/api/coupons';
 import { useI18n } from '../../shared/i18n/useI18n';
+import { useToast } from '../../shared/components/Toast';
 import BookingForm from '../components/booking/BookingForm';
 import PriceSummary from '../components/booking/PriceSummary';
 import CouponInput from '../components/booking/CouponInput';
@@ -24,6 +25,7 @@ type BookingSummaryState = {
 
 export default function BookingPage() {
   const { t } = useI18n();
+  const { addToast } = useToast();
   const { roomTypeId } = useParams<{ roomTypeId: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -117,10 +119,13 @@ export default function BookingPage() {
         coupon_code: appliedCoupon?.code,
         transfer_add_on: data.transfer_add_on,
       });
+      addToast('success', t('booking.success'));
       navigate(`/payment/${booking.data.booking_code}`);
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
-      setError(error.response?.data?.message || t('booking.failure'));
+      const msg = error.response?.data?.message || t('booking.failure');
+      setError(msg);
+      addToast('error', msg);
     } finally {
       setBookingLoading(false);
     }

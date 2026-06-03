@@ -5,6 +5,8 @@ import { hotelsApi, type HotelSearchParams } from '../../../shared/api/hotels';
 import { useI18n } from '../../../shared/i18n/useI18n';
 import HotelSearchCard from './HotelSearchCard';
 import SortBar from './SortBar';
+import ErrorState from '../common/ErrorState';
+import EmptyState from '../common/EmptyState';
 
 export default function SearchResults() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -40,12 +42,9 @@ export default function SearchResults() {
     return (
       <div className="flex-1">
         <SortBar />
-        <p role="status" aria-live="polite" className="mb-4 text-sm font-medium text-text-secondary">
-          {t('common.loading')}
-        </p>
         <div className="space-y-4">
           {[1, 2, 3].map(i => (
-            <div key={i} aria-hidden="true" className="h-56 animate-pulse rounded-lg border border-border bg-white shadow-sm" />
+            <div key={i} className="skeleton h-56 rounded-2xl" />
           ))}
         </div>
       </div>
@@ -54,16 +53,13 @@ export default function SearchResults() {
 
   if (isError) {
     return (
-      <div className="flex-1 text-center py-12" role="alert">
-        <p className="font-semibold text-text">{t('common.error')}</p>
-        <p className="mt-1 text-sm text-text-secondary">{t('search.errorBody')}</p>
-        <button
-          type="button"
-          onClick={() => void refetch()}
-          className="mt-5 rounded-md bg-navy px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary"
-        >
-          {t('common.retry')}
-        </button>
+      <div className="flex-1">
+        <ErrorState
+          title={t('common.error')}
+          description={t('search.errorBody')}
+          onRetry={() => void refetch()}
+          retryLabel={t('common.retry')}
+        />
       </div>
     );
   }
@@ -92,11 +88,11 @@ export default function SearchResults() {
       <SortBar />
 
       {hotels.length === 0 ? (
-        <div className="rounded-lg border border-border bg-white px-6 py-14 text-center">
-          <SearchX className="mx-auto mb-4 size-10 text-primary" />
-          <p className="font-semibold text-text">{t('search.emptyTitle')}</p>
-          <p className="mt-1 text-sm text-text-secondary">{t('search.emptyBody')}</p>
-        </div>
+        <EmptyState
+          icon={<SearchX className="size-7 text-primary" />}
+          title={t('search.emptyTitle')}
+          description={t('search.emptyBody')}
+        />
       ) : (
         <>
           <div className="space-y-4">

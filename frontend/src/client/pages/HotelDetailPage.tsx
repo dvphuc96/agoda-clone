@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
-import { AlertTriangle, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { getCollectionData, hotelsApi, type RoomType } from '../../shared/api/hotels';
 import { useI18n } from '../../shared/i18n/useI18n';
 import { useRecentlyViewed } from '../hooks/useRecentlyViewed';
@@ -12,6 +12,7 @@ import WishlistButton from '../components/hotel/WishlistButton';
 import { getRoomsSectionLinkClasses } from '../components/hotel/roomsSectionState';
 import ReviewSummary from '../components/hotel/ReviewSummary';
 import ReviewList from '../components/hotel/ReviewList';
+import ErrorState from '../components/common/ErrorState';
 
 const vndFormatter = new Intl.NumberFormat('vi-VN');
 
@@ -66,15 +67,13 @@ export default function HotelDetailPage() {
 
   if (isError || !hotel) {
     return (
-      <div className="mx-auto max-w-6xl px-4 py-24 text-center md:px-8">
-        <div className="mx-auto mb-5 flex size-16 items-center justify-center rounded-full bg-destructive/10">
-          <AlertTriangle className="size-7 text-destructive" />
-        </div>
-        <h2 className="text-xl font-bold text-text">{t('hotel.notFoundTitle')}</h2>
-        <p className="mt-2 text-sm text-text-secondary">{t('hotel.notFoundBody')}</p>
-        <Link to="/search" className="mt-6 inline-block rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-white transition-spring-fast hover:bg-primary-hover">
-          {t('hotel.backToSearch')}
-        </Link>
+      <div className="mx-auto max-w-6xl px-4 py-24 md:px-8">
+        <ErrorState
+          title={t('hotel.notFoundTitle')}
+          description={t('hotel.notFoundBody')}
+          backLabel={t('hotel.backToSearch')}
+          onBack={() => window.history.back()}
+        />
       </div>
     );
   }

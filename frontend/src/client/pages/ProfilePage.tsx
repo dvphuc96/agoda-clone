@@ -5,6 +5,7 @@ import { Navigate } from 'react-router-dom';
 import { profileApi } from '../../shared/api/profile';
 import { useAuth } from '../../shared/contexts/AuthContext';
 import { useI18n } from '../../shared/i18n/useI18n';
+import { useToast } from '../../shared/components/Toast';
 import AvatarUpload from '../components/profile/AvatarUpload';
 import PasswordChangeForm from '../components/profile/PasswordChangeForm';
 
@@ -13,6 +14,7 @@ type Tab = 'info' | 'password';
 export default function ProfilePage() {
   const { isAuthenticated, setUser } = useAuth();
   const { t } = useI18n();
+  const { addToast } = useToast();
   const queryClient = useQueryClient();
   const [tab, setTab] = useState<Tab>('info');
   const [success, setSuccess] = useState('');
@@ -38,13 +40,13 @@ export default function ProfilePage() {
   const updateMutation = useMutation({
     mutationFn: () => profileApi.update({ name, phone: phone || null }),
     onSuccess: (res) => {
-      setSuccess(t('profile.saved'));
+      addToast('success', t('profile.saved'));
       setError('');
       setUser((prev) => (prev ? { ...prev, ...res.data.data } : prev));
       queryClient.invalidateQueries({ queryKey: ['profile'] });
     },
     onError: () => {
-      setError(t('common.error'));
+      addToast('error', t('common.error'));
       setSuccess('');
     },
   });

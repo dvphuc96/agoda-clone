@@ -6,9 +6,11 @@ import { bookingsApi } from '../../shared/api/bookings';
 import { paymentsApi } from '../../shared/api/payments';
 import { useI18n } from '../../shared/i18n/useI18n';
 import { formatDateForLocale, formatVndForLocale } from '../../shared/i18n/format';
+import { useToast } from '../../shared/components/Toast';
 
 export default function PaymentPage() {
   const { locale, t } = useI18n();
+  const { addToast } = useToast();
   const { bookingCode } = useParams<{ bookingCode: string }>();
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
@@ -42,7 +44,9 @@ export default function PaymentPage() {
       window.location.href = result.data.payment_url;
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
-      setError(error.response?.data?.message || t('payment.createFailure'));
+      const msg = error.response?.data?.message || t('payment.createFailure');
+      setError(msg);
+      addToast('error', msg);
     } finally {
       setLoading(false);
     }
