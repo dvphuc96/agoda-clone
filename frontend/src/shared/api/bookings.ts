@@ -27,12 +27,11 @@ export interface Booking {
   special_requests: string | null;
   total_price: string;
   discount_amount: number;
-  coupon?: Coupon | null;
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
   nights: number;
   cancellation: CancellationPolicySummary | null;
   room_type: RoomType & { hotel: Hotel };
-  coupon?: Coupon;
+  coupon?: Coupon | null;
   payments: Payment[];
   refunds: Refund[];
   transfer_bookings?: TransferBooking[];

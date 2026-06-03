@@ -8,6 +8,7 @@ interface AuthContextType {
   register: (data: { name: string; email: string; password: string; password_confirmation: string; phone?: string }) => Promise<void>;
   logout: () => Promise<void>;
   loading: boolean;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -62,6 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     register,
     logout,
     loading,
+    setUser,
   }), [user, loading, login, register, logout]);
 
   return (
