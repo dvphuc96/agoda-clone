@@ -1,133 +1,88 @@
 # Architecture
 
-No application stack is selected yet.
+## Tech Stack
 
-No application code exists yet. This document defines generic architecture
-questions and boundary rules that future implementation should adapt after a
-user-provided spec and stack decision exist.
+| Layer | Technology |
+| --- | --- |
+| Backend | Laravel 13, PHP 8.3, MySQL 8.0, Sanctum auth |
+| Frontend | React 19, TypeScript, Vite 8, Tailwind CSS 4 |
+| State | TanStack Query (server state), React Context (client state) |
+| i18n | Custom hook-based system (`useI18n`), vi/en locales |
+| Payments | VNPay, MoMo (gateway redirects + callbacks) |
+| PDF | barryvdh/laravel-dompdf (invoices) |
+| Infrastructure | Docker (MySQL, PHP-FPM, Node, phpMyAdmin) |
+| Auth | Sanctum token-based, stored in localStorage |
 
-## Discovery Before Shape
-
-Before proposing implementation shape, identify:
-
-- Product surfaces: browser, mobile, desktop, CLI, API, worker, or service.
-- Runtime stack: language, framework, database, queues, providers, and hosting.
-- Core domains: the product concepts that deserve stable names and contracts.
-- Boundary inputs: user input, API requests, webhooks, jobs, files, credentials,
-  provider payloads, and environment configuration.
-- Validation ladder: the smallest checks that can prove the selected stack.
-
-Record stack choices in `docs/decisions/` when they meaningfully constrain
-future work.
-
-## Default Layering
-
-```text
-domain
-  <- application
-      <- infrastructure
-          <- interface
-              <- app surfaces
-```
-
-## Candidate Structure
+## Backend Structure
 
 ```text
 app/
-  domain/
-    entities/
-    value-objects/
-    repositories/
-    services/
+  Http/
+    Controllers/Api/          # 18 public + 19 admin controllers
+      Admin/                  # Admin-only controllers
+    Requests/                 # FormRequest validation
+      Admin/                  # Admin-specific requests
+    Resources/                # API response transformers
+    Middleware/                # isAdmin middleware
+  Models/                     # 22 Eloquent models
+  Services/                   # 15 business logic services
+  Traits/                     # Auditable trait
+  Policies/                   # Laravel policies
 
-  application/
-    commands/
-    queries/
-    handlers/
+database/
+  migrations/                 # 34 migrations
+  seeders/
 
-  infrastructure/
-    database/
-    logging/
-    notifications/
+resources/
+  views/
+    emails/                   # 6 Blade email templates
+    invoices/                 # PDF invoice template
 
-  interface/
-    controllers/
-    dto/
-    presenters/
-    routes/
-    middlewares/
-
-surfaces/
-  browser/
-  mobile/
-  desktop/
-  cli/
+routes/
+  api.php                     # All API routes (public + auth + admin)
 ```
 
-This is a thinking template, not a scaffold. Create real folders only when a
-story enters implementation and the selected stack needs them.
-
-## Dependency Rule
-
-Inner layers must not depend on outer layers.
-
-| Layer | May depend on | Must not depend on |
-| --- | --- | --- |
-| domain | nothing project-external except tiny pure utilities | framework, database, UI, provider, process/env |
-| application | domain | framework, UI, provider, database concrete clients |
-| infrastructure | domain, application | interface controllers or UI |
-| interface | all backend layers | UI state or platform shell assumptions |
-| app surfaces | API contracts and app-facing clients | domain internals directly |
-
-## Parse-First Boundary Rule
-
-Unknown data must be parsed at boundaries before it enters inner code.
-
-Boundaries include:
-
-- HTTP request bodies, params, and query strings.
-- Session payloads and identity claims.
-- Environment variables.
-- Database rows returned from external clients.
-- Platform shell payloads.
-- Deep links, tokens, and signed URLs.
-- Provider webhooks, events, and async payloads.
-
-Target flow:
+## Frontend Structure
 
 ```text
-unknown input
-  -> parser
-  -> typed DTO or command
-  -> application use case
-  -> domain object/value object
+frontend/src/
+  admin/                      # Admin panel
+    pages/                    # 13 feature directories + Dashboard
+    components/layout/        # AdminLayout, sidebar
+  client/                     # Client-facing app
+    pages/                    # 16 pages
+    components/               # Shared client components
+  shared/                     # Shared across admin/client
+    api/                      # API client modules (admin.ts, bookings.ts, etc.)
+    i18n/                     # Translation types, locales (vi/en)
+    contexts/                 # React contexts (auth, theme)
 ```
 
-Inner layers should work with meaningful product types such as `UserId`,
-`AccountId`, `WorkspaceId`, `Role`, `DateRange`, or domain-specific IDs,
-rather than repeatedly validating raw strings.
+## API Architecture
 
-## Command/Query Boundary
+- RESTful JSON API at `/api/*`
+- Public routes: hotel search, locations, transfer quotes, payment callbacks
+- Auth routes (`auth:sanctum`): bookings, payments, profile, reviews, wishlist, support
+- Admin routes (`auth:sanctum` + `isAdmin`): CRUD management, dashboard, audit logs
 
-If the product has both reads and writes, keep command/query separation clear at
-the code level even when the storage layer is simple:
+## Data Flow
 
-- Commands mutate state and own audit side effects.
-- Queries read state and format for consumers.
-- Shared domain rules live in domain/application, not controllers.
+```text
+React Page → TanStack Query → apiClient (Axios) → Laravel Controller
+  → FormRequest (validation) → Service (business logic) → Model (Eloquent)
+  → Resource (transform) → JSON Response
 
-## Observability Contract
+Email flow: Service → NotificationService → Mailable → Blade template
+PDF flow: InvoiceService → DomPDF → Blade template → Stream response
+Audit flow: Model event → Auditable trait → AuditLog::log()
+```
 
-The future server should emit one canonical JSON log line per request with:
+## Key Design Decisions
 
-- timestamp
-- level
-- request_id
-- user_id when known
-- action
-- duration_ms
-- status_code
-- message
-
-Audit logs are product records. Application logs are operational records. Do not
-use one as a substitute for the other.
+1. **Services over fat controllers**: Business logic in `app/Services/`, controllers stay thin
+2. **API Resources**: All responses transformed through Eloquent Resources
+3. **FormRequests**: Validation at boundary, not in controllers
+4. **Auditable trait**: Auto-logs admin CRUD on models with boot events
+5. **Price resolution**: PriceResolutionService handles per-night pricing with overrides
+6. **Bilingual client**: Client UI in vi/en via i18n, admin UI in English only
+7. **Gateway pattern**: Payment gateways handle redirects, callbacks update payment status
