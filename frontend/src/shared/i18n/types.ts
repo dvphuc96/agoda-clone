@@ -314,6 +314,7 @@ export type Messages = {
     forgotPassword: string;
     backToLogin: string;
     invalidToken: string;
+    passwordsDoNotMatch: string;
   };
   notifications: {
     title: string;
@@ -331,6 +332,12 @@ export type Messages = {
     emptyTitle: string;
     emptyBody: string;
     exploreHotels: string;
+    empty: string;
+    emptyDesc: string;
+    explore: string;
+    removed: string;
+    added: string;
+    removeFromWishlist: string;
   };
   transfers: {
     nav: string;
@@ -449,12 +456,17 @@ export type Messages = {
     uploadAvatar: string;
     save: string;
     saved: string;
+    saving: string;
     currentPassword: string;
     newPassword: string;
     confirmPassword: string;
     passwordChanged: string;
     wrongPassword: string;
-  };
+    uploadFailed: string;
+    invalidFileType: string;
+    fileTooLarge: string;
+    showPassword: string;
+    hidePassword: string;
   };
 };
 
