@@ -5,11 +5,50 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ValidateCouponRequest;
 use App\Http\Resources\CouponResource;
+use App\Models\Coupon;
 use App\Services\CouponService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class CouponController extends Controller
 {
+    public function available(Request $request): JsonResponse
+    {
+        $request->validate([
+            'hotel_id' => 'nullable|integer|exists:hotels,id',
+            'booking_value' => 'nullable|numeric|min:0',
+        ]);
+
+        $hotelId = $request->hotel_id;
+        $bookingValue = (float) ($request->booking_value ?? 0);
+
+        $coupons = Coupon::where('is_active', true)
+            ->where('starts_at', '<=', now())
+            ->where('expires_at', '>', now())
+            ->where(function ($q) {
+                $q->whereNull('max_uses')->orWhereRaw('used_count < max_uses');
+            })
+            ->when($hotelId, function ($q, $hotelId) {
+                $q->where(function ($q2) use ($hotelId) {
+                    $q2->whereNull('applicable_hotels')
+                        ->orWhereJsonContains('applicable_hotels', $hotelId);
+                });
+            })
+            ->when($bookingValue > 0, function ($q) use ($bookingValue) {
+                $q->where(function ($q2) use ($bookingValue) {
+                    $q2->whereNull('min_booking_value')
+                        ->orWhere('min_booking_value', '<=', $bookingValue);
+                });
+            })
+            ->orderByDesc('discount_value')
+            ->limit(10)
+            ->get();
+
+        return response()->json([
+            'data' => CouponResource::collection($coupons),
+        ]);
+    }
+
     public function validate(ValidateCouponRequest $request, CouponService $couponService): JsonResponse
     {
         $user = auth()->user();
