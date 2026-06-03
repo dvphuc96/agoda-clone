@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Api\HotelController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\RoomTypeController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\TransferController;
@@ -66,6 +67,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Coupon validation
     Route::post('/coupons/validate', [CouponController::class, 'validate']);
+
+    // Profile routes
+    Route::get('/profile', [ProfileController::class, 'show']);
+    Route::put('/profile', [ProfileController::class, 'update']);
+    Route::post('/profile/avatar', [ProfileController::class, 'uploadAvatar']);
+    Route::put('/profile/password', [ProfileController::class, 'changePassword']);
 
     Route::get('/bookings', [BookingController::class, 'index']);
     Route::post('/bookings', [BookingController::class, 'store']);

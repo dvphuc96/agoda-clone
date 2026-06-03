@@ -28,6 +28,7 @@ export type Messages = {
     destinations: string;
     deals: string;
     myBookings: string;
+    wishlist: string;
     login: string;
     logout: string;
   };
@@ -294,6 +295,26 @@ export type Messages = {
     info: string;
     paidAt: string;
   };
+  forgotPassword: {
+    title: string;
+    subtitle: string;
+    email: string;
+    sendLink: string;
+    sending: string;
+    sent: string;
+    checkEmail: string;
+    newPassword: string;
+    confirmPassword: string;
+    newPasswordPlaceholder: string;
+    confirmPasswordPlaceholder: string;
+    resetButton: string;
+    resetting: string;
+    success: string;
+    loginNow: string;
+    forgotPassword: string;
+    backToLogin: string;
+    invalidToken: string;
+  };
   notifications: {
     title: string;
     emptyTitle: string;
@@ -416,6 +437,24 @@ export type Messages = {
     empty: string;
     clearAll: string;
     cleared: string;
+  };
+  profile: {
+    title: string;
+    personalInfo: string;
+    changePassword: string;
+    name: string;
+    email: string;
+    phone: string;
+    avatar: string;
+    uploadAvatar: string;
+    save: string;
+    saved: string;
+    currentPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+    passwordChanged: string;
+    wrongPassword: string;
+  };
   };
 };
 
