@@ -16,7 +16,7 @@ class Booking extends Model
 
     protected $fillable = [
         'user_id', 'room_type_id', 'coupon_id', 'booking_code', 'check_in', 'check_out',
-        'guests', 'special_requests', 'total_price', 'discount_amount', 'status', 'modified_at',
+        'guests', 'special_requests', 'total_price', 'discount_amount', 'status', 'expires_at', 'modified_at',
     ];
 
     protected function casts(): array
@@ -26,8 +26,18 @@ class Booking extends Model
             'check_out' => 'date',
             'total_price' => 'decimal:2',
             'discount_amount' => 'decimal:2',
+            'expires_at' => 'datetime',
             'modified_at' => 'datetime',
         ];
+    }
+
+    public function getRemainingSecondsAttribute(): int
+    {
+        if (!$this->expires_at || $this->status !== 'pending') {
+            return 0;
+        }
+
+        return max(0, now()->diffInSeconds($this->expires_at, false));
     }
 
     protected static function booted(): void

@@ -7,6 +7,7 @@ import { refundsApi } from '../../shared/api/refunds';
 import apiClient from '../../shared/api/client';
 import { useI18n } from '../../shared/i18n/useI18n';
 import { formatDateForLocale, formatVndForLocale } from '../../shared/i18n/format';
+import BookingCountdown from '../components/BookingCountdown';
 
 const statusColors: Record<string, string> = {
   pending: 'bg-badge-pending-bg text-badge-pending-text',
@@ -197,6 +198,24 @@ export default function BookingDetailPage() {
             </Link>
           </div>
         </div>
+      )}
+
+      {/* Countdown for pending bookings with hold expiry */}
+      {booking.status === 'pending' && (
+        <BookingCountdown
+          expiresAt={(booking as { expires_at?: string }).expires_at}
+          onExpire={() => {
+            queryClient.invalidateQueries({ queryKey: ['booking', bookingCode] });
+            queryClient.invalidateQueries({ queryKey: ['my-bookings'] });
+          }}
+        />
+      )}
+
+      {/* Expired booking message */}
+      {booking.status === 'cancelled' && (booking as { expires_at?: string }).expires_at && (
+        <BookingCountdown
+          expiresAt={(booking as { expires_at?: string }).expires_at}
+        />
       )}
 
       {/* Header */}

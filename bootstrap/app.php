@@ -5,6 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use App\Http\Middleware\IsAdmin;
+use App\Http\Middleware\IsHotelOwner;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -18,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo(fn () => null);
         $middleware->alias([
             'isAdmin' => IsAdmin::class,
+            'isHotelOwner' => IsHotelOwner::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

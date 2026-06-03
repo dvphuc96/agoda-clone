@@ -20,6 +20,7 @@ import NotificationsPage from './client/pages/NotificationsPage';
 import WishlistPage from './client/pages/WishlistPage';
 import ProfilePage from './client/pages/ProfilePage';
 import SupportPage from './client/pages/SupportPage';
+import SocialCallbackPage from './client/pages/SocialCallbackPage';
 
 const AdminLayout = lazy(() => import('./admin/components/layout/AdminLayout'));
 const AdminDashboardPage = lazy(() => import('./admin/pages/DashboardPage'));
@@ -38,8 +39,16 @@ const AdminModificationListPage = lazy(() => import('./admin/pages/modifications
 const AdminPriceOverrideListPage = lazy(() => import('./admin/pages/hotels/PriceOverrideListPage'));
 const AdminSupportListPage = lazy(() => import('./admin/pages/support/SupportListPage'));
 const AdminAuditLogPage = lazy(() => import('./admin/pages/audit/AuditLogPage'));
+const AdminAnalyticsPage = lazy(() => import('./admin/pages/analytics/AnalyticsPage'));
+
+const PartnerLayout = lazy(() => import('./partner/components/layout/PartnerLayout'));
+const PartnerDashboardPage = lazy(() => import('./partner/pages/PartnerDashboardPage'));
+const PartnerHotelsPage = lazy(() => import('./partner/pages/PartnerHotelsPage'));
+const PartnerRoomsPage = lazy(() => import('./partner/pages/PartnerRoomsPage'));
+const PartnerBookingsPage = lazy(() => import('./partner/pages/PartnerBookingsPage'));
 
 const adminFallback = <div className="flex min-h-screen items-center justify-center bg-slate-100 text-slate-600">Loading admin…</div>;
+const partnerFallback = <div className="flex min-h-screen items-center justify-center bg-slate-100 text-slate-600">Loading partner portal...</div>;
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -74,10 +83,12 @@ export default function App() {
                 <Route path="/wishlist" element={<WishlistPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/support" element={<SupportPage />} />
+                <Route path="/auth/callback" element={<SocialCallbackPage />} />
               </Route>
               <Route path="/admin" element={<Suspense fallback={adminFallback}><AdminLayout /></Suspense>}>
                 <Route index element={<Navigate to="/admin/dashboard" replace />} />
                 <Route path="dashboard" element={<Suspense fallback={adminFallback}><AdminDashboardPage /></Suspense>} />
+                <Route path="analytics" element={<Suspense fallback={adminFallback}><AdminAnalyticsPage /></Suspense>} />
                 <Route path="locations" element={<Suspense fallback={adminFallback}><AdminLocationListPage /></Suspense>} />
                 <Route path="hotels" element={<Suspense fallback={adminFallback}><AdminHotelListPage /></Suspense>} />
                 <Route path="hotels/:hotelId/rooms" element={<Suspense fallback={adminFallback}><AdminRoomTypeListPage /></Suspense>} />
@@ -93,6 +104,12 @@ export default function App() {
                 <Route path="users" element={<Suspense fallback={adminFallback}><AdminUserListPage /></Suspense>} />
                 <Route path="support" element={<Suspense fallback={adminFallback}><AdminSupportListPage /></Suspense>} />
                 <Route path="audit-logs" element={<Suspense fallback={adminFallback}><AdminAuditLogPage /></Suspense>} />
+              </Route>
+              <Route path="/partner" element={<Suspense fallback={partnerFallback}><PartnerLayout /></Suspense>}>
+                <Route index element={<Suspense fallback={partnerFallback}><PartnerDashboardPage /></Suspense>} />
+                <Route path="hotels" element={<Suspense fallback={partnerFallback}><PartnerHotelsPage /></Suspense>} />
+                <Route path="hotels/:hotelId/rooms" element={<Suspense fallback={partnerFallback}><PartnerRoomsPage /></Suspense>} />
+                <Route path="bookings" element={<Suspense fallback={partnerFallback}><PartnerBookingsPage /></Suspense>} />
               </Route>
             </Routes>
           </BrowserRouter>
