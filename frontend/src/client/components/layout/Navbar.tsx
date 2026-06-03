@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Globe2, Heart, Menu, UserRound, X, Bell, Search, ChevronDown } from 'lucide-react';
+import { Globe2, Heart, Menu, UserRound, X, Bell, Search, ChevronDown, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../../shared/contexts/AuthContext';
 import type { Locale } from '../../../shared/i18n/types';
 import { useI18n } from '../../../shared/i18n/useI18n';
@@ -201,6 +201,16 @@ export default function Navbar() {
                               <Search className="size-4 text-text-secondary" />
                               {t('nav.myBookings')}
                             </Link>
+                            {user?.role === 'admin' && (
+                              <Link
+                                to="/admin"
+                                onClick={() => setProfileOpen(false)}
+                                className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/5"
+                              >
+                                <ShieldCheck className="size-4 text-primary" />
+                                Admin Panel
+                              </Link>
+                            )}
                           </div>
                           <div className="border-t border-border/30 p-1.5">
                             <button
@@ -362,10 +372,6 @@ export default function Navbar() {
                     <UserRound className="size-5 text-primary/70" />
                     {t('nav.profile') || 'Profile'}
                   </Link>
-                  <Link to="/bookings" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-text transition-colors hover:bg-tab/60">
-                    <Search className="size-5 text-primary/70" />
-                    {t('nav.myBookings')}
-                  </Link>
                   <Link to="/wishlist" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-text transition-colors hover:bg-tab/60">
                     <Heart className="size-5 text-primary/70" />
                     {t('nav.wishlist')}
@@ -374,6 +380,12 @@ export default function Navbar() {
                     <Bell className="size-5 text-primary/70" />
                     {t('notifications.title')}
                   </Link>
+                  {user?.role === 'admin' && (
+                    <Link to="/admin" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-primary transition-colors hover:bg-primary/5">
+                      <ShieldCheck className="size-5 text-primary/70" />
+                      Admin Panel
+                    </Link>
+                  )}
                   <div className="pt-2">
                     <button
                       type="button"
