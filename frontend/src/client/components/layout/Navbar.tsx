@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Globe2, Heart, Menu, UserRound, X, Bell, Search, ChevronDown, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../../shared/contexts/AuthContext';
+import NotificationDropdown from '../common/NotificationDropdown';
 import type { Locale } from '../../../shared/i18n/types';
 import { useI18n } from '../../../shared/i18n/useI18n';
 
@@ -139,13 +140,7 @@ export default function Navbar() {
                     <Heart className="size-[18px]" />
                   </Link>
 
-                  <Link
-                    to="/notifications"
-                    className="relative grid size-9 place-items-center rounded-full text-text-secondary transition-all duration-200 hover:bg-tab/60 hover:text-primary"
-                    aria-label={t('notifications.title')}
-                  >
-                    <Bell className="size-[18px]" />
-                  </Link>
+                  <NotificationDropdown />
 
                   {/* Profile Dropdown */}
                   <div className="relative">
@@ -365,10 +360,10 @@ export default function Navbar() {
                     <Heart className="size-5 text-primary/70" />
                     {t('nav.wishlist')}
                   </Link>
-                  <Link to="/notifications" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-text transition-colors hover:bg-tab/60">
+                  <button type="button" onClick={() => { setMenuOpen(false); }} className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-text transition-colors hover:bg-tab/60">
                     <Bell className="size-5 text-primary/70" />
                     {t('notifications.title')}
-                  </Link>
+                  </button>
                   {user?.role === 'admin' && (
                     <Link to="/admin" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-primary transition-colors hover:bg-primary/5">
                       <ShieldCheck className="size-5 text-primary/70" />
