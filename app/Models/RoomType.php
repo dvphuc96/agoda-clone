@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Services\BookingPolicyService;
+use App\Traits\Auditable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class RoomType extends Model
 {
-    use HasFactory;
+    use HasFactory, Auditable;
 
     protected $fillable = [
         'hotel_id', 'name', 'description', 'max_guests',
@@ -38,6 +39,11 @@ class RoomType extends Model
     public function bookings(): HasMany
     {
         return $this->hasMany(Booking::class);
+    }
+
+    public function priceOverrides(): HasMany
+    {
+        return $this->hasMany(PriceOverride::class);
     }
 
     public function getAvailableRoomsCount(string $checkIn, string $checkOut): int

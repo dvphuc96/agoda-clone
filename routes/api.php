@@ -3,7 +3,9 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PasswordResetController;
 use App\Http\Controllers\Api\BookingController;
+use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\LocationController;
+use App\Http\Controllers\Api\SupportTicketController;
 use App\Http\Controllers\Api\HotelController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ProfileController;
@@ -29,6 +31,10 @@ use App\Http\Controllers\Api\Admin\TransferRouteController as AdminTransferRoute
 use App\Http\Controllers\Api\Admin\TransferBookingController as AdminTransferBookingController;
 use App\Http\Controllers\Api\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Api\Admin\ReviewController as AdminReviewController;
+use App\Http\Controllers\Api\Admin\PriceOverrideController as AdminPriceOverrideController;
+use App\Http\Controllers\Api\Admin\InvoiceController as AdminInvoiceController;
+use App\Http\Controllers\Api\Admin\SupportTicketController as AdminSupportTicketController;
+use App\Http\Controllers\Api\Admin\AuditLogController as AdminAuditLogController;
 use App\Http\Controllers\Api\Admin\BookingModificationController as AdminBookingModificationController;
 use App\Http\Controllers\Api\BookingModificationController;
 use Illuminate\Support\Facades\Route;
@@ -90,6 +96,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/bookings/{bookingCode}', [BookingController::class, 'destroy']);
     Route::post('/bookings/{bookingCode}/modify', [BookingModificationController::class, 'store']);
     Route::get('/bookings/{bookingCode}/modifications', [BookingModificationController::class, 'index']);
+    Route::get('/bookings/{bookingCode}/invoice', [InvoiceController::class, 'download']);
 
     Route::post('/payments/create', [PaymentController::class, 'create']);
     Route::get('/payments/{id}', [PaymentController::class, 'show']);
@@ -112,6 +119,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/wishlists/toggle', [WishlistController::class, 'toggle']);
     Route::delete('/wishlists/{hotel}', [WishlistController::class, 'destroy']);
     Route::get('/wishlists/check/{hotel}', [WishlistController::class, 'check']);
+
+    // Support tickets
+    Route::get('/support/tickets', [SupportTicketController::class, 'index']);
+    Route::post('/support/tickets', [SupportTicketController::class, 'store']);
+    Route::get('/support/tickets/{id}', [SupportTicketController::class, 'show']);
+    Route::post('/support/tickets/{id}/messages', [SupportTicketController::class, 'reply']);
 });
 
 Route::middleware(['auth:sanctum', 'isAdmin'])->prefix('admin')->group(function () {
@@ -134,10 +147,18 @@ Route::middleware(['auth:sanctum', 'isAdmin'])->prefix('admin')->group(function 
     Route::delete('/room-types/{roomType}', [AdminRoomTypeController::class, 'destroy']);
     Route::post('/room-types/{roomType}/images', [AdminRoomTypeController::class, 'uploadImages']);
 
+    Route::get('/room-types/{roomType}/price-overrides', [AdminPriceOverrideController::class, 'index']);
+    Route::post('/room-types/{roomType}/price-overrides', [AdminPriceOverrideController::class, 'store']);
+    Route::get('/room-types/{roomType}/price-overrides/{priceOverride}', [AdminPriceOverrideController::class, 'show']);
+    Route::put('/room-types/{roomType}/price-overrides/{priceOverride}', [AdminPriceOverrideController::class, 'update']);
+    Route::delete('/room-types/{roomType}/price-overrides/{priceOverride}', [AdminPriceOverrideController::class, 'destroy']);
+    Route::patch('/room-types/{roomType}/price-overrides/{priceOverride}/toggle', [AdminPriceOverrideController::class, 'toggleActive']);
+
     Route::get('/bookings/export', [AdminBookingController::class, 'export']);
     Route::get('/bookings', [AdminBookingController::class, 'index']);
     Route::get('/bookings/{booking}', [AdminBookingController::class, 'show']);
     Route::patch('/bookings/{booking}/status', [AdminBookingController::class, 'updateStatus']);
+    Route::get('/bookings/{booking}/invoice', [AdminInvoiceController::class, 'download']);
 
     Route::get('/payments', [AdminPaymentController::class, 'index']);
     Route::get('/payments/{payment}', [AdminPaymentController::class, 'show']);
@@ -177,4 +198,13 @@ Route::middleware(['auth:sanctum', 'isAdmin'])->prefix('admin')->group(function 
     Route::get('/modifications/{modification}', [AdminBookingModificationController::class, 'show']);
     Route::patch('/modifications/{modification}/approve', [AdminBookingModificationController::class, 'approve']);
     Route::patch('/modifications/{modification}/reject', [AdminBookingModificationController::class, 'reject']);
+
+    // Support tickets
+    Route::get('/support/tickets', [AdminSupportTicketController::class, 'index']);
+    Route::get('/support/tickets/{id}', [AdminSupportTicketController::class, 'show']);
+    Route::post('/support/tickets/{id}/messages', [AdminSupportTicketController::class, 'reply']);
+    Route::patch('/support/tickets/{id}/status', [AdminSupportTicketController::class, 'updateStatus']);
+
+    // Audit logs
+    Route::get('/audit-logs', [AdminAuditLogController::class, 'index']);
 });

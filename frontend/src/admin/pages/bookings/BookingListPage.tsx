@@ -8,6 +8,8 @@ import DataTable from '../../components/DataTable';
 import Pagination from '../../components/Pagination';
 import StatusBadge from '../../components/StatusBadge';
 import { formatCurrency, formatDate, pageTitle } from '../adminUtils';
+import apiClient from '../../../shared/api/client';
+import { Download } from 'lucide-react';
 
 type AdminBooking = Booking & { user?: { name: string; email: string; phone?: string } };
 
@@ -209,6 +211,32 @@ export default function BookingListPage() {
                     </tbody>
                   </table>
                 </div>
+              </div>
+            )}
+            {['confirmed', 'completed'].includes(bookingData.status) && bookingData.payments?.some((p: Payment) => p.status === 'success') && (
+              <div className="mt-4 border-t border-slate-100 pt-4">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const token = localStorage.getItem('auth_token');
+                    const res = await fetch(`${apiClient.defaults.baseURL}/admin/bookings/${bookingData.id}/invoice`, {
+                      headers: { Authorization: `Bearer ${token}`, Accept: 'application/pdf' },
+                    });
+                    if (res.ok) {
+                      const blob = await res.blob();
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = `invoice-${bookingData.booking_code}.pdf`;
+                      a.click();
+                      URL.revokeObjectURL(url);
+                    }
+                  }}
+                  className="flex items-center gap-2 rounded-md bg-slate-950 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
+                >
+                  <Download className="size-4" />
+                  Download Invoice
+                </button>
               </div>
             )}
           </div>

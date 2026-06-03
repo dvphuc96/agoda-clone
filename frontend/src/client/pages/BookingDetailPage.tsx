@@ -1,9 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, Link } from 'react-router-dom';
 import { useState } from 'react';
-import { ArrowLeft, AlertTriangle, Clock, CreditCard, RotateCcw, Star, PencilLine, CheckCircle2, Copy, Check } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, Clock, CreditCard, RotateCcw, Star, PencilLine, CheckCircle2, Copy, Check, Download } from 'lucide-react';
 import { bookingsApi } from '../../shared/api/bookings';
 import { refundsApi } from '../../shared/api/refunds';
+import apiClient from '../../shared/api/client';
 import { useI18n } from '../../shared/i18n/useI18n';
 import { formatDateForLocale, formatVndForLocale } from '../../shared/i18n/format';
 
@@ -456,6 +457,30 @@ export default function BookingDetailPage() {
             <PencilLine className="size-4" />
             {t('bookingModification.modifyBooking')}
           </Link>
+        )}
+        {['confirmed', 'completed'].includes(booking.status) && latestPayment?.status === 'success' && (
+          <button
+            type="button"
+            onClick={async () => {
+              const token = localStorage.getItem('auth_token');
+              const res = await fetch(`${apiClient.defaults.baseURL}/bookings/${booking.booking_code}/invoice`, {
+                headers: { Authorization: `Bearer ${token}`, Accept: 'application/pdf' },
+              });
+              if (res.ok) {
+                const blob = await res.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `invoice-${booking.booking_code}.pdf`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }
+            }}
+            className="flex items-center gap-2 rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-white transition-spring-fast hover:bg-primary-hover active:scale-[0.97]"
+          >
+            <Download className="size-4" />
+            {t('invoice.download')}
+          </button>
         )}
         <Link
           to="/bookings"

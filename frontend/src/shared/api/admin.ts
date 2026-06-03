@@ -8,6 +8,21 @@ import type { TransferBooking, TransferRoute, TransferStatus, TransferVehicleTyp
 import type { Coupon, CouponPayload } from './coupons';
 import type { Review } from './reviews';
 import type { BookingModification } from './modifications';
+import type { PriceOverride, PriceOverridePayload } from './price-overrides';
+import type { SupportTicket } from './support';
+
+export interface AuditLogEntry {
+  id: number;
+  user_id: number | null;
+  user_name: string | null;
+  action: string;
+  subject_type: string;
+  subject_id: number | null;
+  subject_label: string;
+  properties: Record<string, unknown> | null;
+  ip_address: string | null;
+  created_at: string;
+}
 
 export interface Paginated<T> {
   data: T[];
@@ -180,4 +195,18 @@ export const adminApi = {
   review: (id: number) => apiClient.get<Review>(`/admin/reviews/${id}`),
   updateReviewStatus: (id: number, status: string) => apiClient.patch<Review>(`/admin/reviews/${id}/status`, { status }),
   deleteReview: (id: number) => apiClient.delete(`/admin/reviews/${id}`),
+
+  priceOverrides: (roomTypeId: number, params?: Record<string, string | number>) => apiClient.get<Paginated<PriceOverride>>(`/admin/room-types/${roomTypeId}/price-overrides`, { params }),
+  priceOverride: (roomTypeId: number, id: number) => apiClient.get<PriceOverride>(`/admin/room-types/${roomTypeId}/price-overrides/${id}`),
+  createPriceOverride: (roomTypeId: number, data: PriceOverridePayload) => apiClient.post<{ data: PriceOverride; message: string }>(`/admin/room-types/${roomTypeId}/price-overrides`, data),
+  updatePriceOverride: (roomTypeId: number, id: number, data: PriceOverridePayload) => apiClient.put<{ data: PriceOverride; message: string }>(`/admin/room-types/${roomTypeId}/price-overrides/${id}`, data),
+  deletePriceOverride: (roomTypeId: number, id: number) => apiClient.delete<{ message: string }>(`/admin/room-types/${roomTypeId}/price-overrides/${id}`),
+  togglePriceOverrideActive: (roomTypeId: number, id: number) => apiClient.patch<{ data: PriceOverride; message: string }>(`/admin/room-types/${roomTypeId}/price-overrides/${id}/toggle`),
+
+  supportTickets: (params?: Record<string, string | number>) => apiClient.get<Paginated<SupportTicket>>('/admin/support/tickets', { params }),
+  supportTicket: (id: number) => apiClient.get<SupportTicket>(`/admin/support/tickets/${id}`),
+  replySupportTicket: (id: number, message: string) => apiClient.post<{ data: unknown; message: string }>(`/admin/support/tickets/${id}/messages`, { message }),
+  updateSupportTicketStatus: (id: number, data: { status?: string; priority?: string }) => apiClient.patch<SupportTicket>(`/admin/support/tickets/${id}/status`, data),
+
+  auditLogs: (params?: Record<string, string | number>) => apiClient.get<Paginated<AuditLogEntry>>('/admin/audit-logs', { params }),
 };

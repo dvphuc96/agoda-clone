@@ -83,6 +83,7 @@ export default function RoomTypeListPage() {
         cell: ({ row }) => (
           <div className="flex gap-2">
             <button type="button" className="rounded-md border px-3 py-1.5 text-xs font-semibold" onClick={() => openEdit(row.original)}>Edit</button>
+            <Link to={`/admin/hotels/${hotelId}/rooms/${row.original.id}/price-overrides`} className="rounded-md border border-emerald-200 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-50">Rates</Link>
             {(row.original.images?.length ?? 0) > 0 && (
               <button type="button" className="rounded-md border px-3 py-1.5 text-xs font-semibold" onClick={() => setViewingImages(row.original)}>
                 Images
