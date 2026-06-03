@@ -46,6 +46,26 @@ export interface DashboardStats {
 export interface RevenuePoint {
   date: string;
   revenue: number;
+  booking_count: number;
+}
+
+export interface OccupancyData {
+  date: string;
+  total_rooms: number;
+  booked_rooms: number;
+  rate: number;
+}
+
+export interface TopHotel {
+  hotel: { id: number; name: string; slug?: string };
+  revenue: number;
+  bookings: number;
+  avg_rating: number;
+}
+
+export interface DashboardRevenuePoint {
+  date: string;
+  revenue: number;
 }
 
 export interface StatusPoint {
@@ -111,7 +131,7 @@ const formDataWithFiles = (name: string, files: FileList | File[]) => {
 
 export const adminApi = {
   stats: () => apiClient.get<DashboardStats>('/admin/dashboard/stats'),
-  revenueChart: () => apiClient.get<{ data: RevenuePoint[] }>('/admin/dashboard/revenue-chart'),
+  revenueChart: () => apiClient.get<{ data: DashboardRevenuePoint[] }>('/admin/dashboard/revenue-chart'),
   bookingStatus: () => apiClient.get<{ data: StatusPoint[] }>('/admin/dashboard/booking-status'),
 
   locations: (params?: Record<string, string | number>) => apiClient.get<Paginated<Location>>('/admin/locations', { params }),
@@ -209,4 +229,9 @@ export const adminApi = {
   updateSupportTicketStatus: (id: number, data: { status?: string; priority?: string }) => apiClient.patch<SupportTicket>(`/admin/support/tickets/${id}/status`, data),
 
   auditLogs: (params?: Record<string, string | number>) => apiClient.get<Paginated<AuditLogEntry>>('/admin/audit-logs', { params }),
+
+  analyticsRevenue: (params?: Record<string, string | number>) => apiClient.get<{ data: RevenuePoint[] }>('/admin/analytics/revenue', { params }),
+  analyticsOccupancy: (params?: Record<string, string | number>) => apiClient.get<{ data: OccupancyData[] }>('/admin/analytics/occupancy', { params }),
+  analyticsTopHotels: (params?: Record<string, string | number>) => apiClient.get<{ data: TopHotel[] }>('/admin/analytics/top-hotels', { params }),
+  analyticsExport: (params?: Record<string, string | number>) => apiClient.get<Blob>('/admin/analytics/export', { params, responseType: 'blob' }),
 };

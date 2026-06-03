@@ -7,6 +7,7 @@ import { useI18n } from '../../shared/i18n/useI18n';
 import { formatDateForLocale, formatVndForLocale } from '../../shared/i18n/format';
 import ErrorState from '../components/common/ErrorState';
 import EmptyState from '../components/common/EmptyState';
+import BookingCountdown from '../components/BookingCountdown';
 
 const statusColors: Record<string, string> = {
   pending: 'bg-badge-pending-bg text-badge-pending-text',
@@ -110,6 +111,14 @@ export default function MyBookingsPage() {
                     <div className="mt-2 text-lg font-bold text-primary">{formatVndForLocale(booking.total_price, locale)}</div>
                     <div className="text-[11px] text-text-secondary">{t('booking.bookingCode')}: #{booking.booking_code}</div>
                     <div className="mt-1 text-[11px] font-semibold text-primary transition-spring-fast group-hover:underline">{t('common.viewDetails')}</div>
+                    {booking.status === 'pending' && (booking as { expires_at?: string }).expires_at && (
+                      <div className="mt-2">
+                        <BookingCountdown
+                          expiresAt={(booking as { expires_at?: string }).expires_at}
+                          compact
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

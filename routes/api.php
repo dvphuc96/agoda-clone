@@ -3,8 +3,10 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PasswordResetController;
 use App\Http\Controllers\Api\BookingController;
+use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\LocationController;
+use App\Http\Controllers\Api\SocialAuthController;
 use App\Http\Controllers\Api\SupportTicketController;
 use App\Http\Controllers\Api\HotelController;
 use App\Http\Controllers\Api\PaymentController;
@@ -34,9 +36,15 @@ use App\Http\Controllers\Api\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\Api\Admin\PriceOverrideController as AdminPriceOverrideController;
 use App\Http\Controllers\Api\Admin\InvoiceController as AdminInvoiceController;
 use App\Http\Controllers\Api\Admin\SupportTicketController as AdminSupportTicketController;
+use App\Http\Controllers\Api\Admin\AnalyticsController as AdminAnalyticsController;
 use App\Http\Controllers\Api\Admin\AuditLogController as AdminAuditLogController;
 use App\Http\Controllers\Api\Admin\BookingModificationController as AdminBookingModificationController;
 use App\Http\Controllers\Api\BookingModificationController;
+use App\Http\Controllers\Api\Partner\PartnerDashboardController;
+use App\Http\Controllers\Api\Partner\PartnerHotelController;
+use App\Http\Controllers\Api\Partner\PartnerRoomTypeController;
+use App\Http\Controllers\Api\Partner\PartnerBookingController;
+use App\Http\Controllers\Api\Partner\PartnerPriceOverrideController;
 use Illuminate\Support\Facades\Route;
 
 // Auth routes
@@ -45,6 +53,11 @@ Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail']);
     Route::post('/reset-password', [PasswordResetController::class, 'reset']);
+
+    // Social login
+    Route::get('/social/{provider}/redirect', [SocialAuthController::class, 'redirect']);
+    Route::get('/social/{provider}/callback', [SocialAuthController::class, 'callback']);
+    Route::post('/social/{provider}/token', [SocialAuthController::class, 'token']);
 });
 
 // Location routes
@@ -59,6 +72,7 @@ Route::get('/hotels/{slug}/rooms', [HotelController::class, 'rooms']);
 
 // Room type routes
 Route::get('/room-types/{roomType}', [RoomTypeController::class, 'show']);
+Route::get('/room-types/{roomType}/availability-calendar', [RoomTypeController::class, 'availabilityCalendar']);
 
 // Review routes (public)
 Route::get('/hotels/{slug}/reviews', [ReviewController::class, 'index']);
@@ -74,6 +88,12 @@ Route::get('/transfers/hotels/{hotel}/quotes', [TransferController::class, 'hote
 // Payment callbacks (public - gateway redirects)
 Route::get('/payments/vnpay/callback', [PaymentController::class, 'vnpayCallback']);
 Route::get('/payments/momo/callback', [PaymentController::class, 'momoCallback']);
+
+// Chat routes (auth optional - guests can create sessions too)
+Route::post('/chat/sessions', [ChatController::class, 'storeSession']);
+Route::get('/chat/sessions', [ChatController::class, 'getSessions']);
+Route::post('/chat/sessions/{session}/messages', [ChatController::class, 'sendMessage']);
+Route::get('/chat/sessions/{session}/messages', [ChatController::class, 'getMessages']);
 
 // Authenticated routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -125,6 +145,28 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/support/tickets', [SupportTicketController::class, 'store']);
     Route::get('/support/tickets/{id}', [SupportTicketController::class, 'show']);
     Route::post('/support/tickets/{id}/messages', [SupportTicketController::class, 'reply']);
+
+    // Partner routes
+    Route::middleware(['isHotelOwner'])->prefix('partner')->group(function () {
+        Route::get('/dashboard/stats', [PartnerDashboardController::class, 'stats']);
+
+        Route::get('/hotels', [PartnerHotelController::class, 'index']);
+        Route::get('/hotels/{hotel}', [PartnerHotelController::class, 'show']);
+        Route::put('/hotels/{hotel}', [PartnerHotelController::class, 'update']);
+
+        Route::get('/hotels/{hotel}/room-types', [PartnerRoomTypeController::class, 'index']);
+        Route::post('/hotels/{hotel}/room-types', [PartnerRoomTypeController::class, 'store']);
+        Route::get('/room-types/{roomType}', [PartnerRoomTypeController::class, 'show']);
+        Route::put('/room-types/{roomType}', [PartnerRoomTypeController::class, 'update']);
+
+        Route::get('/bookings', [PartnerBookingController::class, 'index']);
+        Route::get('/bookings/{booking}', [PartnerBookingController::class, 'show']);
+
+        Route::get('/room-types/{roomType}/price-overrides', [PartnerPriceOverrideController::class, 'index']);
+        Route::post('/room-types/{roomType}/price-overrides', [PartnerPriceOverrideController::class, 'store']);
+        Route::put('/price-overrides/{priceOverride}', [PartnerPriceOverrideController::class, 'update']);
+        Route::patch('/price-overrides/{priceOverride}/toggle-active', [PartnerPriceOverrideController::class, 'toggleActive']);
+    });
 });
 
 Route::middleware(['auth:sanctum', 'isAdmin'])->prefix('admin')->group(function () {
@@ -167,6 +209,9 @@ Route::middleware(['auth:sanctum', 'isAdmin'])->prefix('admin')->group(function 
     Route::get('/users/{user}', [AdminUserController::class, 'show']);
     Route::patch('/users/{user}/role', [AdminUserController::class, 'updateRole']);
     Route::patch('/users/{user}/toggle-active', [AdminUserController::class, 'toggleActive']);
+    Route::get('/users/{user}/hotels', [AdminUserController::class, 'hotels']);
+    Route::post('/users/{user}/hotels', [AdminUserController::class, 'assignHotel']);
+    Route::delete('/users/{user}/hotels/{hotel}', [AdminUserController::class, 'removeHotel']);
 
     Route::get('/refunds', [AdminRefundController::class, 'index']);
     Route::get('/refunds/{refund}', [AdminRefundController::class, 'show']);
@@ -207,4 +252,10 @@ Route::middleware(['auth:sanctum', 'isAdmin'])->prefix('admin')->group(function 
 
     // Audit logs
     Route::get('/audit-logs', [AdminAuditLogController::class, 'index']);
+
+    // Analytics
+    Route::get('/analytics/revenue', [AdminAnalyticsController::class, 'revenue']);
+    Route::get('/analytics/occupancy', [AdminAnalyticsController::class, 'occupancy']);
+    Route::get('/analytics/top-hotels', [AdminAnalyticsController::class, 'topHotels']);
+    Route::get('/analytics/export', [AdminAnalyticsController::class, 'export']);
 });

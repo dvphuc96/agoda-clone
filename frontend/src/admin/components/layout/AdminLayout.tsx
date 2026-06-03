@@ -1,10 +1,11 @@
-import { BarChart3, BedDouble, Building2, CarFront, ClipboardList, CreditCard, Headset, Home, LogOut, MapPinned, Menu, MessageSquare, PencilLine, RotateCcw, ScrollText, Tag, Users } from 'lucide-react';
+import { BarChart3, BedDouble, Building2, CarFront, ClipboardList, CreditCard, Headset, Home, LineChart as LineChartIcon, LogOut, MapPinned, Menu, MessageSquare, PencilLine, RotateCcw, ScrollText, Tag, Users } from 'lucide-react';
 import { useState } from 'react';
 import { Link, NavLink, Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../../../shared/contexts/AuthContext';
 
 const navItems = [
   { to: '/admin/dashboard', label: 'Dashboard', icon: BarChart3 },
+  { to: '/admin/analytics', label: 'Analytics', icon: LineChartIcon },
   { to: '/admin/locations', label: 'Locations', icon: MapPinned },
   { to: '/admin/hotels', label: 'Hotels', icon: Building2 },
   { to: '/admin/bookings', label: 'Bookings', icon: BedDouble },

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\HotelResource;
+use App\Models\Hotel;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -44,5 +46,38 @@ class UserController extends Controller
         $user->update(['is_active' => !($user->is_active ?? true)]);
 
         return response()->json($user->refresh()->loadCount('bookings'));
+    }
+
+    public function hotels(User $user)
+    {
+        return HotelResource::collection(
+            $user->ownedHotels()->with(['location', 'images'])->paginate(15)
+        );
+    }
+
+    public function assignHotel(Request $request, User $user): JsonResponse
+    {
+        $data = $request->validate([
+            'hotel_id' => ['required', 'exists:hotels,id'],
+            'role' => ['sometimes', 'in:owner,manager'],
+        ]);
+
+        $user->ownedHotels()->syncWithoutDetaching([
+            $data['hotel_id'] => ['role' => $data['role'] ?? 'owner'],
+        ]);
+
+        return response()->json([
+            'message' => 'Hotel assigned to user successfully.',
+            'data' => HotelResource::collection($user->refresh()->ownedHotels()->get()),
+        ]);
+    }
+
+    public function removeHotel(User $user, Hotel $hotel): JsonResponse
+    {
+        $user->ownedHotels()->detach($hotel->id);
+
+        return response()->json([
+            'message' => 'Hotel removed from user successfully.',
+        ]);
     }
 }

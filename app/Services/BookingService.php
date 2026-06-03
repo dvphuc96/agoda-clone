@@ -68,6 +68,7 @@ class BookingService
                 'total_price' => $finalPrice,
                 'discount_amount' => $discountAmount,
                 'status' => 'pending',
+                'expires_at' => now()->addMinutes(config('booking.hold_minutes', 30)),
             ]);
 
             if ($coupon && $discountAmount > 0) {

@@ -41,6 +41,8 @@ class BookingResource extends JsonResource
             'total_price' => $this->total_price,
             'discount_amount' => (float) ($this->discount_amount ?? 0),
             'status' => $this->status,
+            'expires_at' => $this->expires_at?->format('Y-m-d H:i:s'),
+            'remaining_seconds' => $this->remaining_seconds,
             'nights' => $this->check_in->diffInDays($this->check_out),
             'cancellation' => $cancellation,
             'user' => $this->whenLoaded('user', fn () => [

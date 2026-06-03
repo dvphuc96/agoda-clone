@@ -2,6 +2,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import BookingProgressBar from '../components/common/BookingProgressBar';
+import ChatWidget from '../components/chat/ChatWidget';
 import { ToastProvider } from '../../shared/components/Toast';
 
 export default function ClientLayout() {
@@ -20,6 +21,7 @@ export default function ClientLayout() {
           <Outlet />
         </main>
         <Footer />
+        <ChatWidget />
       </div>
     </ToastProvider>
   );

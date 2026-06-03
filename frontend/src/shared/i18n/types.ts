@@ -77,6 +77,11 @@ export type Messages = {
     budgetAnswer: string;
     searching: string;
     foundResults: string;
+    inputPlaceholder: string;
+    sending: string;
+    noSessions: string;
+    newChat: string;
+    assistantTitle: string;
   };
   regions: Record<string, string>;
   searchForm: {
@@ -185,6 +190,13 @@ export type Messages = {
     passwordMismatch: string;
     requiredTitle: string;
     requiredBookingBody: string;
+    orContinueWith: string;
+    continueWithGoogle: string;
+    continueWithFacebook: string;
+    socialLoginFailed: string;
+    socialCallbackTitle: string;
+    socialCallbackBody: string;
+    socialCallbackFailed: string;
   };
   booking: {
     title: string;
@@ -254,6 +266,11 @@ export type Messages = {
     checkOut: string;
     pricePerNight: string;
     subtotal: string;
+    expiresAt: string;
+    remaining: string;
+    expiredTitle: string;
+    expiredBody: string;
+    searchAgain: string;
   };
   coupons: {
     enterCode: string;
