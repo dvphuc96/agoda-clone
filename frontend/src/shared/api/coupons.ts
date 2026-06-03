@@ -34,6 +34,8 @@ export interface ValidateCouponError {
   message?: string;
 }
 
+export type CouponPayload = Partial<Omit<Coupon, 'id' | 'used_count' | 'remaining_uses' | 'created_at' | 'updated_at'>>;
+
 export const couponsApi = {
   validate: (data: { code: string; booking_value: number; hotel_id?: number }) =>
     apiClient.post<ValidateCouponResponseData>('/coupons/validate', data),

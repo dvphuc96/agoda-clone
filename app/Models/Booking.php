@@ -14,9 +14,8 @@ class Booking extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'room_type_id', 'booking_code', 'check_in', 'check_out',
-        'guests', 'special_requests', 'total_price', 'status',
-        'coupon_id', 'discount_amount',
+        'user_id', 'room_type_id', 'coupon_id', 'booking_code', 'check_in', 'check_out',
+        'guests', 'special_requests', 'total_price', 'discount_amount', 'status', 'modified_at',
     ];
 
     protected function casts(): array
@@ -25,6 +24,8 @@ class Booking extends Model
             'check_in' => 'date',
             'check_out' => 'date',
             'total_price' => 'decimal:2',
+            'discount_amount' => 'decimal:2',
+            'modified_at' => 'datetime',
         ];
     }
 
@@ -73,5 +74,15 @@ class Booking extends Model
     public function review(): HasOne
     {
         return $this->hasOne(Review::class);
+    }
+
+    public function modifications(): HasMany
+    {
+        return $this->hasMany(BookingModification::class);
+    }
+
+    public function latestModification()
+    {
+        return $this->hasOne(BookingModification::class)->latestOfMany();
     }
 }

@@ -39,7 +39,7 @@ class BookingResource extends JsonResource
             'guests' => $this->guests,
             'special_requests' => $this->special_requests,
             'total_price' => $this->total_price,
-            'discount_amount' => $this->discount_amount,
+            'discount_amount' => (float) ($this->discount_amount ?? 0),
             'status' => $this->status,
             'nights' => $this->check_in->diffInDays($this->check_out),
             'cancellation' => $cancellation,
@@ -55,6 +55,8 @@ class BookingResource extends JsonResource
             'payments' => PaymentResource::collection($this->whenLoaded('payments')),
             'refunds' => RefundResource::collection($this->whenLoaded('refunds')),
             'transfer_bookings' => TransferBookingResource::collection($this->whenLoaded('transferBookings')),
+            'modifications' => BookingModificationResource::collection($this->whenLoaded('modifications')),
+            'modified_at' => $this->modified_at?->format('Y-m-d H:i:s'),
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
         ];
     }

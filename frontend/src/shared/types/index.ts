@@ -19,6 +19,7 @@ export type {
   ValidateCouponResponse,
 } from '../api/coupons';
 export type { Refund, CancelRequestData } from '../api/refunds';
+export type { BookingModification, RequestModificationData } from '../api/modifications';
 export type { Notification } from '../api/notifications';
 export type { BookingPolicy, BookingPolicyPayload, CancellationPolicySummary } from '../api/policies';
 export type {

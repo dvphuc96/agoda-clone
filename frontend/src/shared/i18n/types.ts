@@ -406,6 +406,25 @@ export type Messages = {
     rejected: string;
     loadMore: string;
   };
+  bookingModification: {
+    pageTitle: string;
+    currentBooking: string;
+    newDetails: string;
+    pricePreview: string;
+    newNights: string;
+    pricePerNight: string;
+    newTotal: string;
+    priceDifference: string;
+    additionalPayment: string;
+    refundNote: string;
+    autoApproveNotice: string;
+    requiresApprovalNotice: string;
+    submitRequest: string;
+    submitFailure: string;
+    notEligibleTitle: string;
+    notEligibleBody: string;
+    modifyBooking: string;
+  };
   footer: {
     tagline: string;
     company: string;
