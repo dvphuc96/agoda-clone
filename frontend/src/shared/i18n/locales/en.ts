@@ -414,4 +414,19 @@ export const en: Messages = {
     air_conditioning: 'Air conditioning',
     breakfast: 'Breakfast',
   },
+  map: {
+    title: 'Map View',
+    listView: 'List',
+    mapView: 'Map',
+    splitView: 'Split',
+    hotelsInArea: 'Hotels in this area',
+    viewDetails: 'View Details',
+    loading: 'Loading map...',
+  },
+  recentlyViewed: {
+    title: 'Recently Viewed',
+    empty: 'No recently viewed hotels',
+    clearAll: 'Clear All',
+    cleared: 'History cleared',
+  },
 };
