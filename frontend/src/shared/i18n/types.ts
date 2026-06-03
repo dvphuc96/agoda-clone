@@ -345,6 +345,32 @@ export type Messages = {
     bookingCode: string;
     total: string;
   };
+  reviews: {
+    title: string;
+    noReviews: string;
+    anonymous: string;
+    writeReview: string;
+    rating: string;
+    ratingLabel: string;
+    commentLabel: string;
+    commentPlaceholder: string;
+    titleLabel: string;
+    titlePlaceholder: string;
+    submit: string;
+    submitting: string;
+    success: string;
+    failure: string;
+    loginRequired: string;
+    editReview: string;
+    deleteReview: string;
+    deleteConfirm: string;
+    avgRating: string;
+    reviewsCount: string;
+    pending: string;
+    approved: string;
+    rejected: string;
+    loadMore: string;
+  };
   footer: {
     tagline: string;
     company: string;

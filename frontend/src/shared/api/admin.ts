@@ -6,6 +6,7 @@ import type { Refund } from './refunds';
 import type { BookingPolicy, BookingPolicyPayload } from './policies';
 import type { TransferBooking, TransferRoute, TransferStatus, TransferVehicleType } from './transfers';
 import type { Coupon } from './coupons';
+import type { Review } from './reviews';
 
 export interface Paginated<T> {
   data: T[];
@@ -168,4 +169,9 @@ export const adminApi = {
   updateCoupon: (id: number, data: Partial<Coupon>) => apiClient.put<{ data: Coupon; message: string }>(`/admin/coupons/${id}`, data),
   deleteCoupon: (id: number) => apiClient.delete<{ message: string }>(`/admin/coupons/${id}`),
   toggleCouponActive: (id: number) => apiClient.patch<{ data: Coupon; message: string }>(`/admin/coupons/${id}/toggle-active`),
+
+  reviews: (params?: Record<string, string | number>) => apiClient.get<Paginated<Review>>('/admin/reviews', { params }),
+  review: (id: number) => apiClient.get<Review>(`/admin/reviews/${id}`),
+  updateReviewStatus: (id: number, status: string) => apiClient.patch<Review>(`/admin/reviews/${id}/status`, { status }),
+  deleteReview: (id: number) => apiClient.delete(`/admin/reviews/${id}`),
 };

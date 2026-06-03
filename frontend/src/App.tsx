@@ -27,6 +27,7 @@ const AdminPolicyListPage = lazy(() => import('./admin/pages/policies/PolicyList
 const AdminUserListPage = lazy(() => import('./admin/pages/users/UserListPage'));
 const AdminTransferListPage = lazy(() => import('./admin/pages/transfers/TransferListPage'));
 const AdminCouponListPage = lazy(() => import('./admin/pages/coupons/CouponListPage'));
+const AdminReviewListPage = lazy(() => import('./admin/pages/reviews/ReviewListPage'));
 
 const adminFallback = <div className="flex min-h-screen items-center justify-center bg-slate-100 text-slate-600">Loading admin…</div>;
 
@@ -70,6 +71,7 @@ export default function App() {
                 <Route path="policies" element={<Suspense fallback={adminFallback}><AdminPolicyListPage /></Suspense>} />
                 <Route path="transfers" element={<Suspense fallback={adminFallback}><AdminTransferListPage /></Suspense>} />
                 <Route path="coupons" element={<Suspense fallback={adminFallback}><AdminCouponListPage /></Suspense>} />
+                <Route path="reviews" element={<Suspense fallback={adminFallback}><AdminReviewListPage /></Suspense>} />
                 <Route path="users" element={<Suspense fallback={adminFallback}><AdminUserListPage /></Suspense>} />
               </Route>
             </Routes>

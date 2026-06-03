@@ -53,6 +53,9 @@ export interface Hotel {
   room_types: RoomType[];
   min_price?: string;
   max_price?: string;
+  reviews_count?: number;
+  avg_rating?: number | null;
+  latest_reviews?: import('./reviews').Review[];
 }
 
 export interface PaginatedResponse<T> {

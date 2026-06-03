@@ -8,6 +8,8 @@ import ImageGallery from '../components/hotel/ImageGallery';
 import HotelInfo from '../components/hotel/HotelInfo';
 import RoomTypeCard from '../components/hotel/RoomTypeCard';
 import { getRoomsSectionLinkClasses } from '../components/hotel/roomsSectionState';
+import ReviewSummary from '../components/hotel/ReviewSummary';
+import ReviewList from '../components/hotel/ReviewList';
 
 const vndFormatter = new Intl.NumberFormat('vi-VN');
 
@@ -112,6 +114,15 @@ export default function HotelDetailPage() {
                   ))}
                 </div>
               )}
+            </div>
+
+            {/* Reviews section */}
+            <div id="reviews" className="scroll-mt-24">
+              <h2 className="mb-5 text-xl font-bold tracking-tight text-text">{t('reviews.title')}</h2>
+              <div className="mb-6">
+                <ReviewSummary avgRating={hotel.avg_rating} reviewsCount={hotel.reviews_count ?? 0} />
+              </div>
+              <ReviewList hotelSlug={hotel.slug} />
             </div>
           </div>
 

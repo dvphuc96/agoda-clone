@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 
 class Booking extends Model
@@ -67,5 +68,10 @@ class Booking extends Model
     public function transferBookings(): HasMany
     {
         return $this->hasMany(TransferBooking::class);
+    }
+
+    public function review(): HasOne
+    {
+        return $this->hasOne(Review::class);
     }
 }

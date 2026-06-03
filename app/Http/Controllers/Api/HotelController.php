@@ -115,7 +115,7 @@ class HotelController extends Controller
     {
         $hotel = Hotel::where('slug', $slug)
             ->where('status', 'active')
-            ->with(['location', 'images', 'roomTypes.images'])
+            ->with(['location', 'images', 'roomTypes.images', 'reviews.user'])
             ->firstOrFail();
 
         return response()->json(new HotelResource($hotel));

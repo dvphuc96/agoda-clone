@@ -34,6 +34,11 @@ class HotelResource extends JsonResource
             'max_price' => $this->whenLoaded('roomTypes', function () {
                 return $this->roomTypes->max('price_per_night');
             }),
+            'reviews_count' => $this->whenLoaded('reviews', fn () => $this->reviews->where('status', 'approved')->count()),
+            'avg_rating' => $this->whenLoaded('reviews', fn () => round($this->reviews->where('status', 'approved')->avg('rating') ?? 0, 1) ?: null),
+            'latest_reviews' => ReviewResource::collection(
+                $this->whenLoaded('reviews', fn () => $this->reviews->where('status', 'approved')->take(3))
+            ),
         ];
     }
 }
