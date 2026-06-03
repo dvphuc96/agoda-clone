@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\PasswordResetController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\LocationController;
+use App\Http\Controllers\Api\SupportTicketController;
 use App\Http\Controllers\Api\HotelController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ProfileController;
@@ -32,6 +33,8 @@ use App\Http\Controllers\Api\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Api\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\Api\Admin\PriceOverrideController as AdminPriceOverrideController;
 use App\Http\Controllers\Api\Admin\InvoiceController as AdminInvoiceController;
+use App\Http\Controllers\Api\Admin\SupportTicketController as AdminSupportTicketController;
+use App\Http\Controllers\Api\Admin\AuditLogController as AdminAuditLogController;
 use App\Http\Controllers\Api\Admin\BookingModificationController as AdminBookingModificationController;
 use App\Http\Controllers\Api\BookingModificationController;
 use Illuminate\Support\Facades\Route;
@@ -116,6 +119,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/wishlists/toggle', [WishlistController::class, 'toggle']);
     Route::delete('/wishlists/{hotel}', [WishlistController::class, 'destroy']);
     Route::get('/wishlists/check/{hotel}', [WishlistController::class, 'check']);
+
+    // Support tickets
+    Route::get('/support/tickets', [SupportTicketController::class, 'index']);
+    Route::post('/support/tickets', [SupportTicketController::class, 'store']);
+    Route::get('/support/tickets/{id}', [SupportTicketController::class, 'show']);
+    Route::post('/support/tickets/{id}/messages', [SupportTicketController::class, 'reply']);
 });
 
 Route::middleware(['auth:sanctum', 'isAdmin'])->prefix('admin')->group(function () {
@@ -189,4 +198,13 @@ Route::middleware(['auth:sanctum', 'isAdmin'])->prefix('admin')->group(function 
     Route::get('/modifications/{modification}', [AdminBookingModificationController::class, 'show']);
     Route::patch('/modifications/{modification}/approve', [AdminBookingModificationController::class, 'approve']);
     Route::patch('/modifications/{modification}/reject', [AdminBookingModificationController::class, 'reject']);
+
+    // Support tickets
+    Route::get('/support/tickets', [AdminSupportTicketController::class, 'index']);
+    Route::get('/support/tickets/{id}', [AdminSupportTicketController::class, 'show']);
+    Route::post('/support/tickets/{id}/messages', [AdminSupportTicketController::class, 'reply']);
+    Route::patch('/support/tickets/{id}/status', [AdminSupportTicketController::class, 'updateStatus']);
+
+    // Audit logs
+    Route::get('/audit-logs', [AdminAuditLogController::class, 'index']);
 });

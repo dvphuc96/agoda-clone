@@ -19,6 +19,7 @@ import ModifyBookingPage from './client/pages/ModifyBookingPage';
 import NotificationsPage from './client/pages/NotificationsPage';
 import WishlistPage from './client/pages/WishlistPage';
 import ProfilePage from './client/pages/ProfilePage';
+import SupportPage from './client/pages/SupportPage';
 
 const AdminLayout = lazy(() => import('./admin/components/layout/AdminLayout'));
 const AdminDashboardPage = lazy(() => import('./admin/pages/DashboardPage'));
@@ -35,6 +36,8 @@ const AdminCouponListPage = lazy(() => import('./admin/pages/coupons/CouponListP
 const AdminReviewListPage = lazy(() => import('./admin/pages/reviews/ReviewListPage'));
 const AdminModificationListPage = lazy(() => import('./admin/pages/modifications/ModificationListPage'));
 const AdminPriceOverrideListPage = lazy(() => import('./admin/pages/hotels/PriceOverrideListPage'));
+const AdminSupportListPage = lazy(() => import('./admin/pages/support/SupportListPage'));
+const AdminAuditLogPage = lazy(() => import('./admin/pages/audit/AuditLogPage'));
 
 const adminFallback = <div className="flex min-h-screen items-center justify-center bg-slate-100 text-slate-600">Loading admin…</div>;
 
@@ -70,6 +73,7 @@ export default function App() {
                 <Route path="/notifications" element={<NotificationsPage />} />
                 <Route path="/wishlist" element={<WishlistPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/support" element={<SupportPage />} />
               </Route>
               <Route path="/admin" element={<Suspense fallback={adminFallback}><AdminLayout /></Suspense>}>
                 <Route index element={<Navigate to="/admin/dashboard" replace />} />
@@ -87,6 +91,8 @@ export default function App() {
                 <Route path="modifications" element={<Suspense fallback={adminFallback}><AdminModificationListPage /></Suspense>} />
                 <Route path="hotels/:hotelId/rooms/:roomTypeId/price-overrides" element={<Suspense fallback={adminFallback}><AdminPriceOverrideListPage /></Suspense>} />
                 <Route path="users" element={<Suspense fallback={adminFallback}><AdminUserListPage /></Suspense>} />
+                <Route path="support" element={<Suspense fallback={adminFallback}><AdminSupportListPage /></Suspense>} />
+                <Route path="audit-logs" element={<Suspense fallback={adminFallback}><AdminAuditLogPage /></Suspense>} />
               </Route>
             </Routes>
           </BrowserRouter>

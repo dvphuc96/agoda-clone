@@ -32,6 +32,7 @@ export type Messages = {
     login: string;
     logout: string;
     profile: string;
+    support: string;
   };
   home: {
     eyebrow: string;
@@ -548,6 +549,58 @@ export type Messages = {
     fileTooLarge: string;
     showPassword: string;
     hidePassword: string;
+  };
+  support: {
+    title: string;
+    subtitle: string;
+    subject: string;
+    subjectPlaceholder: string;
+    category: string;
+    categoryBooking: string;
+    categoryPayment: string;
+    categoryHotel: string;
+    categoryTransfer: string;
+    categoryOther: string;
+    bookingCode: string;
+    bookingCodePlaceholder: string;
+    message: string;
+    messagePlaceholder: string;
+    send: string;
+    sending: string;
+    reply: string;
+    replyPlaceholder: string;
+    status: string;
+    statusOpen: string;
+    statusInProgress: string;
+    statusResolved: string;
+    statusClosed: string;
+    priority: string;
+    priorityLow: string;
+    priorityNormal: string;
+    priorityHigh: string;
+    priorityUrgent: string;
+    noTickets: string;
+    createTicket: string;
+    createSuccess: string;
+    replySuccess: string;
+    ticketClosed: string;
+  };
+  auditLog: {
+    title: string;
+    subtitle: string;
+    user: string;
+    action: string;
+    subject: string;
+    date: string;
+    details: string;
+    filterUser: string;
+    filterAction: string;
+    filterDate: string;
+    noLogs: string;
+    actionCreated: string;
+    actionUpdated: string;
+    actionDeleted: string;
+    actionToggled: string;
   };
 };
 
