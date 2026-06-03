@@ -132,17 +132,6 @@ export default function Navbar() {
               {isAuthenticated ? (
                 <>
                   <Link
-                    to="/bookings"
-                    className={`rounded-lg px-3 py-1.5 text-[0.82rem] font-medium transition-colors duration-200 ${
-                      scrolled || !isHome
-                        ? 'text-text-secondary hover:text-primary hover:bg-tab/50'
-                        : 'text-text-secondary hover:text-primary hover:bg-tab/50'
-                    }`}
-                  >
-                    {t('nav.myBookings')}
-                  </Link>
-
-                  <Link
                     to="/wishlist"
                     className="relative grid size-9 place-items-center rounded-full text-text-secondary transition-all duration-200 hover:bg-tab/60 hover:text-primary"
                     aria-label={t('nav.wishlist')}
