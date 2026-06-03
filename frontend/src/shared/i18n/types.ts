@@ -31,6 +31,7 @@ export type Messages = {
     wishlist: string;
     login: string;
     logout: string;
+    profile: string;
   };
   home: {
     eyebrow: string;
@@ -174,7 +175,12 @@ export type Messages = {
     createAccount: string;
     loginInstead: string;
     loginError: string;
+    loginSuccess: string;
     registerError: string;
+    registerSuccess: string;
+    invalidEmail: string;
+    invalidPhone: string;
+    passwordTooShort: string;
     passwordMismatch: string;
     requiredTitle: string;
     requiredBookingBody: string;
@@ -198,6 +204,7 @@ export type Messages = {
     defaultRoomName: string;
     defaultHotelName: string;
     failure: string;
+    success: string;
     status: string;
     createdAt: string;
     cancel: string;
@@ -232,6 +239,20 @@ export type Messages = {
     refundRejected: string;
     refundProcessed: string;
     notEligibleForCancel: string;
+    progressSearch: string;
+    progressHotel: string;
+    progressBooking: string;
+    progressPayment: string;
+    progressConfirmation: string;
+    copyCode: string;
+    copied: string;
+    celebrationTitle: string;
+    celebrationSubtitle: string;
+    continueSearching: string;
+    checkIn: string;
+    checkOut: string;
+    pricePerNight: string;
+    subtotal: string;
   };
   coupons: {
     enterCode: string;

@@ -47,35 +47,43 @@ export default function PriceSummary({ room, hotelName, checkIn, checkOut, night
       </div>
 
       {/* Price Breakdown */}
-      <div className="space-y-2 mb-4 pb-4 border-b border-border/50">
+      <div className="space-y-2.5 mb-4 pb-4 border-b border-border/50">
         <div className="flex flex-wrap justify-between gap-x-3 gap-y-1 text-sm">
-          <span className="text-text-secondary">{formatPrice(room.price_per_night)} x {t('booking.nights', { count: nights })}</span>
-          <span className="text-text">{formatPrice(totals.roomTotal)}</span>
+          <span className="text-text-secondary">
+            {formatPrice(room.price_per_night)} {t('booking.pricePerNight').toLowerCase()} x {nights} {t('booking.nights', { count: nights }).toLowerCase()}
+          </span>
+          <span className="font-medium text-text">{formatPrice(totals.roomTotal)}</span>
         </div>
         {transferQuote && (
           <div className="flex flex-wrap justify-between gap-x-3 gap-y-1 text-sm">
             <span className="text-text-secondary">
-              {t('transfers.nav')} - {transferQuote.vehicle_type.name} ({transferQuote.airport_code})
+              {t('transfers.nav')} — {transferQuote.vehicle_type.name} ({transferQuote.airport_code})
             </span>
-            <span className="text-text">{formatPrice(totals.transferTotal)}</span>
+            <span className="font-medium text-text">{formatPrice(totals.transferTotal)}</span>
           </div>
         )}
         <div className="flex flex-wrap justify-between gap-x-3 gap-y-1 text-sm">
           <span className="text-text-secondary">{t('booking.taxes')}</span>
-          <span className="text-text">{formatZeroPrice()}</span>
+          <span className="font-medium text-text">{formatZeroPrice()}</span>
         </div>
         {discount > 0 && (
-          <div className="flex flex-wrap justify-between gap-x-3 gap-y-1 text-sm text-emerald-600 dark:text-emerald-400">
+          <div className="flex flex-wrap justify-between gap-x-3 gap-y-1 text-sm text-emerald-600">
             <span className="font-medium">{t('coupons.discount')}</span>
             <span className="font-medium">-{formatPrice(totals.discountAmount)}</span>
           </div>
         )}
       </div>
 
-      {/* Total */}
-      <div className="flex flex-wrap justify-between items-center gap-x-3 gap-y-1">
-        <span className="font-bold text-text">{t('booking.total')}</span>
-        <span className="text-xl font-bold text-primary">{formatPrice(totals.grandTotal)}</span>
+      {/* Subtotal & Total */}
+      <div className="space-y-2">
+        <div className="flex flex-wrap justify-between gap-x-3 gap-y-1 text-sm">
+          <span className="text-text-secondary">{t('booking.subtotal')}</span>
+          <span className="font-medium text-text">{formatPrice(totals.roomTotal + totals.transferTotal - totals.discountAmount)}</span>
+        </div>
+        <div className="flex flex-wrap justify-between items-center gap-x-3 gap-y-1 pt-2 border-t border-border/50">
+          <span className="font-bold text-text">{t('booking.total')}</span>
+          <span className="text-xl font-bold text-primary">{formatPrice(totals.grandTotal)}</span>
+        </div>
       </div>
     </div>
   );

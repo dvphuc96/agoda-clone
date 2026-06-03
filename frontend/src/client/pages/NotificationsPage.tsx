@@ -1,9 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { Bell } from 'lucide-react';
+import { BellOff } from 'lucide-react';
 import { notificationsApi } from '../../shared/api/notifications';
 import { useI18n } from '../../shared/i18n/useI18n';
 import { formatDateForLocale } from '../../shared/i18n/format';
+import ErrorState from '../components/common/ErrorState';
+import EmptyState from '../components/common/EmptyState';
 
 export default function NotificationsPage() {
   const { locale, t } = useI18n();
@@ -30,11 +32,13 @@ export default function NotificationsPage() {
 
   if (isError) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-16 text-center md:px-8">
-        <h2 className="text-xl font-bold text-text">{t('common.error')}</h2>
-        <Link to="/" className="mt-4 inline-flex rounded-full bg-primary px-6 py-2 text-sm font-semibold text-white transition-spring-fast hover:bg-primary-hover active:scale-[0.97]">
-          {t('common.home')}
-        </Link>
+      <div className="mx-auto max-w-3xl px-4 py-12 md:px-8 md:py-16">
+        <h1 className="mb-6 text-2xl font-bold tracking-tight text-text">{t('notifications.title')}</h1>
+        <ErrorState
+          title={t('common.error')}
+          onRetry={() => window.location.reload()}
+          retryLabel={t('common.retry')}
+        />
       </div>
     );
   }
@@ -51,13 +55,11 @@ export default function NotificationsPage() {
       <h1 className="mb-6 text-2xl font-bold tracking-tight text-text">{t('notifications.title')}</h1>
 
       {notifications.length === 0 ? (
-        <div className="rounded-2xl bg-surface p-10 text-center shadow-sm">
-          <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full bg-tab text-text-secondary">
-            <Bell className="size-5" />
-          </div>
-          <h3 className="text-lg font-semibold text-text">{t('notifications.emptyTitle')}</h3>
-          <p className="mt-1 text-sm text-text-secondary">{t('notifications.emptyBody')}</p>
-        </div>
+        <EmptyState
+          icon={<BellOff className="size-7 text-primary" />}
+          title={t('notifications.emptyTitle')}
+          description={t('notifications.emptyBody')}
+        />
       ) : (
         <div className="space-y-3">
           {notifications.map((n) => (

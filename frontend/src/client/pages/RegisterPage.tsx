@@ -3,10 +3,13 @@ import { ArrowRight, UserRoundPlus } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../shared/contexts/AuthContext';
 import { useI18n } from '../../shared/i18n/useI18n';
+import { useToast } from '../../shared/components/Toast';
+import { validateEmail, validatePhone, validatePassword } from '../../shared/utils/validation';
 
 export default function RegisterPage() {
   const { register } = useAuth();
   const { t } = useI18n();
+  const { addToast } = useToast();
   const navigate = useNavigate();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -15,6 +18,25 @@ export default function RegisterPage() {
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  const handleBlur = (field: string, value: string) => {
+    let msg: string | null = null;
+    if (field === 'email') msg = validateEmail(value);
+    else if (field === 'phone') msg = validatePhone(value);
+    else if (field === 'password') msg = validatePassword(value);
+    setFieldErrors((prev) => {
+      const next = { ...prev };
+      if (msg) next[field] = t(msg as any);
+      else delete next[field];
+      return next;
+    });
+  };
+
+  const getInputClasses = (field: string) =>
+    `w-full rounded-xl border bg-warm-surface px-4 py-3 text-sm text-text outline-none transition-spring-fast placeholder:text-text-secondary/60 focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/15 ${
+      fieldErrors[field] ? 'border-destructive ring-2 ring-destructive/15' : 'border-border'
+    }`;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,6 +50,7 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       await register({ name, email, password, password_confirmation: passwordConfirmation, phone: phone || undefined });
+      addToast('success', t('auth.registerSuccess'));
       navigate('/');
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
@@ -36,8 +59,6 @@ export default function RegisterPage() {
       setLoading(false);
     }
   };
-
-  const inputClasses = 'w-full rounded-xl border border-border bg-warm-surface px-4 py-3 text-sm text-text outline-none transition-spring-fast placeholder:text-text-secondary/60 focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/15';
 
   return (
     <div className="min-h-[calc(100dvh-200px)] bg-bg px-4 py-16 md:py-24">
@@ -64,26 +85,29 @@ export default function RegisterPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="register-name" className="mb-2 block text-sm font-semibold text-text">{t('auth.name')}</label>
-              <input id="register-name" type="text" value={name} onChange={e => setName(e.target.value)} required autoComplete="name" placeholder={t('auth.namePlaceholder')} className={inputClasses} />
+              <input id="register-name" type="text" value={name} onChange={e => setName(e.target.value)} required autoComplete="name" placeholder={t('auth.namePlaceholder')} className={getInputClasses('name')} />
             </div>
             <div>
               <label htmlFor="register-email" className="mb-2 block text-sm font-semibold text-text">{t('auth.email')}</label>
-              <input id="register-email" type="email" value={email} onChange={e => setEmail(e.target.value)} required autoComplete="email" placeholder={t('auth.emailPlaceholder')} className={inputClasses} />
+              <input id="register-email" type="email" value={email} onChange={e => setEmail(e.target.value)} onBlur={() => handleBlur('email', email)} required autoComplete="email" placeholder={t('auth.emailPlaceholder')} className={getInputClasses('email')} />
+              {fieldErrors.email && <p className="mt-1 text-xs text-destructive">{fieldErrors.email}</p>}
             </div>
             <div>
               <label htmlFor="register-phone" className="mb-2 block text-sm font-semibold text-text">{t('auth.phone')}</label>
-              <input id="register-phone" type="tel" value={phone} onChange={e => setPhone(e.target.value)} autoComplete="tel" placeholder={t('auth.phonePlaceholder')} className={inputClasses} />
+              <input id="register-phone" type="tel" value={phone} onChange={e => setPhone(e.target.value)} onBlur={() => handleBlur('phone', phone)} autoComplete="tel" placeholder={t('auth.phonePlaceholder')} className={getInputClasses('phone')} />
+              {fieldErrors.phone && <p className="mt-1 text-xs text-destructive">{fieldErrors.phone}</p>}
             </div>
             <div>
               <label htmlFor="register-password" className="mb-2 block text-sm font-semibold text-text">{t('auth.password')}</label>
-              <input id="register-password" type="password" value={password} onChange={e => setPassword(e.target.value)} required autoComplete="new-password" aria-describedby="register-password-hint" placeholder={t('auth.passwordPlaceholder')} className={inputClasses} />
+              <input id="register-password" type="password" value={password} onChange={e => setPassword(e.target.value)} onBlur={() => handleBlur('password', password)} required autoComplete="new-password" aria-describedby="register-password-hint" placeholder={t('auth.passwordPlaceholder')} className={getInputClasses('password')} />
+              {fieldErrors.password && <p className="mt-1 text-xs text-destructive">{fieldErrors.password}</p>}
               <p id="register-password-hint" className="mt-2 text-xs leading-5 text-text-secondary">
                 {t('auth.passwordHint')}
               </p>
             </div>
             <div>
               <label htmlFor="register-password-confirmation" className="mb-2 block text-sm font-semibold text-text">{t('auth.confirmPassword')}</label>
-              <input id="register-password-confirmation" type="password" value={passwordConfirmation} onChange={e => setPasswordConfirmation(e.target.value)} required autoComplete="new-password" placeholder={t('auth.confirmPasswordPlaceholder')} className={inputClasses} />
+              <input id="register-password-confirmation" type="password" value={passwordConfirmation} onChange={e => setPasswordConfirmation(e.target.value)} required autoComplete="new-password" placeholder={t('auth.confirmPasswordPlaceholder')} className={getInputClasses('passwordConfirmation')} />
             </div>
             <button
               type="submit"

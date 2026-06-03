@@ -3,15 +3,19 @@ import { ArrowRight, LockKeyhole } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../shared/contexts/AuthContext';
 import { useI18n } from '../../shared/i18n/useI18n';
+import { useToast } from '../../shared/components/Toast';
+import { validateEmail, validatePassword } from '../../shared/utils/validation';
 
 export default function LoginPage() {
   const { login } = useAuth();
   const { t } = useI18n();
+  const { addToast } = useToast();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,6 +23,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await login(email, password);
+      addToast('success', t('auth.loginSuccess'));
       navigate('/');
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
@@ -27,6 +32,23 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
+
+  const handleBlur = (field: string, value: string) => {
+    let msg: string | null = null;
+    if (field === 'email') msg = validateEmail(value);
+    if (field === 'password') msg = validatePassword(value);
+    setFieldErrors((prev) => {
+      const next = { ...prev };
+      if (msg) next[field] = t(msg as any);
+      else delete next[field];
+      return next;
+    });
+  };
+
+  const inputClasses = (field: string) =>
+    `w-full rounded-xl border bg-warm-surface px-4 py-3 text-sm text-text outline-none transition-spring-fast placeholder:text-text-secondary/60 focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/15 ${
+      fieldErrors[field] ? 'border-destructive ring-2 ring-destructive/15' : 'border-border'
+    }`;
 
   return (
     <div className="min-h-[calc(100dvh-200px)] bg-bg px-4 py-16 md:py-24">
@@ -58,11 +80,15 @@ export default function LoginPage() {
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
+                onBlur={() => handleBlur('email', email)}
                 required
                 autoComplete="email"
                 placeholder={t('auth.emailPlaceholder')}
-                className="w-full rounded-xl border border-border bg-warm-surface px-4 py-3 text-sm text-text outline-none transition-spring-fast placeholder:text-text-secondary/60 focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/15"
+                className={inputClasses('email')}
               />
+              {fieldErrors.email && (
+                <p className="mt-1 text-xs text-destructive">{fieldErrors.email}</p>
+              )}
             </div>
             <div>
               <label htmlFor="login-password" className="mb-2 block text-sm font-semibold text-text">{t('auth.password')}</label>
@@ -71,11 +97,15 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
+                onBlur={() => handleBlur('password', password)}
                 required
                 autoComplete="current-password"
                 placeholder={t('auth.passwordPlaceholder')}
-                className="w-full rounded-xl border border-border bg-warm-surface px-4 py-3 text-sm text-text outline-none transition-spring-fast placeholder:text-text-secondary/60 focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/15"
+                className={inputClasses('password')}
               />
+              {fieldErrors.password && (
+                <p className="mt-1 text-xs text-destructive">{fieldErrors.password}</p>
+              )}
             </div>
             <button
               type="submit"

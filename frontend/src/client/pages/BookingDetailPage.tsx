@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, Link } from 'react-router-dom';
 import { useState } from 'react';
-import { ArrowLeft, AlertTriangle, Clock, CreditCard, RotateCcw, Star, PencilLine } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, Clock, CreditCard, RotateCcw, Star, PencilLine, CheckCircle2, Copy, Check } from 'lucide-react';
 import { bookingsApi } from '../../shared/api/bookings';
 import { refundsApi } from '../../shared/api/refunds';
 import { useI18n } from '../../shared/i18n/useI18n';
@@ -27,6 +27,15 @@ export default function BookingDetailPage() {
   const { locale, t } = useI18n();
   const [reason, setReason] = useState('');
   const [showRefundForm, setShowRefundForm] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const copyCode = () => {
+    if (booking?.booking_code) {
+      navigator.clipboard.writeText(booking.booking_code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   const { data: booking, isLoading, isError } = useQuery({
     queryKey: ['booking', bookingCode],
@@ -140,6 +149,54 @@ export default function BookingDetailPage() {
         <span>/</span>
         <span className="text-text">#{booking.booking_code}</span>
       </div>
+
+      {/* Celebration banner for confirmed/completed */}
+      {['confirmed', 'completed'].includes(booking.status) && (
+        <div className="mb-6 rounded-2xl bg-success/5 p-6 text-center ring-1 ring-success/20">
+          <div className="mx-auto mb-3 flex size-14 items-center justify-center rounded-full bg-success/10 animate-[heart-pop_400ms_cubic-bezier(0.32,0.72,0,1)]">
+            <CheckCircle2 className="size-7 text-success" />
+          </div>
+          <h2 className="text-xl font-bold text-text">{t('booking.celebrationTitle')}</h2>
+          <div className="mt-3 flex items-center justify-center gap-2">
+            <code className="rounded-lg bg-surface px-4 py-2 text-lg font-bold tracking-wider text-primary ring-1 ring-black/5">
+              #{booking.booking_code}
+            </code>
+            <button
+              type="button"
+              onClick={copyCode}
+              className="flex items-center gap-1 rounded-lg bg-surface px-3 py-2 text-xs font-medium text-text-secondary ring-1 ring-black/5 transition-spring-fast hover:text-primary active:scale-95"
+              aria-label={t('booking.copyCode')}
+            >
+              {copied ? <Check className="size-3.5 text-success" /> : <Copy className="size-3.5" />}
+              {copied ? t('booking.copied') : t('booking.copyCode')}
+            </button>
+          </div>
+          <div className="mt-4 flex items-center justify-center gap-6 text-xs text-text-secondary">
+            <div>
+              <div className="font-semibold text-text">{t('booking.checkIn')}</div>
+              <div className="mt-0.5">{formatDateForLocale(booking.check_in, locale)}</div>
+            </div>
+            <div className="size-1 rounded-full bg-border" />
+            <div>
+              <div className="font-semibold text-text">{t('booking.checkOut')}</div>
+              <div className="mt-0.5">{formatDateForLocale(booking.check_out, locale)}</div>
+            </div>
+            <div className="size-1 rounded-full bg-border" />
+            <div>
+              <div className="font-semibold text-text">{t('booking.nights', { count: booking.nights })}</div>
+              <div className="mt-0.5">{booking.nights}</div>
+            </div>
+          </div>
+          <div className="mt-4 flex justify-center gap-3">
+            <Link
+              to="/"
+              className="rounded-full bg-primary px-6 py-2 text-sm font-semibold text-white transition-spring-fast hover:bg-primary-hover active:scale-[0.97]"
+            >
+              {t('booking.continueSearching')}
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
