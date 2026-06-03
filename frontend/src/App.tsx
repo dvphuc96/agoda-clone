@@ -34,6 +34,7 @@ const AdminTransferListPage = lazy(() => import('./admin/pages/transfers/Transfe
 const AdminCouponListPage = lazy(() => import('./admin/pages/coupons/CouponListPage'));
 const AdminReviewListPage = lazy(() => import('./admin/pages/reviews/ReviewListPage'));
 const AdminModificationListPage = lazy(() => import('./admin/pages/modifications/ModificationListPage'));
+const AdminPriceOverrideListPage = lazy(() => import('./admin/pages/hotels/PriceOverrideListPage'));
 
 const adminFallback = <div className="flex min-h-screen items-center justify-center bg-slate-100 text-slate-600">Loading admin…</div>;
 
@@ -84,6 +85,7 @@ export default function App() {
                 <Route path="coupons" element={<Suspense fallback={adminFallback}><AdminCouponListPage /></Suspense>} />
                 <Route path="reviews" element={<Suspense fallback={adminFallback}><AdminReviewListPage /></Suspense>} />
                 <Route path="modifications" element={<Suspense fallback={adminFallback}><AdminModificationListPage /></Suspense>} />
+                <Route path="hotels/:hotelId/rooms/:roomTypeId/price-overrides" element={<Suspense fallback={adminFallback}><AdminPriceOverrideListPage /></Suspense>} />
                 <Route path="users" element={<Suspense fallback={adminFallback}><AdminUserListPage /></Suspense>} />
               </Route>
             </Routes>

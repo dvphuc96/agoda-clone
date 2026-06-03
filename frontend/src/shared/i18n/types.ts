@@ -446,6 +446,47 @@ export type Messages = {
     notEligibleBody: string;
     modifyBooking: string;
   };
+  ratePlans: {
+    title: string;
+    subtitle: string;
+    label: string;
+    startDate: string;
+    endDate: string;
+    pricePerNight: string;
+    status: string;
+    active: string;
+    inactive: string;
+    create: string;
+    edit: string;
+    delete: string;
+    deleteConfirm: string;
+    noOverrides: string;
+    createSuccess: string;
+    updateSuccess: string;
+    deleteSuccess: string;
+    overlapError: string;
+    dateRangeError: string;
+    priceRequired: string;
+    seasonalPrice: string;
+    defaultPrice: string;
+  };
+  invoice: {
+    title: string;
+    invoiceNumber: string;
+    billTo: string;
+    bookingDetails: string;
+    pricePerNight: string;
+    nights: string;
+    subtotal: string;
+    taxes: string;
+    total: string;
+    paymentInfo: string;
+    paymentMethod: string;
+    paidAt: string;
+    download: string;
+    notEligible: string;
+    notEligibleTitle: string;
+  };
   footer: {
     tagline: string;
     company: string;

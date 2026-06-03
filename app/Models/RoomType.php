@@ -40,6 +40,11 @@ class RoomType extends Model
         return $this->hasMany(Booking::class);
     }
 
+    public function priceOverrides(): HasMany
+    {
+        return $this->hasMany(PriceOverride::class);
+    }
+
     public function getAvailableRoomsCount(string $checkIn, string $checkOut): int
     {
         $policyService = app(BookingPolicyService::class);

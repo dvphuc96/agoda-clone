@@ -15,6 +15,7 @@ class BookingService
     public function __construct(
         private TransferBookingService $transferBookingService,
         private CouponService $couponService,
+        private PriceResolutionService $priceResolutionService,
     ) {}
 
     public function createBooking(User $user, array $data): Booking
@@ -35,7 +36,8 @@ class BookingService
                 throw new \InvalidArgumentException('Phong da het trong thoi gian ban chon');
             }
 
-            $totalPrice = $roomType->price_per_night * $nights;
+            $priceData = $this->priceResolutionService->resolveTotalPrice($roomType, $data['check_in'], $data['check_out']);
+            $totalPrice = $priceData['total'];
 
             $discountAmount = 0;
             $coupon = null;
