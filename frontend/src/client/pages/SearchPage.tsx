@@ -83,10 +83,30 @@ export default function SearchPage() {
           {showFilters ? t('search.hideFilters') : t('search.showFilters')}
         </button>
 
+        {/* Mobile filter overlay */}
+        {showFilters && (
+          <div className="fixed inset-0 z-50 md:hidden">
+            <div className="absolute inset-0 bg-navy/40 backdrop-blur-sm" onClick={() => setShowFilters(false)} />
+            <div className="absolute inset-x-0 bottom-0 max-h-[80vh] overflow-y-auto rounded-t-2xl bg-surface p-5 shadow-xl animate-[slide-up_300ms_cubic-bezier(0.32,0.72,0,1)]">
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="font-bold text-text">{t('search.filters')}</h2>
+                <button
+                  type="button"
+                  onClick={() => setShowFilters(false)}
+                  className="flex size-8 items-center justify-center rounded-full bg-tab text-text-secondary transition-spring-fast hover:text-text"
+                >
+                  <X className="size-4" />
+                </button>
+              </div>
+              <SearchFilters />
+            </div>
+          </div>
+        )}
+
         {/* List view - original layout */}
         {viewMode === 'list' && (
           <div className="flex flex-col items-stretch gap-6 md:flex-row md:items-start">
-            <div className={`${showFilters ? 'block' : 'hidden'} w-full md:block md:w-auto md:shrink-0`}>
+            <div className="hidden w-full md:block md:w-auto md:shrink-0">
               <SearchFilters />
             </div>
             <div className="min-w-0 w-full">
@@ -104,9 +124,6 @@ export default function SearchPage() {
         {viewMode === 'split' && (
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
             <div className="flex flex-col gap-4 lg:w-1/2">
-              <div className={`${showFilters ? 'block' : 'hidden'} md:hidden`}>
-                <SearchFilters />
-              </div>
               <MapPanel className="h-[calc(100vh-280px)] min-h-[400px] lg:min-h-[520px]" locationId={locationId} />
             </div>
             <div className="min-w-0 lg:w-1/2">

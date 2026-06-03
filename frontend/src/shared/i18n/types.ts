@@ -239,6 +239,20 @@ export type Messages = {
     refundRejected: string;
     refundProcessed: string;
     notEligibleForCancel: string;
+    progressSearch: string;
+    progressHotel: string;
+    progressBooking: string;
+    progressPayment: string;
+    progressConfirmation: string;
+    copyCode: string;
+    copied: string;
+    celebrationTitle: string;
+    celebrationSubtitle: string;
+    continueSearching: string;
+    checkIn: string;
+    checkOut: string;
+    pricePerNight: string;
+    subtotal: string;
   };
   coupons: {
     enterCode: string;
