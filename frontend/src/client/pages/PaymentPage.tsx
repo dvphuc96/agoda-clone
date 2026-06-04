@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, useSearchParams, Link } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 import { bookingsApi } from '../../shared/api/bookings';
@@ -7,10 +7,12 @@ import { paymentsApi } from '../../shared/api/payments';
 import { useI18n } from '../../shared/i18n/useI18n';
 import { formatDateForLocale, formatVndForLocale } from '../../shared/i18n/format';
 import { useToast } from '../../shared/components/Toast';
+import BookingCountdown from '../components/BookingCountdown';
 
 export default function PaymentPage() {
   const { locale, t } = useI18n();
   const { addToast } = useToast();
+  const navigate = useNavigate();
   const { bookingCode } = useParams<{ bookingCode: string }>();
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
@@ -191,6 +193,19 @@ export default function PaymentPage() {
       {error && (
         <div role="alert" aria-live="polite" className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600 break-words">
           {error}
+        </div>
+      )}
+
+      {/* Booking Hold Countdown */}
+      {booking?.status === 'pending' && (
+        <div className="mb-6">
+          <BookingCountdown
+            expiresAt={booking.expires_at}
+            onExpire={() => {
+              addToast('error', t('booking.expiredBody'));
+              setTimeout(() => navigate('/bookings'), 3000);
+            }}
+          />
         </div>
       )}
 

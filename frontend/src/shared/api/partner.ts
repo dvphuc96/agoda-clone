@@ -15,6 +15,7 @@ export const partnerApi = {
 
   hotels: () => apiClient.get<Hotel[]>('/partner/hotels'),
   hotel: (id: number) => apiClient.get<Hotel>(`/partner/hotels/${id}`),
+  createHotel: (data: Partial<Hotel>) => apiClient.post<Hotel>('/partner/hotels', data),
   updateHotel: (id: number, data: Partial<Hotel>) => apiClient.put<Hotel>(`/partner/hotels/${id}`, data),
 
   roomTypes: (hotelId: number) => apiClient.get<RoomType[]>(`/partner/hotels/${hotelId}/room-types`),
@@ -24,6 +25,7 @@ export const partnerApi = {
 
   bookings: (params?: Record<string, string | number>) => apiClient.get<Paginated<Booking>>('/partner/bookings', { params }),
   booking: (id: number) => apiClient.get<Booking>(`/partner/bookings/${id}`),
+  updateBookingStatus: (id: number, status: string) => apiClient.patch(`/partner/bookings/${id}/status`, { status }),
 
   priceOverrides: (roomTypeId: number) => apiClient.get<PriceOverride[]>(`/partner/room-types/${roomTypeId}/price-overrides`),
   createPriceOverride: (roomTypeId: number, data: PriceOverridePayload) => apiClient.post(`/partner/room-types/${roomTypeId}/price-overrides`, data),

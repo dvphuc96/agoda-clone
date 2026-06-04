@@ -155,6 +155,8 @@ export type Messages = {
     highlightDeal: string;
     includedTaxes: string;
     roomBenefits: string;
+    checkAvailability: string;
+    hideCalendar: string;
   };
   auth: {
     loginTitle: string;

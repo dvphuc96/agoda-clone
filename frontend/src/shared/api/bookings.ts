@@ -27,6 +27,7 @@ export interface Booking {
   special_requests: string | null;
   total_price: string;
   discount_amount: number;
+  expires_at?: string | null;
   status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
   nights: number;
   cancellation: CancellationPolicySummary | null;

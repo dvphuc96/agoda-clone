@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { lazy, Suspense } from 'react';
+import ErrorBoundary from './shared/components/ErrorBoundary';
 import { I18nProvider } from './shared/i18n/I18nProvider';
 import { AuthProvider } from './shared/contexts/AuthContext';
 import ClientLayout from './client/layouts/ClientLayout';
@@ -66,7 +67,7 @@ export default function App() {
         <AuthProvider>
           <BrowserRouter>
             <Routes>
-              <Route element={<ClientLayout />}>
+              <Route element={<ErrorBoundary><ClientLayout /></ErrorBoundary>}>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/search" element={<SearchPage />} />
                 <Route path="/hotel/:slug" element={<HotelDetailPage />} />
@@ -85,7 +86,7 @@ export default function App() {
                 <Route path="/support" element={<SupportPage />} />
                 <Route path="/auth/callback" element={<SocialCallbackPage />} />
               </Route>
-              <Route path="/admin" element={<Suspense fallback={adminFallback}><AdminLayout /></Suspense>}>
+              <Route path="/admin" element={<Suspense fallback={adminFallback}><ErrorBoundary><AdminLayout /></ErrorBoundary></Suspense>}>
                 <Route index element={<Navigate to="/admin/dashboard" replace />} />
                 <Route path="dashboard" element={<Suspense fallback={adminFallback}><AdminDashboardPage /></Suspense>} />
                 <Route path="analytics" element={<Suspense fallback={adminFallback}><AdminAnalyticsPage /></Suspense>} />
@@ -105,7 +106,7 @@ export default function App() {
                 <Route path="support" element={<Suspense fallback={adminFallback}><AdminSupportListPage /></Suspense>} />
                 <Route path="audit-logs" element={<Suspense fallback={adminFallback}><AdminAuditLogPage /></Suspense>} />
               </Route>
-              <Route path="/partner" element={<Suspense fallback={partnerFallback}><PartnerLayout /></Suspense>}>
+              <Route path="/partner" element={<Suspense fallback={partnerFallback}><ErrorBoundary><PartnerLayout /></ErrorBoundary></Suspense>}>
                 <Route index element={<Suspense fallback={partnerFallback}><PartnerDashboardPage /></Suspense>} />
                 <Route path="hotels" element={<Suspense fallback={partnerFallback}><PartnerHotelsPage /></Suspense>} />
                 <Route path="hotels/:hotelId/rooms" element={<Suspense fallback={partnerFallback}><PartnerRoomsPage /></Suspense>} />

@@ -157,6 +157,8 @@ export const en: Messages = {
     highlightDeal: 'Best price',
     includedTaxes: 'Taxes & fees included',
     roomBenefits: 'Room benefits',
+    checkAvailability: 'Check availability calendar',
+    hideCalendar: 'Hide calendar',
   },
   auth: {
     loginTitle: 'Log in to GoStay',

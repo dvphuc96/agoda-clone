@@ -22,9 +22,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 export default function PartnerHotelsPage() {
   const queryClient = useQueryClient();
-  const [editing, setEditing] = useState<Hotel | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [form, setForm] = useState({
+  const defaultForm = {
     name: '',
     description: '',
     address: '',
@@ -32,7 +30,11 @@ export default function PartnerHotelsPage() {
     email: '',
     checkin_time: '14:00',
     checkout_time: '12:00',
-  });
+  };
+
+  const [editing, setEditing] = useState<Hotel | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [form, setForm] = useState({ ...defaultForm });
 
   const hotels = useQuery({
     queryKey: ['partner', 'hotels'],
@@ -43,8 +45,10 @@ export default function PartnerHotelsPage() {
 
   const save = useMutation({
     mutationFn: () => {
-      if (!editing) return Promise.reject();
-      return partnerApi.updateHotel(editing.id, form);
+      if (editing) {
+        return partnerApi.updateHotel(editing.id, form);
+      }
+      return partnerApi.createHotel(form);
     },
     onSuccess: () => {
       setModalOpen(false);
@@ -64,6 +68,12 @@ export default function PartnerHotelsPage() {
       checkin_time: hotel.checkin_time,
       checkout_time: hotel.checkout_time,
     });
+    setModalOpen(true);
+  };
+
+  const openCreate = () => {
+    setEditing(null);
+    setForm({ ...defaultForm });
     setModalOpen(true);
   };
 
@@ -113,13 +123,23 @@ export default function PartnerHotelsPage() {
     <div>
       {pageTitle('My Hotels', 'View and manage your hotel properties.')}
 
+      <div className="mb-4">
+        <button
+          type="button"
+          onClick={openCreate}
+          className="rounded-md bg-emerald-700 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-800"
+        >
+          + Request New Hotel
+        </button>
+      </div>
+
       <DataTable
         data={hotelArray}
         columns={columns}
         emptyText={hotels.isLoading ? 'Loading...' : 'No hotels found. Contact admin to register your property.'}
       />
 
-      <AdminModal open={modalOpen} title={editing ? `Edit: ${editing.name}` : 'Edit Hotel'} width="lg" onClose={closeModal}>
+      <AdminModal open={modalOpen} title={editing ? `Edit: ${editing.name}` : 'Request New Hotel'} width="lg" onClose={closeModal}>
         <form className="space-y-4" onSubmit={(event) => { event.preventDefault(); save.mutate(); }}>
           <div className="grid gap-4 md:grid-cols-2">
             <Field label="Hotel name">
@@ -191,7 +211,7 @@ export default function PartnerHotelsPage() {
               disabled={save.isPending}
               className="rounded-md bg-emerald-700 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-800 disabled:opacity-60"
             >
-              Save changes
+              {editing ? 'Save changes' : 'Submit Request'}
             </button>
           </div>
         </form>

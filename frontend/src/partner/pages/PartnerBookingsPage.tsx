@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ColumnDef } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 import { partnerApi } from '../../shared/api/partner';
@@ -10,6 +10,7 @@ import AdminModal from '../../admin/components/AdminModal';
 import { formatCurrency, formatDate, pageTitle } from '../partnerUtils';
 
 export default function PartnerBookingsPage() {
+  const queryClient = useQueryClient();
   const [params, setParams] = useState({ search: '', status: '', hotel_id: '', date_from: '', date_to: '', page: 1 });
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
@@ -30,6 +31,16 @@ export default function PartnerBookingsPage() {
     queryKey: ['partner', 'bookings', selectedId],
     queryFn: async () => (await partnerApi.booking(selectedId!)).data,
     enabled: selectedId !== null,
+  });
+
+  const updateStatus = useMutation({
+    mutationFn: ({ id, status }: { id: number; status: string }) => partnerApi.updateBookingStatus(id, status),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['partner', 'bookings'] });
+      if (selectedId !== null) {
+        void queryClient.invalidateQueries({ queryKey: ['partner', 'bookings', selectedId] });
+      }
+    },
   });
 
   const hotelArray = Array.isArray(hotels.data) ? hotels.data : [];
@@ -160,6 +171,30 @@ export default function PartnerBookingsPage() {
               <div>
                 <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">Special Requests</span>
                 <p className="rounded-md bg-slate-50 px-3 py-2 text-sm text-slate-700">{bookingData.special_requests}</p>
+              </div>
+            )}
+            {bookingData.status === 'pending' && (
+              <div className="flex justify-end gap-2 border-t border-slate-200 pt-4">
+                <button
+                  type="button"
+                  className="rounded-md border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 hover:bg-red-100 disabled:opacity-60"
+                  disabled={updateStatus.isPending}
+                  onClick={() => {
+                    if (window.confirm('Cancel this booking?')) {
+                      updateStatus.mutate({ id: bookingData.id, status: 'cancelled' });
+                    }
+                  }}
+                >
+                  Cancel Booking
+                </button>
+                <button
+                  type="button"
+                  className="rounded-md bg-emerald-700 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-800 disabled:opacity-60"
+                  disabled={updateStatus.isPending}
+                  onClick={() => updateStatus.mutate({ id: bookingData.id, status: 'confirmed' })}
+                >
+                  Confirm Booking
+                </button>
               </div>
             )}
           </div>
