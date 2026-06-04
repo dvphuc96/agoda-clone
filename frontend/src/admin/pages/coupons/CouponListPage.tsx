@@ -16,6 +16,7 @@ export default function CouponListPage() {
   const queryClient = useQueryClient();
   const [params, setParams] = useState({ search: '', is_active: '', page: 1 });
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [showForm, setShowForm] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<Partial<Coupon>>({});
 
@@ -37,6 +38,7 @@ export default function CouponListPage() {
     mutationFn: (data: Partial<Coupon>) => adminApi.createCoupon(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'coupons'] });
+      setShowForm(false);
       setIsEditing(false);
       setFormData({});
     },
@@ -46,6 +48,7 @@ export default function CouponListPage() {
     mutationFn: ({ id, data }: { id: number; data: Partial<Coupon> }) => adminApi.updateCoupon(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'coupons'] });
+      setShowForm(false);
       setIsEditing(false);
       setSelectedId(null);
       setFormData({});
@@ -140,6 +143,7 @@ export default function CouponListPage() {
                 setFormData(row.original);
                 setIsEditing(true);
                 setSelectedId(row.original.id);
+                setShowForm(true);
               }}
               className="p-1.5 hover:bg-slate-100 rounded-md transition-colors"
               aria-label={t('coupons.edit')}
@@ -226,6 +230,7 @@ export default function CouponListPage() {
                 });
                 setIsEditing(false);
                 setSelectedId(null);
+                setShowForm(true);
               }}
               className="flex items-center gap-2 rounded-md bg-slate-950 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
             >
@@ -234,9 +239,9 @@ export default function CouponListPage() {
             </button>
           </div>
 
-          {isEditing && (
+          {showForm && (
             <div className="mb-4 rounded-lg border border-slate-200 bg-white p-4">
-              <h3 className="mb-4 text-lg font-semibold">{isEditing && selectedId ? t('coupons.edit') : t('coupons.create')}</h3>
+              <h3 className="mb-4 text-lg font-semibold">{selectedId ? t('coupons.edit') : t('coupons.create')}</h3>
               <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
                   <label className="mb-1 block text-sm font-medium">{t('coupons.code')}</label>
@@ -346,11 +351,12 @@ export default function CouponListPage() {
                     disabled={createMutation.isPending || updateMutation.isPending}
                     className="rounded-md bg-slate-950 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-50"
                   >
-                    {createMutation.isPending || updateMutation.isPending ? t('common.loading') : isEditing ? t('coupons.edit') : t('coupons.create')}
+                    {createMutation.isPending || updateMutation.isPending ? t('common.loading') : selectedId ? t('coupons.edit') : t('coupons.create')}
                   </button>
                   <button
                     type="button"
                     onClick={() => {
+                      setShowForm(false);
                       setIsEditing(false);
                       setFormData({});
                     }}

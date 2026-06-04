@@ -101,6 +101,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/auth/me', [AuthController::class, 'me']);
 
     // Coupon validation
+    Route::get('/coupons/available', [CouponController::class, 'available']);
     Route::post('/coupons/validate', [CouponController::class, 'validate']);
 
     // Profile routes

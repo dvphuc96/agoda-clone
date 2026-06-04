@@ -22,11 +22,37 @@ export default function WishlistButton({ hotelId, initialWishlisted = false, siz
     onMutate: async () => {
       await queryClient.cancelQueries({ queryKey: ['hotels'] });
       await queryClient.cancelQueries({ queryKey: ['hotel'] });
+      await queryClient.cancelQueries({ queryKey: ['search-hotels'] });
+      await queryClient.cancelQueries({ queryKey: ['featured-hotels'] });
       await queryClient.cancelQueries({ queryKey: ['wishlists'] });
 
       const previousHotels = queryClient.getQueriesData({ queryKey: ['hotels'] });
       const previousHotel = queryClient.getQueriesData({ queryKey: ['hotel'] });
+      const previousSearchHotels = queryClient.getQueriesData({ queryKey: ['search-hotels'] });
+      const previousFeaturedHotels = queryClient.getQueriesData({ queryKey: ['featured-hotels'] });
       const previousWishlists = queryClient.getQueriesData({ queryKey: ['wishlists'] });
+
+      const toggleInList = (old: { data: { id: number; is_wishlisted?: boolean }[] } | undefined) => {
+        if (!old?.data) return old;
+        return {
+          ...old,
+          data: old.data.map((hotel: { id: number; is_wishlisted?: boolean }) =>
+            hotel.id === hotelId
+              ? { ...hotel, is_wishlisted: !hotel.is_wishlisted }
+              : hotel
+          ),
+        };
+      };
+
+      queryClient.setQueriesData<{ data: { id: number; is_wishlisted?: boolean }[] }>(
+        { queryKey: ['search-hotels'] },
+        toggleInList
+      );
+
+      queryClient.setQueriesData<{ data: { id: number; is_wishlisted?: boolean }[] }>(
+        { queryKey: ['featured-hotels'] },
+        toggleInList
+      );
 
       queryClient.setQueriesData<{ data: { data: { id: number; is_wishlisted?: boolean }[] } }>(
         { queryKey: ['hotels'] },
@@ -57,7 +83,7 @@ export default function WishlistButton({ hotelId, initialWishlisted = false, siz
         }
       );
 
-      return { previousHotels, previousHotel, previousWishlists };
+      return { previousHotels, previousHotel, previousSearchHotels, previousFeaturedHotels, previousWishlists };
     },
     onError: (_err, _vars, context) => {
       if (context?.previousHotels) {
@@ -70,6 +96,16 @@ export default function WishlistButton({ hotelId, initialWishlisted = false, siz
           queryClient.setQueryData(key, data);
         });
       }
+      if (context?.previousSearchHotels) {
+        context.previousSearchHotels.forEach(([key, data]) => {
+          queryClient.setQueryData(key, data);
+        });
+      }
+      if (context?.previousFeaturedHotels) {
+        context.previousFeaturedHotels.forEach(([key, data]) => {
+          queryClient.setQueryData(key, data);
+        });
+      }
       if (context?.previousWishlists) {
         context.previousWishlists.forEach(([key, data]) => {
           queryClient.setQueryData(key, data);
@@ -79,6 +115,8 @@ export default function WishlistButton({ hotelId, initialWishlisted = false, siz
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['hotels'] });
       queryClient.invalidateQueries({ queryKey: ['hotel'] });
+      queryClient.invalidateQueries({ queryKey: ['search-hotels'] });
+      queryClient.invalidateQueries({ queryKey: ['featured-hotels'] });
       queryClient.invalidateQueries({ queryKey: ['wishlists'] });
     },
   });
