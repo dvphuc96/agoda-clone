@@ -22,86 +22,95 @@ binary at `scripts/bin/harness-cli` in installed projects.
 <claude-mem-context>
 # Memory Context
 
-# [agoda-clone] recent context, 2026-06-03 8:43am GMT+7
+# [agoda-clone] recent context, 2026-06-04 2:50pm GMT+7
 
 Legend: 🎯session 🔴bugfix 🟣feature 🔄refactor ✅change 🔵discovery ⚖️decision 🚨security_alert 🔐security_note
 Format: ID TIME TYPE TITLE
 Fetch details: get_observations([IDs]) | Search: mem-search skill
 
-Stats: 50 obs (14,565t read) | 4,440,076t work | 100% savings
+Stats: 50 obs (12,683t read) | 1,512,391t work | 99% savings
 
-### May 29, 2026
-S313 Deploy booking policies, refunds, and notifications system to production database (May 29 at 12:12 PM)
-S314 Complete database migration and seeding for booking policies, refunds, and notifications (May 29 at 12:22 PM)
-S315 Việc cải tiến bộ lọc tìm kiếm khách sạn - nâng cấp UI bộ lọc giá từ input số sang slider kéo chọn (May 29 at 12:24 PM)
-S316 Cải tiến bộ lọc giá tìm kiếm khách sạn - nâng cấp UI từ input số sang slider kéo chọn với hai đầu min/max (May 29 at 4:31 PM)
-S317 Plan and implement features from FEATURE_REPORT.md with branch creation and commits for each feature (May 29 at 4:40 PM)
-### Jun 2, 2026
-S318 Parallel Backend Implementation of Batch 1 Features for GoStay (Jun 2 at 10:04 AM)
-S319 User initiated session with greeting "hi" (Jun 2 at 11:25 AM)
-813 1:12p 🔴 Fixed coupon validation API response handling
-814 " 🔴 Removed unused imports and types from admin coupon list page
-S320 Implement complete coupon/promotion system with admin management and booking integration (Jun 2 at 3:42 PM)
-817 3:47p 🔵 Coupon feature implementation staged for commit
-818 3:48p 🔵 Coupon system architecture examined for task breakdown
-819 3:50p 🔵 Coupon system API routes and frontend integration analyzed
-820 " 🟣 Coupon feature task breakdown created with 8 tasks
-821 3:52p 🔵 Coupon database migrations not yet executed
-822 3:53p 🔵 Docker database container not running or doesn't exist
-823 3:54p 🔵 Docker services started and database container healthy
-824 " 🔵 Database migrations report nothing to migrate
-825 3:55p 🟣 Coupon seed data created and populated
-826 3:58p 🟣 Coupon seeder creation and execution completed successfully
-827 4:00p 🟣 Task progression advanced to API endpoint testing phase
-828 4:01p 🔴 CouponController middleware error discovered during API testing
-829 4:02p 🔴 CouponController constructor syntax fixed
-830 4:04p 🔵 Codebase constructor patterns analyzed for consistency
-831 4:06p 🔴 CouponController middleware error persists after constructor fix
-832 4:07p 🔴 CouponController converted to traditional constructor syntax
-833 4:08p 🔵 CouponController middleware registration fundamentally non-functional
-834 4:09p 🔵 Root cause identified: Base Controller class lacks middleware functionality
-835 4:11p 🔴 CouponController refactored to work with codebase architecture
-836 4:12p 🔵 Coupon validation route lacks authentication middleware protection
-837 4:14p 🔴 Coupon validation route moved to authenticated middleware group
-838 4:15p 🔵 Authentication middleware now functional but login route not named
-839 4:18p 🔵 Authentication middleware functional across all protected routes
-840 4:19p 🔵 All coupon routes properly registered in Laravel router
-841 4:20p 🔵 Laravel 11 application configuration examined for middleware setup
-842 4:22p 🔵 Laravel Sanctum installed but not configured in auth guards
-843 4:23p 🔴 Sanctum authentication guard configuration added
-844 4:25p 🔵 Sanctum guard configuration didn't resolve authentication errors
-845 4:26p 🔵 Application code does not reference login route name
-846 4:29p 🔴 Laravel Sanctum stateful API middleware configuration added
-847 4:30p 🔵 Authentication issues persist despite Sanctum middleware configuration
-848 4:33p 🔵 Hotels API endpoint functional, isolates authentication issue to protected routes
-849 4:42p ✅ Coupon feature task breakdown completely removed for expedited completion
-850 4:44p 🔴 Admin coupon show endpoint returns incorrect response structure
-851 " 🔵 CouponSeeder successfully populates database
-852 4:54p 🔴 Fixed "Route [login] not defined" error in unauthenticated API requests
-853 " 🔵 Coupon validation API working correctly after authentication fix
-854 " 🔴 Admin coupon management API functional with proper role-based access control
-855 " 🔵 Coupon update validation error with unique rule parameter
-856 4:56p 🔴 Modified UpdateCouponRequest to handle route parameter resolution
-857 " 🔵 Database constraint violation during coupon update operations
-858 " 🔵 Unique validation still incorrectly flagging existing coupon codes
-859 4:58p 🔴 Fixed coupon update controller to handle partial field updates
-860 " 🟣 Coupon management system fully functional with complete CRUD operations
-861 " ✅ Cleaned up unnecessary middleware file
-862 5:00p 🔄 Replaced deprecated onKeyPress event handler with onKeyDown
-863 5:04p 🔵 Laravel application missing encryption key configuration
-S321 Fix Laravel authentication login error "No application encryption key has been specified" (Jun 2 at 5:04 PM)
-864 5:11p 🔵 Database constraint violation for duplicate location slug
-S322 Fix database seeding duplicate constraint violation for locations table (Jun 2 at 5:17 PM)
-**Investigated**: Investigated duplicate entry error for locations table slug constraint violation. Examined entrypoint.sh seeder logic, DatabaseSeeder.php and LocationSeeder.php structure.
+### Jun 3, 2026
+972 10:25p 🔵 Laravel Socialite package not installed
+974 10:26p 🟣 Extended social login to registration page with Google and Facebook OAuth
+975 " 🟣 Database migrations executed successfully for chat and social authentication features
+976 " 🟣 Integrated chat widget into client layout for global access
+977 10:37p 🔴 Fixed duplicate "My Bookings" navigation item and added admin redirect functionality
+978 " 🔴 Fixed duplicate "My Bookings" navigation link and preparing admin redirect functionality
+979 10:51p 🔴 Duplicate "my bookings" display removal requested
+980 " 🟣 Admin account toggle redirect functionality requested
+981 10:55p 🔴 Removed standalone "My Bookings" link from desktop top navigation bar
+982 10:57p 🟣 Created notification dropdown component with real-time notification preview
+983 " 🟣 Created notification dropdown component with lazy loading and badge count display
+984 10:58p 🔄 Integrated NotificationDropdown component into Navbar and removed Bell icon from navbar imports
+S425 Complete integration of showForm state for improved form management in CouponListPage (Jun 3 at 11:06 PM)
+S426 Complete showForm state integration with proper submit button logic (Jun 3 at 11:07 PM)
+S427 Complete showForm state integration in admin coupon management interface (Jun 3 at 11:07 PM)
+S428 Click-to-apply coupon functionality for booking page (Jun 3 at 11:08 PM)
+985 11:08p 🟣 Booking page coupon UX improvement proposed
+986 11:15p 🟣 Booking page coupon selection UX improvement initiated
+987 " 🔵 Backend coupon validation API structure identified
+988 " 🔵 Coupon validation service logic identified
+989 " 🔵 Coupon model validation methods identified
+990 " 🟣 Available coupons API endpoint implemented
+991 " 🟣 CouponController imports updated for available endpoint
+992 11:16p 🟣 Available coupons API route registered
+993 " 🔵 Frontend coupon API structure identified
+994 " 🟣 Frontend available coupons API method added
+995 11:17p 🟣 CouponInput component enhanced with click-to-apply functionality
+996 " 🟣 Click-to-apply coupon feature completed and deployed
+997 " 🔵 Backend directory not found
+998 " 🔵 SEO meta tags missing
+S429 Continue work on agoda-clone project - AvailabilityCalendar integration and polish features (Jun 3 at 11:17 PM)
+### Jun 4, 2026
+999 10:36a 🔵 GoStay platform missing features comprehensive analysis
+1000 10:38a ⚖️ Feature gap implementation workflow organized
+1001 10:40a 🔵 Booking expiry backend already implemented and scheduled
+1002 10:44a 🟣 Partner booking management actions added
+1003 " ✅ Hotel detail page prepared for availability calendar integration
+1004 " ✅ Feature status documentation updated
+S430 Create test data for all application pages (Jun 4 at 10:49 AM)
+1005 10:51a 🔵 New task request: Create test data for all app pages
+S431 Fix hotel detail page to hide "Check Availability" button when no dates selected (Jun 4 at 11:06 AM)
+1006 11:07a 🔵 Database schema analysis for test data creation
+1007 11:10a ⚖️ Break seeder task into smallest possible subtasks
+S432 Check availability button and hotel check-in/check-out time display issues (Jun 4 at 11:29 AM)
+S433 Profile image upload not displaying after upload (Jun 4 at 11:32 AM)
+1008 11:41a 🔴 Profile image upload not displaying after upload
+1009 1:24p 🔴 Profile image upload display issue investigation
+1010 1:25p 🔴 Profile image upload state management bug discovered
+1011 1:29p 🔴 Profile image upload storage symlink fixed
+1012 1:30p 🔴 Image upload display issue in form
+1013 1:53p 🔵 Laravel stateful API middleware configuration
+1014 1:54p 🔵 Multiple file chooser dialogs triggered by upload component
+1015 " 🔵 File upload component creating duplicate handlers
+1016 1:55p 🔵 Application uses Laravel Sanctum authentication
+1017 " 🔵 Backend API authentication validation functional
+1018 1:57p 🔵 API authentication rejects valid database credentials
+1019 " 🔵 Profile API routes identified for avatar uploads
+1020 1:58p 🔵 Profile routes require Sanctum authentication
+1021 " 🔵 AvatarUpload component uses FileReader for immediate preview
+1022 1:59p 🔴 Fixed avatar upload preview not displaying immediately
+S434 Fixed avatar upload preview not displaying immediately after file selection (Jun 4 at 2:00 PM)
+**Investigated**: Investigated image upload display issue where uploaded avatar images were not showing before clicking save. Explored Laravel backend configuration (stateful API middleware, Sanctum authentication), profile routes (POST /api/profile/avatar requires auth:sanctum), and frontend AvatarUpload component implementation. Discovered during Playwright browser testing that the upload component was spawning 12 concurrent file chooser dialogs, suggesting a component bug, but the core issue was in state management.
 
-**Learned**: Learned that entrypoint.sh was checking HOTEL_COUNT to determine if database is empty, but LocationSeeder runs before HotelSeeder in DatabaseSeeder, causing duplicate location entries on container restart. The logic should check LOCATION_COUNT instead since locations are seeded first.
+**Learned**: - Application uses Laravel Sanctum with stateful API middleware and requires authentication for profile/avatar operations
+    - AvatarUpload component uses FileReader for immediate local preview before server upload
+    - Original component used `const displayUrl = preview || currentAvatarUrl` which computed display URL on each render
+    - This computed approach caused preview to not show properly when component re-rendered due to parent state changes
+    - Profile routes protected by auth:sanctum middleware require valid session tokens for file uploads
 
-**Completed**: Fixed entrypoint.sh seeder logic by changing from HOTEL_COUNT to LOCATION_COUNT check. This ensures that seeder only runs if no locations exist, preventing duplicate entry violations. Successfully tested restart showing "Nothing to migrate" and no duplicate errors.
+**Completed**: - Refactored AvatarUpload component in `/Users/dvphuc/dev/project/agoda-clone/frontend/src/client/components/profile/AvatarUpload.tsx`
+    - Replaced computed displayUrl with dedicated `displayUrl` state initialized with currentAvatarUrl
+    - Added `previewRef` useRef for persisting preview URL across re-renders
+    - Optimized with `useCallback` on handleFileChange to prevent unnecessary re-renders
+    - Added `useQueryClient` for updating React Query cache after successful uploads
+    - TypeScript compilation passed with no errors
 
-**Next Steps**: Monitor container logs to ensure no duplicate constraint violations occur on future restarts
+**Next Steps**: User needs to restart Vite dev server for the proxy `/storage` to take effect, then test the avatar upload functionality. The fix ensures: immediate preview display (FileReader data URL), preview persistence across component re-renders, and proper server image display after successful upload.
 
 
-Access 4440k tokens of past work via get_observations([IDs]) or mem-search skill.
+Access 1512k tokens of past work via get_observations([IDs]) or mem-search skill.
 </claude-mem-context>
 
 # Rules

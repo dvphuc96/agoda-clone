@@ -1,27 +1,72 @@
-import { useState } from 'react';
+import { useEffect, useReducer, useRef } from 'react';
 import { ArrowRight, UserRound, LockKeyhole } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Navigate } from 'react-router-dom';
 import { profileApi } from '../../shared/api/profile';
 import { useAuth } from '../../shared/contexts/AuthContext';
 import { useI18n } from '../../shared/i18n/useI18n';
-import { useToast } from '../../shared/components/Toast';
+import { useToast } from '../../shared/hooks/useToast';
 import AvatarUpload from '../components/profile/AvatarUpload';
 import PasswordChangeForm from '../components/profile/PasswordChangeForm';
 
 type Tab = 'info' | 'password';
 
+type ProfileState = {
+  tab: Tab;
+  success: string;
+  error: string;
+  name: string;
+  phone: string;
+};
+
+type ProfileAction =
+  | { type: 'selectTab'; tab: Tab }
+  | { type: 'setSuccess'; success: string }
+  | { type: 'setError'; error: string }
+  | { type: 'setName'; name: string }
+  | { type: 'setPhone'; phone: string }
+  | { type: 'setForm'; name: string; phone: string };
+
+const initialProfileState: ProfileState = {
+  tab: 'info',
+  success: '',
+  error: '',
+  name: '',
+  phone: '',
+};
+
+function profileReducer(
+  state: ProfileState,
+  action: ProfileAction,
+): ProfileState {
+  switch (action.type) {
+    case 'selectTab':
+      return { ...state, tab: action.tab, success: '', error: '' };
+    case 'setSuccess':
+      return { ...state, success: action.success };
+    case 'setError':
+      return { ...state, error: action.error };
+    case 'setName':
+      return { ...state, name: action.name };
+    case 'setPhone':
+      return { ...state, phone: action.phone };
+    case 'setForm':
+      return { ...state, name: action.name, phone: action.phone };
+    default:
+      return state;
+  }
+}
+
 export default function ProfilePage() {
-  const { isAuthenticated, setUser } = useAuth();
+  const { isAuthenticated, loading: authLoading, setUser } = useAuth();
   const { t } = useI18n();
   const { addToast } = useToast();
   const queryClient = useQueryClient();
-  const [tab, setTab] = useState<Tab>('info');
-  const [success, setSuccess] = useState('');
-  const [error, setError] = useState('');
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [initialized, setInitialized] = useState(false);
+  const [state, dispatch] = useReducer(
+    profileReducer,
+    initialProfileState,
+  );
+  const initializedRef = useRef(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ['profile'],
@@ -31,25 +76,43 @@ export default function ProfilePage() {
 
   const user = data;
 
-  if (user && !initialized) {
-    setName(user.name);
-    setPhone(user.phone ?? '');
-    setInitialized(true);
-  }
+  useEffect(() => {
+    if (!user || initializedRef.current) return;
+
+    dispatch({
+      type: 'setForm',
+      name: user.name,
+      phone: user.phone ?? '',
+    });
+    initializedRef.current = true;
+  }, [user]);
 
   const updateMutation = useMutation({
-    mutationFn: () => profileApi.update({ name, phone: phone || null }),
+    mutationFn: () =>
+      profileApi.update({
+        name: state.name,
+        phone: state.phone || null,
+      }),
     onSuccess: (res) => {
       addToast('success', t('profile.saved'));
-      setError('');
+      dispatch({ type: 'setError', error: '' });
       setUser((prev) => (prev ? { ...prev, ...res.data.data } : prev));
       queryClient.invalidateQueries({ queryKey: ['profile'] });
     },
     onError: () => {
       addToast('error', t('common.error'));
-      setSuccess('');
+      dispatch({ type: 'setSuccess', success: '' });
     },
   });
+
+  if (authLoading) {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-12 md:px-8 md:py-16">
+        <div className="skeleton mb-6 h-8 w-48 rounded-lg" />
+        <div className="skeleton h-64 rounded-2xl" />
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
@@ -80,17 +143,13 @@ export default function ProfilePage() {
           <button
             key={key}
             type="button"
-            onClick={() => {
-              setTab(key);
-              setSuccess('');
-              setError('');
-            }}
+            onClick={() => dispatch({ type: 'selectTab', tab: key })}
             className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-spring-fast ${
-              tab === key
+              state.tab === key
                 ? 'bg-surface text-text shadow-sm'
                 : 'text-text-secondary hover:text-text'
             }`}
-            aria-pressed={tab === key}
+            aria-pressed={state.tab === key}
           >
             <Icon className="size-4" />
             {label}
@@ -98,28 +157,27 @@ export default function ProfilePage() {
         ))}
       </div>
 
-      {tab === 'info' && (
+      {state.tab === 'info' && (
         <div className="rounded-2xl border border-border/80 bg-surface p-6 shadow-[0_24px_70px_rgba(16,32,29,.08)]">
           <div className="mb-6 flex justify-center">
             <AvatarUpload currentAvatarUrl={user.avatar_url ?? null} />
           </div>
 
-          {success && (
-            <div
-              role="status"
+          {state.success && (
+            <output
               aria-live="polite"
               className="mb-5 rounded-lg border border-green-200 bg-green-50 p-3 text-sm text-green-700"
             >
-              {success}
-            </div>
+              {state.success}
+            </output>
           )}
-          {error && (
+          {state.error && (
             <div
               role="alert"
               aria-live="polite"
               className="mb-5 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600"
             >
-              {error}
+              {state.error}
             </div>
           )}
 
@@ -140,8 +198,10 @@ export default function ProfilePage() {
               <input
                 id="profile-name"
                 type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={state.name}
+                onChange={(e) =>
+                  dispatch({ type: 'setName', name: e.target.value })
+                }
                 required
                 maxLength={255}
                 autoComplete="name"
@@ -176,8 +236,10 @@ export default function ProfilePage() {
               <input
                 id="profile-phone"
                 type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                value={state.phone}
+                onChange={(e) =>
+                  dispatch({ type: 'setPhone', phone: e.target.value })
+                }
                 maxLength={30}
                 autoComplete="tel"
                 placeholder={t('auth.phonePlaceholder')}
@@ -201,7 +263,7 @@ export default function ProfilePage() {
         </div>
       )}
 
-      {tab === 'password' && (
+      {state.tab === 'password' && (
         <div className="rounded-2xl border border-border/80 bg-surface p-6 shadow-[0_24px_70px_rgba(16,32,29,.08)]">
           <PasswordChangeForm />
         </div>

@@ -35,7 +35,7 @@ class User extends Authenticatable
 
     protected function avatarUrl(): Attribute
     {
-        return Attribute::get(fn () => $this->avatar ? Storage::url($this->avatar) : null);
+        return Attribute::get(fn () => $this->avatar ? '/storage/' . $this->avatar : null);
     }
 
     public function bookings(): HasMany

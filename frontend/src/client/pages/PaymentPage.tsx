@@ -6,7 +6,7 @@ import { bookingsApi } from '../../shared/api/bookings';
 import { paymentsApi } from '../../shared/api/payments';
 import { useI18n } from '../../shared/i18n/useI18n';
 import { formatDateForLocale, formatVndForLocale } from '../../shared/i18n/format';
-import { useToast } from '../../shared/components/Toast';
+import { useToast } from '../../shared/hooks/useToast';
 import BookingCountdown from '../components/BookingCountdown';
 
 export default function PaymentPage() {
