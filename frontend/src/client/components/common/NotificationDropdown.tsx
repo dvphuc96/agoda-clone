@@ -11,6 +11,17 @@ export default function NotificationDropdown() {
   const ref = useRef<HTMLDivElement>(null);
   const { locale, t } = useI18n();
 
+  // Lightweight polling query for badge count (updates every 60s)
+  const { data: badgeData } = useQuery({
+    queryKey: ['notifications', 'badge'],
+    queryFn: () => notificationsApi.list().then(r => {
+      const d = r.data;
+      return Array.isArray(d) ? d.length : (d as any)?.total ?? (Array.isArray((d as any)?.data) ? (d as any).data.length : 0);
+    }),
+    refetchInterval: 60_000,
+    staleTime: 30_000,
+  });
+
   const { data } = useQuery({
     queryKey: ['notifications'],
     queryFn: () => notificationsApi.list().then(r => r.data),
@@ -18,6 +29,8 @@ export default function NotificationDropdown() {
   });
 
   const notifications = Array.isArray(data) ? data : data?.data ?? [];
+  // Use badge count when dropdown is closed, actual list length when open
+  const displayCount = open ? notifications.length : (badgeData ?? 0);
 
   useEffect(() => {
     if (!open) return;
@@ -37,9 +50,9 @@ export default function NotificationDropdown() {
         aria-label={t('notifications.title')}
       >
         <Bell className="size-[18px]" />
-        {notifications.length > 0 && (
+        {displayCount > 0 && (
           <span className="absolute right-0.5 top-0.5 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white">
-            {notifications.length > 9 ? '9+' : notifications.length}
+            {displayCount > 9 ? '9+' : displayCount}
           </span>
         )}
       </button>

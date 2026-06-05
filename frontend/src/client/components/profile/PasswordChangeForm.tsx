@@ -1,46 +1,103 @@
-import { useState } from 'react';
+import { useReducer } from 'react';
 import { ArrowRight, Eye, EyeOff } from 'lucide-react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { profileApi } from '../../../shared/api/profile';
+import { useAuth } from '../../../shared/contexts/AuthContext';
+import { useToast } from '../../../shared/hooks/useToast';
 import { useI18n } from '../../../shared/i18n/useI18n';
+
+type PasswordState = {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+  showCurrent: boolean;
+  showNew: boolean;
+  error: string;
+};
+
+type PasswordAction =
+  | { type: 'setCurrentPassword'; value: string }
+  | { type: 'setNewPassword'; value: string }
+  | { type: 'setConfirmPassword'; value: string }
+  | { type: 'toggleCurrentVisibility' }
+  | { type: 'toggleNewVisibility' }
+  | { type: 'setError'; error: string }
+  | { type: 'clearError' };
+
+const initialPasswordState: PasswordState = {
+  currentPassword: '',
+  newPassword: '',
+  confirmPassword: '',
+  showCurrent: false,
+  showNew: false,
+  error: '',
+};
+
+function passwordReducer(
+  state: PasswordState,
+  action: PasswordAction,
+): PasswordState {
+  switch (action.type) {
+    case 'setCurrentPassword':
+      return { ...state, currentPassword: action.value };
+    case 'setNewPassword':
+      return { ...state, newPassword: action.value };
+    case 'setConfirmPassword':
+      return { ...state, confirmPassword: action.value };
+    case 'toggleCurrentVisibility':
+      return { ...state, showCurrent: !state.showCurrent };
+    case 'toggleNewVisibility':
+      return { ...state, showNew: !state.showNew };
+    case 'setError':
+      return { ...state, error: action.error };
+    case 'clearError':
+      return { ...state, error: '' };
+    default:
+      return state;
+  }
+}
 
 export default function PasswordChangeForm() {
   const { t } = useI18n();
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [showCurrent, setShowCurrent] = useState(false);
-  const [showNew, setShowNew] = useState(false);
-  const [success, setSuccess] = useState('');
-  const [error, setError] = useState('');
+  const { logout } = useAuth();
+  const { success } = useToast();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [state, dispatch] = useReducer(
+    passwordReducer,
+    initialPasswordState,
+  );
 
   const mutation = useMutation({
     mutationFn: () =>
       profileApi.changePassword({
-        current_password: currentPassword,
-        password: newPassword,
-        password_confirmation: confirmPassword,
+        current_password: state.currentPassword,
+        password: state.newPassword,
+        password_confirmation: state.confirmPassword,
       }),
-    onSuccess: () => {
-      setSuccess(t('profile.passwordChanged'));
-      setError('');
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
+    onSuccess: async () => {
+      success(t('profile.passwordChanged'));
+
+      try {
+        await queryClient.invalidateQueries({ queryKey: ['profile'] });
+        await logout();
+      } finally {
+        navigate('/login', { replace: true });
+      }
     },
     onError: (err: unknown) => {
       const error = err as { response?: { data?: { message?: string } } };
-      setError(
-        error.response?.data?.message || t('profile.wrongPassword'),
-      );
-      setSuccess('');
+      dispatch({
+        type: 'setError',
+        error: error.response?.data?.message || t('profile.wrongPassword'),
+      });
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setSuccess('');
-    setError('');
+    dispatch({ type: 'clearError' });
     mutation.mutate();
   };
 
@@ -49,22 +106,13 @@ export default function PasswordChangeForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      {success && (
-        <div
-          role="status"
-          aria-live="polite"
-          className="rounded-lg border border-green-200 bg-green-50 p-3 text-sm text-green-700"
-        >
-          {success}
-        </div>
-      )}
-      {error && (
+      {state.error && (
         <div
           role="alert"
           aria-live="polite"
           className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600"
         >
-          {error}
+          {state.error}
         </div>
       )}
 
@@ -75,20 +123,25 @@ export default function PasswordChangeForm() {
         <div className="relative">
           <input
             id="current-password"
-            type={showCurrent ? 'text' : 'password'}
-            value={currentPassword}
-            onChange={(e) => setCurrentPassword(e.target.value)}
+            type={state.showCurrent ? 'text' : 'password'}
+            value={state.currentPassword}
+            onChange={(e) =>
+              dispatch({
+                type: 'setCurrentPassword',
+                value: e.target.value,
+              })
+            }
             required
             autoComplete="current-password"
             className={inputClass}
           />
           <button
             type="button"
-            onClick={() => setShowCurrent(!showCurrent)}
+            onClick={() => dispatch({ type: 'toggleCurrentVisibility' })}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary"
-            aria-label={showCurrent ? 'Hide password' : 'Show password'}
+            aria-label={state.showCurrent ? 'Hide password' : 'Show password'}
           >
-            {showCurrent ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+            {state.showCurrent ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
           </button>
         </div>
       </div>
@@ -100,9 +153,14 @@ export default function PasswordChangeForm() {
         <div className="relative">
           <input
             id="new-password"
-            type={showNew ? 'text' : 'password'}
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
+            type={state.showNew ? 'text' : 'password'}
+            value={state.newPassword}
+            onChange={(e) =>
+              dispatch({
+                type: 'setNewPassword',
+                value: e.target.value,
+              })
+            }
             required
             minLength={8}
             autoComplete="new-password"
@@ -110,11 +168,11 @@ export default function PasswordChangeForm() {
           />
           <button
             type="button"
-            onClick={() => setShowNew(!showNew)}
+            onClick={() => dispatch({ type: 'toggleNewVisibility' })}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary"
-            aria-label={showNew ? 'Hide password' : 'Show password'}
+            aria-label={state.showNew ? 'Hide password' : 'Show password'}
           >
-            {showNew ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+            {state.showNew ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
           </button>
         </div>
       </div>
@@ -126,8 +184,13 @@ export default function PasswordChangeForm() {
         <input
           id="confirm-new-password"
           type="password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
+          value={state.confirmPassword}
+          onChange={(e) =>
+            dispatch({
+              type: 'setConfirmPassword',
+              value: e.target.value,
+            })
+          }
           required
           minLength={8}
           autoComplete="new-password"

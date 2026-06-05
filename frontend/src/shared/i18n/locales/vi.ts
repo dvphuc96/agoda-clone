@@ -157,6 +157,8 @@ export const vi: Messages = {
     highlightDeal: 'Giá tốt nhất',
     includedTaxes: 'Đã bao gồm thuế & phí',
     roomBenefits: 'Quyền lợi phòng',
+    checkAvailability: 'Xem lịch phòng trống',
+    hideCalendar: 'Ẩn lịch',
   },
   auth: {
     loginTitle: 'Đăng nhập GoStay',

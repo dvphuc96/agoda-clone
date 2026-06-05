@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { couponsApi, type Coupon, type ValidateCouponResponseData } from '../../../shared/api/coupons';
 import { formatVndForLocale } from '../../../shared/i18n/format';
 import { useI18n } from '../../../shared/i18n/useI18n';
-import { useToast } from '../../../shared/components/Toast';
+import { useToast } from '../../../shared/hooks/useToast';
 import { AlertCircle, Check, Tag, X, Loader2, ChevronDown, ChevronUp, Percent, DollarSign } from 'lucide-react';
 
 interface CouponInputProps {
@@ -16,6 +16,7 @@ interface CouponInputProps {
 export default function CouponInput({ bookingValue, hotelId, onCouponApplied, onCouponRemoved }: CouponInputProps) {
   const { locale, t } = useI18n();
   const { addToast } = useToast();
+  const queryClient = useQueryClient();
   const [code, setCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
   const [discountAmount, setDiscountAmount] = useState(0);
@@ -37,6 +38,7 @@ export default function CouponInput({ bookingValue, hotelId, onCouponApplied, on
       setDiscountAmount(discount_amount);
       setError('');
       onCouponApplied(coupon, discount_amount);
+      queryClient.invalidateQueries({ queryKey: ['available-coupons'] });
       addToast('success', t('coupons.applied'));
       setCode('');
     },
@@ -113,6 +115,7 @@ export default function CouponInput({ bookingValue, hotelId, onCouponApplied, on
         <Tag className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-text-secondary" />
         <input
           type="text"
+          aria-label={t('coupons.enterCode')}
           value={code}
           onChange={(e) => {
             setCode(e.target.value.toUpperCase());

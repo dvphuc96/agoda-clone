@@ -1,0 +1,107 @@
+name: test
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test & Build (gate)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    # These env vars are visible to ALL steps in this job. Laravel reads them
+    # via env() which prefers OS env over .env file — so we don't need to
+    # modify .env.example (which has DB_* commented out by default in Laravel 13).
+    env:
+      DB_CONNECTION: mysql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_DATABASE: gostay_test
+      DB_USERNAME: gostay
+      DB_PASSWORD: gostay
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: gostay_test
+          MYSQL_USER: gostay
+          MYSQL_PASSWORD: gostay
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP 8.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, xml, mysql, curl, zip, bcmath, gd, intl, pdo, pdo_mysql
+          coverage: none
+          ini-values: memory_limit=512M
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Prepare Laravel environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate --no-interaction
+
+      - name: Run migrations (test DB)
+        run: php artisan migrate --no-interaction --force
+
+      - name: Run PHPUnit suite
+        run: composer test
+
+      - name: Build frontend (gate for deploy)
+        working-directory: frontend
+        run: npm run build
+        env:
+          # Vite reads these at build time
+          VITE_API_BASE_URL: /api
+
+      - name: Upload build artifact (for deploy job reuse)
+        if: github.ref == 'refs/heads/master'
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: public/
+          retention-days: 1

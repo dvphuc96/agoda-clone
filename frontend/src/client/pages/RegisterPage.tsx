@@ -3,7 +3,7 @@ import { ArrowRight, UserRoundPlus } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../shared/contexts/AuthContext';
 import { useI18n } from '../../shared/i18n/useI18n';
-import { useToast } from '../../shared/components/Toast';
+import { useToast } from '../../shared/hooks/useToast';
 import { validateEmail, validatePhone, validatePassword } from '../../shared/utils/validation';
 
 export default function RegisterPage() {

@@ -23,8 +23,8 @@ class Hotel extends Model
     {
         return [
             'amenities' => 'array',
-            'checkin_time' => 'datetime:H:i',
-            'checkout_time' => 'datetime:H:i',
+            'checkin_time' => 'string',
+            'checkout_time' => 'string',
         ];
     }
 

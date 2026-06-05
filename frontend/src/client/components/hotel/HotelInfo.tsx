@@ -3,6 +3,11 @@ import type { Hotel } from '../../../shared/api/hotels';
 import { useI18n } from '../../../shared/i18n/useI18n';
 import { amenityLabel } from '../../../shared/ui/travel';
 
+const formatTime = (t: string | null | undefined, fallback: string) => {
+  if (!t) return fallback;
+  return t.length >= 5 ? t.slice(0, 5) : t;
+};
+
 export default function HotelInfo({ hotel }: { hotel: Hotel }) {
   const { t } = useI18n();
   const amenityLabels = {
@@ -65,14 +70,14 @@ export default function HotelInfo({ hotel }: { hotel: Hotel }) {
           <Clock className="size-4 text-primary" />
           <div>
             <div className="text-[11px] font-semibold uppercase tracking-wider text-text-secondary">{t('hotel.checkIn')}</div>
-            <div className="text-sm font-bold text-text">{hotel.checkin_time || '14:00'}</div>
+            <div className="text-sm font-bold text-text">{formatTime(hotel.checkin_time, '14:00')}</div>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <Clock className="size-4 text-primary" />
           <div>
             <div className="text-[11px] font-semibold uppercase tracking-wider text-text-secondary">{t('hotel.checkOut')}</div>
-            <div className="text-sm font-bold text-text">{hotel.checkout_time || '12:00'}</div>
+            <div className="text-sm font-bold text-text">{formatTime(hotel.checkout_time, '12:00')}</div>
           </div>
         </div>
         {hotel.phone && (

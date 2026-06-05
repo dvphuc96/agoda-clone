@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import { supportApi } from '../../shared/api/support';
+import { supportApi, type TicketMessage } from '../../shared/api/support';
 import { useI18n } from '../../shared/i18n/useI18n';
 import { formatDateForLocale } from '../../shared/i18n/format';
 import { MessageCircle, Plus, Send, X } from 'lucide-react';
@@ -59,7 +59,7 @@ export default function SupportPage() {
   };
 
   if (selectedId && detail.data) {
-    const ticket = detail.data;
+    const ticket = detail.data.data;
     return (
       <div className="mx-auto max-w-3xl px-4 py-8">
         <button type="button" onClick={() => setSelectedId(null)} className="mb-4 text-sm text-primary hover:underline">&larr; {t('booking.backToList')}</button>
@@ -74,7 +74,7 @@ export default function SupportPage() {
             </div>
 
             <div className="space-y-4 border-t border-border pt-4">
-              {(ticket.messages || []).map((msg) => (
+              {(ticket.messages || []).map((msg: TicketMessage) => (
                 <div key={msg.id} className={`rounded-xl p-4 ${msg.is_admin ? 'bg-primary/5 border border-primary/10 ml-8' : 'bg-tab mr-8'}`}>
                   <div className="mb-1 flex items-center justify-between">
                     <span className="text-xs font-semibold text-text-secondary">{msg.is_admin ? 'GoStay Support' : msg.user_name}</span>

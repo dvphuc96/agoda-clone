@@ -44,7 +44,7 @@ class ProfileController extends Controller
         $user->update(['avatar' => $path]);
 
         return response()->json([
-            'avatar_url' => Storage::url($path),
+            'avatar_url' => '/storage/' . $path,
         ]);
     }
 

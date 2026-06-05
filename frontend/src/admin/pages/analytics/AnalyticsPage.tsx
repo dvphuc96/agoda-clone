@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { LineChart, Line, BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { Download, DollarSign, TrendingUp, CalendarDays } from 'lucide-react';
-import { adminApi, type RevenuePoint, type OccupancyData, type TopHotel } from '../../../shared/api/admin';
+import { adminApi, type TopHotel } from '../../../shared/api/admin';
 import { formatCurrency, pageTitle } from '../adminUtils';
 import DateRangePicker from '../../components/DateRangePicker';
 
@@ -55,7 +55,7 @@ export default function AnalyticsPage() {
   const totalRevenue = (revenue.data ?? []).reduce((sum, r) => sum + r.revenue, 0);
   const totalBookings = (revenue.data ?? []).reduce((sum, r) => sum + r.booking_count, 0);
   const avgRevenuePerDay = (revenue.data ?? []).length > 0
-    ? totalRevenue / revenue.data.length
+    ? totalRevenue / (revenue.data?.length ?? 0)
     : 0;
 
   const tabs: { key: Tab; label: string }[] = [
@@ -161,8 +161,8 @@ export default function AnalyticsPage() {
                       tick={{ fontSize: 12 }}
                     />
                     <Tooltip
-                      formatter={(value: number) => [formatVND(value), 'Revenue']}
-                      labelFormatter={formatShortDate}
+                      formatter={(value) => [formatVND(Number(value)), 'Revenue']}
+                      labelFormatter={(label) => formatShortDate(String(label))}
                     />
                     <Line
                       type="monotone"
@@ -205,8 +205,8 @@ export default function AnalyticsPage() {
                       tick={{ fontSize: 12 }}
                     />
                     <Tooltip
-                      formatter={(value: number) => [`${value.toFixed(1)}%`, 'Occupancy']}
-                      labelFormatter={formatShortDate}
+                      formatter={(value) => [`${Number(value).toFixed(1)}%`, 'Occupancy']}
+                      labelFormatter={(label) => formatShortDate(String(label))}
                     />
                     <Bar
                       dataKey="rate"

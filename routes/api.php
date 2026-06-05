@@ -162,6 +162,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/bookings', [PartnerBookingController::class, 'index']);
         Route::get('/bookings/{booking}', [PartnerBookingController::class, 'show']);
+        Route::patch('/bookings/{booking}/status', [PartnerBookingController::class, 'updateStatus']);
 
         Route::get('/room-types/{roomType}/price-overrides', [PartnerPriceOverrideController::class, 'index']);
         Route::post('/room-types/{roomType}/price-overrides', [PartnerPriceOverrideController::class, 'store']);

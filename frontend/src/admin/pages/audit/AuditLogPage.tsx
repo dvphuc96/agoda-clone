@@ -7,13 +7,6 @@ import Pagination from '../../components/Pagination';
 import StatusBadge from '../../components/StatusBadge';
 import { formatDate, pageTitle } from '../adminUtils';
 
-const actionColors: Record<string, string> = {
-  created: 'bg-emerald-100 text-emerald-800',
-  updated: 'bg-blue-100 text-blue-800',
-  deleted: 'bg-red-100 text-red-800',
-  toggled: 'bg-amber-100 text-amber-800',
-};
-
 export default function AuditLogPage() {
   const [params, setParams] = useState({ action: '', subject_type: '', date_from: '', date_to: '', page: 1 });
 

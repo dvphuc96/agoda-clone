@@ -1,53 +1,124 @@
-import { useState } from 'react';
+import { useReducer } from 'react';
 import { ArrowRight, LockKeyhole } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../shared/contexts/AuthContext';
 import { useI18n } from '../../shared/i18n/useI18n';
-import { useToast } from '../../shared/components/Toast';
+import { useToast } from '../../shared/hooks/useToast';
 import { validateEmail, validatePassword } from '../../shared/utils/validation';
+
+const ADMIN_EMAIL = 'admin@gostay.local';
+
+function isAdminLogin(email: string) {
+  return email.trim().toLowerCase() === ADMIN_EMAIL;
+}
+
+function validateLoginPassword(email: string, value: string) {
+  if (isAdminLogin(email)) return null;
+  return validatePassword(value);
+}
+
+type LoginState = {
+  email: string;
+  password: string;
+  error: string;
+  loading: boolean;
+  fieldErrors: Record<string, string>;
+};
+
+type LoginAction =
+  | { type: 'setEmail'; email: string; passwordError?: string | null }
+  | { type: 'setPassword'; password: string }
+  | { type: 'setError'; error: string }
+  | { type: 'setLoading'; loading: boolean }
+  | { type: 'setFieldError'; field: string; message: string | null };
+
+const initialLoginState: LoginState = {
+  email: '',
+  password: '',
+  error: '',
+  loading: false,
+  fieldErrors: {},
+};
+
+function loginReducer(state: LoginState, action: LoginAction): LoginState {
+  switch (action.type) {
+    case 'setEmail': {
+      const fieldErrors = { ...state.fieldErrors };
+      if (action.passwordError) fieldErrors.password = action.passwordError;
+      else delete fieldErrors.password;
+      return { ...state, email: action.email, fieldErrors };
+    }
+    case 'setPassword':
+      return { ...state, password: action.password };
+    case 'setError':
+      return { ...state, error: action.error };
+    case 'setLoading':
+      return { ...state, loading: action.loading };
+    case 'setFieldError': {
+      const fieldErrors = { ...state.fieldErrors };
+      if (action.message) fieldErrors[action.field] = action.message;
+      else delete fieldErrors[action.field];
+      return { ...state, fieldErrors };
+    }
+    default:
+      return state;
+  }
+}
 
 export default function LoginPage() {
   const { login } = useAuth();
   const { t } = useI18n();
   const { addToast } = useToast();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [state, dispatch] = useReducer(loginReducer, initialLoginState);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
+    dispatch({ type: 'setError', error: '' });
+    dispatch({ type: 'setLoading', loading: true });
     try {
-      await login(email, password);
+      await login(state.email, state.password);
       addToast('success', t('auth.loginSuccess'));
       navigate('/');
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
-      setError(error.response?.data?.message || t('auth.loginError'));
+      dispatch({
+        type: 'setError',
+        error: error.response?.data?.message || t('auth.loginError'),
+      });
     } finally {
-      setLoading(false);
+      dispatch({ type: 'setLoading', loading: false });
     }
   };
 
   const handleBlur = (field: string, value: string) => {
     let msg: string | null = null;
     if (field === 'email') msg = validateEmail(value);
-    if (field === 'password') msg = validatePassword(value);
-    setFieldErrors((prev) => {
-      const next = { ...prev };
-      if (msg) next[field] = t(msg as any);
-      else delete next[field];
-      return next;
+    if (field === 'password') {
+      msg = validateLoginPassword(state.email, value);
+    }
+
+    dispatch({
+      type: 'setFieldError',
+      field,
+      message: msg ? t(msg as any) : null,
     });
+  };
+
+  const handleEmailChange = (value: string) => {
+    let passwordError: string | null = null;
+
+    if (state.password) {
+      const msg = validateLoginPassword(value, state.password);
+      passwordError = msg ? t(msg as any) : null;
+    }
+
+    dispatch({ type: 'setEmail', email: value, passwordError });
   };
 
   const inputClasses = (field: string) =>
     `w-full rounded-xl border bg-warm-surface px-4 py-3 text-sm text-text outline-none transition-spring-fast placeholder:text-text-secondary/60 focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/15 ${
-      fieldErrors[field] ? 'border-destructive ring-2 ring-destructive/15' : 'border-border'
+      state.fieldErrors[field] ? 'border-destructive ring-2 ring-destructive/15' : 'border-border'
     }`;
 
   return (
@@ -62,13 +133,13 @@ export default function LoginPage() {
             <p className="mt-2 text-sm leading-6 text-text-secondary">{t('auth.loginSubtitle')}</p>
           </div>
 
-          {error && (
+          {state.error && (
             <div
               role="alert"
               aria-live="polite"
               className="mb-5 break-words rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600"
             >
-              {error}
+              {state.error}
             </div>
           )}
 
@@ -78,16 +149,16 @@ export default function LoginPage() {
               <input
                 id="login-email"
                 type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                onBlur={() => handleBlur('email', email)}
+                value={state.email}
+                onChange={e => handleEmailChange(e.target.value)}
+                onBlur={() => handleBlur('email', state.email)}
                 required
                 autoComplete="email"
                 placeholder={t('auth.emailPlaceholder')}
                 className={inputClasses('email')}
               />
-              {fieldErrors.email && (
-                <p className="mt-1 text-xs text-destructive">{fieldErrors.email}</p>
+              {state.fieldErrors.email && (
+                <p className="mt-1 text-xs text-destructive">{state.fieldErrors.email}</p>
               )}
             </div>
             <div>
@@ -95,25 +166,27 @@ export default function LoginPage() {
               <input
                 id="login-password"
                 type="password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                onBlur={() => handleBlur('password', password)}
+                value={state.password}
+                onChange={e =>
+                  dispatch({ type: 'setPassword', password: e.target.value })
+                }
+                onBlur={() => handleBlur('password', state.password)}
                 required
                 autoComplete="current-password"
                 placeholder={t('auth.passwordPlaceholder')}
                 className={inputClasses('password')}
               />
-              {fieldErrors.password && (
-                <p className="mt-1 text-xs text-destructive">{fieldErrors.password}</p>
+              {state.fieldErrors.password && (
+                <p className="mt-1 text-xs text-destructive">{state.fieldErrors.password}</p>
               )}
             </div>
             <button
               type="submit"
-              disabled={loading}
+              disabled={state.loading}
               className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-4 py-3 text-sm font-semibold text-white transition-spring-fast hover:bg-primary-hover active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {loading ? t('auth.loginLoading') : t('auth.loginAction')}
-              {!loading && <ArrowRight className="size-4" aria-hidden="true" />}
+              {state.loading ? t('auth.loginLoading') : t('auth.loginAction')}
+              {!state.loading && <ArrowRight className="size-4" aria-hidden="true" />}
             </button>
           </form>
 

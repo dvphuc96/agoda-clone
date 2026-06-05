@@ -7,7 +7,7 @@ import { bookingsApi } from '../../shared/api/bookings';
 import { transfersApi, type TransferDirection } from '../../shared/api/transfers';
 import { type Coupon } from '../../shared/api/coupons';
 import { useI18n } from '../../shared/i18n/useI18n';
-import { useToast } from '../../shared/components/Toast';
+import { useToast } from '../../shared/hooks/useToast';
 import BookingForm from '../components/booking/BookingForm';
 import PriceSummary from '../components/booking/PriceSummary';
 import CouponInput from '../components/booking/CouponInput';

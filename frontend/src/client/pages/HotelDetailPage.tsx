@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, CalendarDays, ChevronDown } from 'lucide-react';
 import { getCollectionData, hotelsApi, type RoomType } from '../../shared/api/hotels';
 import { useI18n } from '../../shared/i18n/useI18n';
 import { useRecentlyViewed } from '../hooks/useRecentlyViewed';
@@ -14,6 +14,8 @@ import ReviewSummary from '../components/hotel/ReviewSummary';
 import ReviewList from '../components/hotel/ReviewList';
 import ErrorState from '../components/common/ErrorState';
 
+const AvailabilityCalendar = lazy(() => import('../../shared/components/AvailabilityCalendar'));
+
 const vndFormatter = new Intl.NumberFormat('vi-VN');
 
 export default function HotelDetailPage() {
@@ -23,6 +25,7 @@ export default function HotelDetailPage() {
   const checkIn = searchParams.get('check_in') || '';
   const checkOut = searchParams.get('check_out') || '';
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
+  const [expandedCalendars, setExpandedCalendars] = useState<Set<number>>(new Set());
   const { addHotel } = useRecentlyViewed();
   const recordedRef = useRef<string | null>(null);
 
@@ -81,6 +84,18 @@ export default function HotelDetailPage() {
   const displayRooms = rooms && rooms.length > 0 ? rooms : hotel.room_types ?? [];
   const isRoomsSectionActive = selectedRoomId !== null;
 
+  const toggleCalendar = (roomId: number) => {
+    setExpandedCalendars((prev) => {
+      const next = new Set(prev);
+      if (next.has(roomId)) {
+        next.delete(roomId);
+      } else {
+        next.add(roomId);
+      }
+      return next;
+    });
+  };
+
   return (
     <div className="bg-bg">
       {/* Breadcrumb */}
@@ -122,16 +137,44 @@ export default function HotelDetailPage() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {displayRooms.map((room, idx) => (
-                    <RoomTypeCard
-                      key={room.id}
-                      room={room}
-                      index={idx}
-                      isSelected={selectedRoomId === String(room.id)}
-                      hasSelectedRoom={isRoomsSectionActive}
-                      onSelect={setSelectedRoomId}
-                    />
-                  ))}
+                  {displayRooms.map((room, idx) => {
+                    const isCalendarOpen = expandedCalendars.has(room.id);
+                    return (
+                      <div key={room.id} className="space-y-2">
+                        <RoomTypeCard
+                          room={room}
+                          index={idx}
+                          isSelected={selectedRoomId === String(room.id)}
+                          hasSelectedRoom={isRoomsSectionActive}
+                          onSelect={setSelectedRoomId}
+                        />
+                        {checkIn && checkOut && (
+                          <button
+                            type="button"
+                            onClick={() => toggleCalendar(room.id)}
+                            className="group flex w-full items-center justify-center gap-2 rounded-xl border border-border/60 bg-surface px-4 py-2.5 text-xs font-semibold text-text-secondary transition-spring-fast hover:border-primary/30 hover:bg-primary/[0.03] hover:text-primary"
+                          >
+                            <CalendarDays className="size-3.5" />
+                            {isCalendarOpen ? t('hotel.hideCalendar') : t('hotel.checkAvailability')}
+                            <ChevronDown className={`size-3.5 transition-transform duration-200 ${isCalendarOpen ? 'rotate-180' : ''}`} />
+                          </button>
+                        )}
+                        {isCalendarOpen && checkIn && checkOut && (
+                          <Suspense fallback={
+                            <div className="rounded-2xl border border-border bg-surface p-6">
+                              <div className="grid grid-cols-7 gap-1">
+                                {Array.from({ length: 35 }).map((_, i) => (
+                                  <div key={i} className="h-10 animate-pulse rounded-lg bg-warm-surface" />
+                                ))}
+                              </div>
+                            </div>
+                          }>
+                            <AvailabilityCalendar roomId={room.id} />
+                          </Suspense>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
