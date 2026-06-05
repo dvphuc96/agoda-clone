@@ -16,6 +16,17 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
 
+    # These env vars are visible to ALL steps in this job. Laravel reads them
+    # via env() which prefers OS env over .env file — so we don't need to
+    # modify .env.example (which has DB_* commented out by default in Laravel 13).
+    env:
+      DB_CONNECTION: mysql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_DATABASE: gostay_test
+      DB_USERNAME: gostay
+      DB_PASSWORD: gostay
+
     services:
       mysql:
         image: mysql:8.0
@@ -72,12 +83,6 @@ jobs:
       - name: Prepare Laravel environment
         run: |
           cp .env.example .env
-          # override DB to use the mysql service container
-          sed -i 's/DB_CONNECTION=.*/DB_CONNECTION=mysql/' .env
-          sed -i 's/DB_HOST=.*/DB_HOST=127.0.0.1/' .env
-          sed -i 's/DB_DATABASE=.*/DB_DATABASE=gostay_test/' .env
-          sed -i 's/DB_USERNAME=.*/DB_USERNAME=gostay/' .env
-          sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=gostay/' .env
           php artisan key:generate --no-interaction
 
       - name: Run migrations (test DB)
@@ -85,12 +90,6 @@ jobs:
 
       - name: Run PHPUnit suite
         run: composer test
-        env:
-          DB_CONNECTION: mysql
-          DB_HOST: 127.0.0.1
-          DB_DATABASE: gostay_test
-          DB_USERNAME: gostay
-          DB_PASSWORD: gostay
 
       - name: Run frontend lint
         working-directory: frontend
