@@ -117,7 +117,7 @@ ln -sfn "$RELEASE_DIR" "$CURRENT_LINK.new"
 mv -Tf "$CURRENT_LINK.new" "$CURRENT_LINK"
 
 # Reload PHP-FPM (clears opcache for the new release).
-sudo /bin/systemctl reload php8.3-fpm
+sudo /bin/systemctl reload php8.4-fpm
 
 # Restart queue workers (so they pick up new code).
 sudo /usr/bin/supervisorctl restart all

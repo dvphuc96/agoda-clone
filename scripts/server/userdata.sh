@@ -21,15 +21,15 @@ apt-get install -y \
   mysql-client
 
 # ----------------------------------------------------------------------------
-# 2. PHP 8.3 + extensions
+# 2. PHP 8.4 + extensions
 # ----------------------------------------------------------------------------
 add-apt-repository -y ppa:ondrej/php
 apt-get update -y
 apt-get install -y \
-  php8.3-fpm php8.3-cli \
-  php8.3-mysql php8.3-xml php8.3-curl php8.3-mbstring \
-  php8.3-zip php8.3-bcmath php8.3-gd php8.3-intl \
-  php8.3-readline php8.3-opcache php8.3-redis
+  php8.4-fpm php8.4-cli \
+  php8.4-mysql php8.4-xml php8.4-curl php8.4-mbstring \
+  php8.4-zip php8.4-bcmath php8.4-gd php8.4-intl \
+  php8.4-readline php8.4-opcache php8.4-redis
 
 # ----------------------------------------------------------------------------
 # 3. Nginx
@@ -99,9 +99,9 @@ chmod g+s "$DEPLOY_ROOT/shared/storage"  # new files inherit www-data group
 # ----------------------------------------------------------------------------
 cat > /etc/sudoers.d/deploy-gostay <<'EOF'
 # Allow deploy user to reload PHP-FPM and restart supervisor — nothing else.
-deploy ALL=(root) NOPASSWD: /bin/systemctl reload php8.3-fpm
-deploy ALL=(root) NOPASSWD: /bin/systemctl restart php8.3-fpm
-deploy ALL=(root) NOPASSWD: /bin/systemctl status php8.3-fpm
+deploy ALL=(root) NOPASSWD: /bin/systemctl reload php8.4-fpm
+deploy ALL=(root) NOPASSWD: /bin/systemctl restart php8.4-fpm
+deploy ALL=(root) NOPASSWD: /bin/systemctl status php8.4-fpm
 deploy ALL=(root) NOPASSWD: /usr/bin/supervisorctl restart *
 deploy ALL=(root) NOPASSWD: /usr/bin/supervisorctl status
 EOF
@@ -111,11 +111,11 @@ visudo -cf /etc/sudoers.d/deploy-gostay
 # ----------------------------------------------------------------------------
 # 11. PHP-FPM pool config — run as deploy:www-data
 # ----------------------------------------------------------------------------
-cat > /etc/php/8.3/fpm/pool.d/gostay.conf <<'EOF'
+cat > /etc/php/8.4/fpm/pool.d/gostay.conf <<'EOF'
 [gostay]
 user = deploy
 group = www-data
-listen = /run/php/php8.3-fpm-gostay.sock
+listen = /run/php/php8.4-fpm-gostay.sock
 listen.owner = www-data
 listen.group = www-data
 pm = dynamic
@@ -191,7 +191,7 @@ server {
 
     # Laravel API + PHP entry point
     location ~ \.php$ {
-        fastcgi_pass unix:/run/php/php8.3-fpm-gostay.sock;
+        fastcgi_pass unix:/run/php/php8.4-fpm-gostay.sock;
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
         include fastcgi_params;
         fastcgi_hide_header X-Powered-By;
@@ -234,9 +234,9 @@ ufw --force enable
 # ----------------------------------------------------------------------------
 # 17. Enable services on boot
 # ----------------------------------------------------------------------------
-systemctl enable nginx php8.3-fpm mysql supervisor
+systemctl enable nginx php8.4-fpm mysql supervisor
 systemctl restart mysql
-systemctl restart php8.3-fpm
+systemctl restart php8.4-fpm
 systemctl restart nginx
 systemctl restart supervisor
 

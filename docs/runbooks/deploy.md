@@ -89,7 +89,7 @@ crontab -e
 |---|---|
 | Build fails in CI | `composer.lock` or `frontend/package-lock.json` not committed? |
 | Deploy uploads but site is blank | Check `/var/www/gostay/current` symlink exists and points to a valid release |
-| 502 Bad Gateway | PHP-FPM down: `sudo systemctl status php8.3-fpm`. Check `/var/www/gostay/shared/storage/logs/php-fpm-error.log` |
+| 502 Bad Gateway | PHP-FPM down: `sudo systemctl status php8.4-fpm`. Check `/var/www/gostay/shared/storage/logs/php-fpm-error.log` |
 | 500 on `/api/*` | Check Laravel log: `tail /var/www/gostay/shared/storage/logs/laravel.log` |
 | Migrations didn't run | Re-run: `php /var/www/gostay/current/artisan migrate --force` |
 | Permission denied on storage | `sudo chown -R deploy:www-data /var/www/gostay/shared/storage` |

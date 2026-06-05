@@ -58,7 +58,7 @@ ln -sfn "$PREV_DIR" "$CURRENT_LINK.new"
 mv -Tf "$CURRENT_LINK.new" "$CURRENT_LINK"
 
 # --- reload services ---
-sudo /bin/systemctl reload php8.3-fpm
+sudo /bin/systemctl reload php8.4-fpm
 sudo /usr/bin/supervisorctl restart all
 
 echo ""
