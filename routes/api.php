@@ -125,6 +125,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/coupons/validate', [CouponController::class, 'validate']);
 
     Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead']);
+    Route::post('/notifications/{notification}/read', [NotificationController::class, 'markAsRead']);
+    Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy']);
 
     Route::get('/transfers/bookings', [TransferBookingController::class, 'index']);
     Route::post('/transfers/bookings', [TransferBookingController::class, 'store']);
