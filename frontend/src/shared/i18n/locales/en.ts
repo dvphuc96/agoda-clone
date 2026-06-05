@@ -368,6 +368,11 @@ export const en: Messages = {
     status: 'Status',
     sentAt: 'Sent at',
     noDate: 'Pending',
+    markAllRead: 'Mark all as read',
+    markAsRead: 'Mark as read',
+    delete: 'Delete',
+    deleteConfirm: 'Delete this notification?',
+    unread: 'Unread',
   },
   wishlist: {
     title: 'My wishlist',

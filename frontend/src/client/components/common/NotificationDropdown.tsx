@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { Bell, X, BellOff } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Bell, X, BellOff, CheckCheck } from 'lucide-react';
 import { notificationsApi } from '../../../shared/api/notifications';
 import { useI18n } from '../../../shared/i18n/useI18n';
 import { formatDateForLocale } from '../../../shared/i18n/format';
@@ -9,15 +9,12 @@ import { formatDateForLocale } from '../../../shared/i18n/format';
 export default function NotificationDropdown() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const qc = useQueryClient();
   const { locale, t } = useI18n();
 
-  // Lightweight polling query for badge count (updates every 60s)
   const { data: badgeData } = useQuery({
     queryKey: ['notifications', 'badge'],
-    queryFn: () => notificationsApi.list().then(r => {
-      const d = r.data;
-      return Array.isArray(d) ? d.length : (d as any)?.total ?? (Array.isArray((d as any)?.data) ? (d as any).data.length : 0);
-    }),
+    queryFn: () => notificationsApi.getUnreadCount().then(r => r.data.count),
     refetchInterval: 60_000,
     staleTime: 30_000,
   });
@@ -29,8 +26,21 @@ export default function NotificationDropdown() {
   });
 
   const notifications = Array.isArray(data) ? data : data?.data ?? [];
-  // Use badge count when dropdown is closed, actual list length when open
-  const displayCount = open ? notifications.length : (badgeData ?? 0);
+  const unreadCount = badgeData ?? 0;
+
+  const invalidateAll = () => {
+    qc.invalidateQueries({ queryKey: ['notifications'] });
+  };
+
+  const markAsReadMutation = useMutation({
+    mutationFn: (id: number) => notificationsApi.markAsRead(id),
+    onSuccess: invalidateAll,
+  });
+
+  const markAllReadMutation = useMutation({
+    mutationFn: () => notificationsApi.markAllRead(),
+    onSuccess: invalidateAll,
+  });
 
   useEffect(() => {
     if (!open) return;
@@ -41,6 +51,15 @@ export default function NotificationDropdown() {
     return () => document.removeEventListener('mousedown', handler);
   }, [open]);
 
+  const handleClickItem = (n: typeof notifications[number]) => {
+    if (!n.is_read) {
+      markAsReadMutation.mutate(n.id);
+    }
+    if (n.booking?.booking_code) {
+      setOpen(false);
+    }
+  };
+
   return (
     <div className="relative" ref={ref}>
       <button
@@ -50,9 +69,9 @@ export default function NotificationDropdown() {
         aria-label={t('notifications.title')}
       >
         <Bell className="size-[18px]" />
-        {displayCount > 0 && (
+        {unreadCount > 0 && (
           <span className="absolute right-0.5 top-0.5 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white">
-            {displayCount > 9 ? '9+' : displayCount}
+            {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
       </button>
@@ -82,50 +101,84 @@ export default function NotificationDropdown() {
                 </div>
               ) : (
                 <div className="divide-y divide-border/20">
-                  {notifications.map((n) => (
-                    <div key={n.id} className="px-4 py-3 transition-colors hover:bg-tab/30">
+                  {notifications.map((n) => {
+                    const innerBody = (
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0 flex-1">
                           <div className="mb-1 flex items-center gap-1.5">
-                            <span className="inline-block rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
+                            {!n.is_read && (
+                              <span className="size-2 shrink-0 rounded-full bg-primary" aria-label={t('notifications.unread')} />
+                            )}
+                            <span className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-medium ${n.is_read ? 'bg-tab text-text-secondary' : 'bg-primary/10 text-primary'}`}>
                               {n.type || '—'}
                             </span>
                           </div>
-                          <p className="text-sm text-text">
+                          <p className={`text-sm ${n.is_read ? 'text-text-secondary' : 'font-medium text-text'}`}>
                             {n.message || (n.payload?.message as string | undefined) || '—'}
                           </p>
                           {n.booking?.booking_code && (
-                            <Link
-                              to={`/bookings/${n.booking.booking_code}`}
-                              onClick={() => setOpen(false)}
-                              className="mt-1 inline-block text-xs font-medium text-primary hover:underline"
-                            >
+                            <span className="mt-1 inline-block text-xs font-medium text-primary group-hover:underline">
                               {t('common.viewDetails')} →
-                            </Link>
+                            </span>
                           )}
                         </div>
                         <span className="whitespace-nowrap text-[10px] text-text-secondary">
                           {n.sent_at ? formatDateForLocale(n.sent_at, locale) : t('notifications.noDate')}
                         </span>
                       </div>
-                    </div>
-                  ))}
+                    );
+
+                    if (n.booking?.booking_code) {
+                      return (
+                        <Link
+                          key={n.id}
+                          to={`/bookings/${n.booking.booking_code}`}
+                          onClick={() => handleClickItem(n)}
+                          className={`group block px-4 py-3 transition-colors hover:bg-tab/30 ${n.is_read ? 'opacity-60' : ''}`}
+                        >
+                          {innerBody}
+                        </Link>
+                      );
+                    }
+
+                    return (
+                      <button
+                        type="button"
+                        key={n.id}
+                        onClick={() => handleClickItem(n)}
+                        className={`group block w-full px-4 py-3 text-left transition-colors hover:bg-tab/30 ${n.is_read ? 'opacity-60' : ''}`}
+                      >
+                        {innerBody}
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>
 
             {/* Footer */}
-            {notifications.length > 0 && (
-              <div className="border-t border-border/30 px-4 py-2">
-                <Link
-                  to="/notifications"
-                  onClick={() => setOpen(false)}
-                  className="block text-center text-xs font-medium text-primary hover:underline"
+            <div className="flex items-center justify-between gap-2 border-t border-border/30 px-4 py-2">
+              {unreadCount > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => markAllReadMutation.mutate()}
+                  disabled={markAllReadMutation.isPending}
+                  className="inline-flex items-center gap-1.5 text-xs font-medium text-primary transition-spring-fast hover:underline disabled:opacity-50"
                 >
-                  {t('common.viewDetails')} →
-                </Link>
-              </div>
-            )}
+                  <CheckCheck className="size-3.5" />
+                  {t('notifications.markAllRead')}
+                </button>
+              ) : (
+                <span />
+              )}
+              <Link
+                to="/notifications"
+                onClick={() => setOpen(false)}
+                className="text-xs font-medium text-primary transition-spring-fast hover:underline"
+              >
+                {t('common.viewDetails')} →
+              </Link>
+            </div>
           </div>
         </>
       )}

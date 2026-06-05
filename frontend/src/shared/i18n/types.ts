@@ -366,6 +366,11 @@ export type Messages = {
     status: string;
     sentAt: string;
     noDate: string;
+    markAllRead: string;
+    markAsRead: string;
+    delete: string;
+    deleteConfirm: string;
+    unread: string;
   };
   wishlist: {
     title: string;

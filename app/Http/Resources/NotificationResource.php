@@ -18,6 +18,8 @@ class NotificationResource extends JsonResource
             'payload' => $this->payload,
             'message' => $this->payload['message'] ?? null,
             'sent_at' => $this->sent_at?->format('Y-m-d H:i:s'),
+            'read_at' => $this->read_at?->format('Y-m-d H:i:s'),
+            'is_read' => $this->read_at !== null,
             'booking' => $this->whenLoaded('booking', fn () => [
                 'id' => $this->booking->id,
                 'booking_code' => $this->booking->booking_code,
