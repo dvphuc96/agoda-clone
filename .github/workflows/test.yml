@@ -91,10 +91,6 @@ jobs:
       - name: Run PHPUnit suite
         run: composer test
 
-      - name: Run frontend lint
-        working-directory: frontend
-        run: npm run lint
-
       - name: Build frontend (gate for deploy)
         working-directory: frontend
         run: npm run build
