@@ -22,7 +22,7 @@ export default function PriceOverrideListPage() {
   const overrides = useQuery({
     queryKey: ['admin', 'price-overrides', rtId, params],
     queryFn: async () => {
-      const filtered = Object.fromEntries(Object.entries(params).filter(([, v]) => v !== '' && v !== null));
+      const filtered = Object.fromEntries(Object.entries(params).filter(([, v]) => String(v) !== '' && v !== null));
       return (await adminApi.priceOverrides(rtId, filtered)).data;
     },
     enabled: !!rtId,

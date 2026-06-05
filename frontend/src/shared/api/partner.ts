@@ -1,5 +1,6 @@
 import apiClient from './client';
-import type { Hotel, RoomType, Booking } from './hotels';
+import type { Hotel, RoomType } from './hotels';
+import type { Booking } from './bookings';
 import type { Paginated } from './admin';
 import type { PriceOverride, PriceOverridePayload } from './price-overrides';
 

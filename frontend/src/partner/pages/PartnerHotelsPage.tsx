@@ -7,7 +7,7 @@ import type { Hotel } from '../../shared/api/hotels';
 import DataTable from '../../admin/components/DataTable';
 import StatusBadge from '../../admin/components/StatusBadge';
 import AdminModal from '../../admin/components/AdminModal';
-import { formatCurrency, pageTitle } from '../partnerUtils';
+import { pageTitle } from '../partnerUtils';
 
 const fieldClass = 'w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-emerald-600 focus:outline-none';
 
