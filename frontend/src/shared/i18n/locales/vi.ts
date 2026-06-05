@@ -368,6 +368,11 @@ export const vi: Messages = {
     status: 'Trạng thái',
     sentAt: 'Thời gian gửi',
     noDate: 'Đang chờ',
+    markAllRead: 'Đánh dấu tất cả đã đọc',
+    markAsRead: 'Đánh dấu đã đọc',
+    delete: 'Xóa',
+    deleteConfirm: 'Xóa thông báo này?',
+    unread: 'Chưa đọc',
   },
   wishlist: {
     title: 'Yêu thích',
