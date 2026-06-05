@@ -38,6 +38,7 @@ Last updated: 2026-06-04
 | 30 | Notification Badge Polling | — | auto-refresh every 60s in Navbar | — | — |
 | 31 | ErrorBoundary | — | wraps client/admin/partner route groups | — | — |
 | 32 | Partner Booking Management | PartnerBookingController::updateStatus | — | confirm/cancel actions in booking detail | — |
+| 33 | Notification Read Status & Lifecycle | NotificationController (unread-count, markAsRead, markAllRead, destroy) | unread dot + bolder text, mark-as-read on click, mark-all-read, delete with confirm | — | [spec](superpowers/specs/2026-06-05-notification-read-status-design.md), [plan](superpowers/plans/2026-06-05-notification-read-status.md) |
 
 ## Backend Models (28)
 
