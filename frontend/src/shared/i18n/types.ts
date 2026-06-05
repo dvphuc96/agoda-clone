@@ -103,6 +103,8 @@ export type Messages = {
     clear: string;
     applyFilters: string;
     priceRange: string;
+    hotelName: string;
+    hotelNamePlaceholder: string;
     minPrice: string;
     maxPrice: string;
     starRating: string;

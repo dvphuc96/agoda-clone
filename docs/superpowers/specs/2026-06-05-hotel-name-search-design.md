@@ -32,12 +32,12 @@ After the existing `location` filter block:
 
 ```php
 if ($q = trim((string) $request->q)) {
-    $escaped = addcslashes($q, '%_\\');
-    $query->where('name', 'like', "%{$escaped}%");
+    $escaped = str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $q);
+    $query->whereRaw('LOWER(name) LIKE LOWER(?) ESCAPE ?', ['%' . $escaped . '%', '\\']);
 }
 ```
 
-LIKE with leading + trailing wildcards is acceptable at this scale. Indexed `name` won't be used due to leading wildcard — accepted (small dataset, demo project). Escape `%` and `_` with `addcslashes` to avoid accidental wildcard injection.
+Uses `whereRaw` with `ESCAPE '\\'` to standardize escape behavior across MySQL and SQLite (SQLite has no default escape char; MySQL defaults to backslash). Manual escape via `str_replace` covers backslash, percent, and underscore. Case-insensitive via `LOWER()` on both sides.
 
 **Resource:** No change — `name` is already in `HotelResource`.
 

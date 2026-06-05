@@ -105,6 +105,8 @@ export const en: Messages = {
     clear: 'Clear',
     applyFilters: 'Apply filters',
     priceRange: 'Price range',
+    hotelName: 'Hotel name',
+    hotelNamePlaceholder: 'Search by hotel name',
     minPrice: 'Min',
     maxPrice: 'Max',
     starRating: 'Star rating',
