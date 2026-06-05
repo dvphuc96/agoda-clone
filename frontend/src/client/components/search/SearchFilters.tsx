@@ -28,6 +28,7 @@ function formatPrice(value: string, fallback: number): string {
 }
 
 interface FilterState {
+  q: string;
   priceMin: string;
   priceMax: string;
   star: number;
@@ -36,6 +37,7 @@ interface FilterState {
 }
 
 type FilterAction =
+  | { type: 'setQuery'; value: string }
   | { type: 'setPriceMin'; value: string }
   | { type: 'setPriceMax'; value: string }
   | { type: 'toggleStar'; value: number }
@@ -45,6 +47,8 @@ type FilterAction =
 
 function filterReducer(state: FilterState, action: FilterAction): FilterState {
   switch (action.type) {
+    case 'setQuery':
+      return { ...state, q: action.value };
     case 'setPriceMin':
       return { ...state, priceMin: action.value };
     case 'setPriceMax':
@@ -67,6 +71,7 @@ function filterReducer(state: FilterState, action: FilterAction): FilterState {
       };
     case 'clear':
       return {
+        q: '',
         priceMin: String(priceBounds.min),
         priceMax: String(priceBounds.max),
         star: 0,
@@ -82,6 +87,7 @@ export default function SearchFilters() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { t } = useI18n();
   const [state, dispatch] = useReducer(filterReducer, {
+    q: searchParams.get('q') ?? '',
     priceMin: searchParams.get('price_min') || String(priceBounds.min),
     priceMax: searchParams.get('price_max') || String(priceBounds.max),
     star: Number(searchParams.get('star')) || 0,
@@ -94,6 +100,9 @@ export default function SearchFilters() {
   const applyFilters = () => {
     const params = new URLSearchParams(searchParams);
     params.delete('page');
+    const trimmedQ = state.q.trim();
+    if (trimmedQ) params.set('q', trimmedQ);
+    else params.delete('q');
     params.set('price_min', String(minPriceValue));
     params.set('price_max', String(maxPriceValue));
     if (state.star) params.set('star', String(state.star));
@@ -108,6 +117,7 @@ export default function SearchFilters() {
   const clearFilters = () => {
     dispatch({ type: 'clear' });
     const params = new URLSearchParams(searchParams);
+    params.delete('q');
     params.delete('price_min');
     params.delete('price_max');
     params.delete('star');
@@ -131,6 +141,19 @@ export default function SearchFilters() {
           </button>
         </div>
         <div className="border-t border-border pt-4">
+        <div className="mb-5 border-b border-border pb-5">
+          <h4 className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-text-secondary">
+            {t('search.hotelName')}
+          </h4>
+          <input
+            type="text"
+            value={state.q}
+            onChange={e => dispatch({ type: 'setQuery', value: e.target.value })}
+            placeholder={t('search.hotelNamePlaceholder')}
+            maxLength={100}
+            className="w-full rounded-full border border-border bg-warm-surface px-4 py-2 text-sm text-text placeholder:text-text-secondary/60 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+          />
+        </div>
         <div className="mb-3 flex items-center justify-between gap-3">
           <h4 className="text-xs font-bold uppercase tracking-[0.14em] text-text-secondary">{t('search.priceRange')}</h4>
           <span className="text-xs font-semibold text-primary">

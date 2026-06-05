@@ -105,6 +105,8 @@ export const vi: Messages = {
     clear: 'Xóa',
     applyFilters: 'Áp dụng bộ lọc',
     priceRange: 'Khoảng giá',
+    hotelName: 'Tên khách sạn',
+    hotelNamePlaceholder: 'Tìm theo tên khách sạn',
     minPrice: 'Từ',
     maxPrice: 'Đến',
     starRating: 'Hạng sao',

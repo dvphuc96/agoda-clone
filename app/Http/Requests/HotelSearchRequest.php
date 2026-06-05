@@ -11,6 +11,7 @@ class HotelSearchRequest extends FormRequest
     {
         return [
             'location' => ['nullable', 'string'],
+            'q' => ['nullable', 'string', 'max:100'],
             'check_in' => ['nullable', 'date', 'after_or_equal:today'],
             'check_out' => ['nullable', 'date', 'after:check_in'],
             'guests' => ['nullable', 'integer', 'min:1'],

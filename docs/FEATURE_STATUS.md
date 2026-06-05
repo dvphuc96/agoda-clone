@@ -39,6 +39,7 @@ Last updated: 2026-06-04
 | 31 | ErrorBoundary | — | wraps client/admin/partner route groups | — | — |
 | 32 | Partner Booking Management | PartnerBookingController::updateStatus | — | confirm/cancel actions in booking detail | — |
 | 33 | Notification Read Status & Lifecycle | NotificationController (unread-count, markAsRead, markAllRead, destroy) | unread dot + bolder text, mark-as-read on click, mark-all-read, delete with confirm | — | [spec](superpowers/specs/2026-06-05-notification-read-status-design.md), [plan](superpowers/plans/2026-06-05-notification-read-status.md) |
+| 34 | Hotel Name Search | HotelSearchRequest (q rule) + HotelController (LIKE ESCAPE) | SearchFilters text input | — | [spec](superpowers/specs/2026-06-05-hotel-name-search-design.md), [plan](superpowers/plans/2026-06-05-hotel-name-search.md) |
 
 ## Backend Models (28)
 

@@ -45,6 +45,11 @@ class HotelController extends Controller
             });
         }
 
+        if ($q = trim((string) $request->q)) {
+            $escaped = str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $q);
+            $query->whereRaw('LOWER(name) LIKE LOWER(?) ESCAPE ?', ['%' . $escaped . '%', '\\']);
+        }
+
         if ($request->star) {
             $query->where('star_rating', $request->star);
         }
