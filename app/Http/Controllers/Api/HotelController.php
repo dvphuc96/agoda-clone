@@ -47,8 +47,13 @@ class HotelController extends Controller
             }
 
             if ($q = trim((string) $request->q)) {
-                $query->selectRaw('*, MATCH(name, description, address) AGAINST(? IN BOOLEAN MODE) AS relevance_score', [$q])
-                    ->whereRaw('MATCH(name, description, address) AGAINST(? IN BOOLEAN MODE)', [$q]);
+                $escaped = str_replace(['%', '_'], ['\\%', '\\_'], $q);
+                $query->where(function ($query) use ($escaped) {
+                    $query->where('name', 'like', "%{$escaped}%")
+                          ->orWhere('description', 'like', "%{$escaped}%")
+                          ->orWhere('address', 'like', "%{$escaped}%");
+                });
+                $query->selectRaw('*, MATCH(name, description, address) AGAINST(? IN BOOLEAN MODE) AS relevance_score', [$q]);
             }
 
             if ($request->star) {
