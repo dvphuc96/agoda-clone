@@ -15,7 +15,7 @@ export default function NotificationDropdown() {
   const { data: badgeData } = useQuery({
     queryKey: ['notifications', 'badge'],
     queryFn: () => notificationsApi.getUnreadCount().then(r => r.data.count),
-    refetchInterval: 60_000,
+    refetchInterval: 30_000,
     staleTime: 30_000,
   });
 

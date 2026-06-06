@@ -47,8 +47,8 @@ class HotelController extends Controller
             }
 
             if ($q = trim((string) $request->q)) {
-                $escaped = str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $q);
-                $query->whereRaw('LOWER(name) LIKE LOWER(?) ESCAPE ?', ['%' . $escaped . '%', '\\']);
+                $query->selectRaw('*, MATCH(name, description, address) AGAINST(? IN BOOLEAN MODE) AS relevance_score', [$q])
+                    ->whereRaw('MATCH(name, description, address) AGAINST(? IN BOOLEAN MODE)', [$q]);
             }
 
             if ($request->star) {
@@ -89,13 +89,17 @@ class HotelController extends Controller
                 }
             }
 
+            $hasFulltext = trim((string) $request->q) !== '';
+
             match ($request->sort) {
                 'price_asc' => $query->join('room_types', 'hotels.id', '=', 'room_types.hotel_id')
                     ->orderBy('room_types.price_per_night', 'asc'),
                 'price_desc' => $query->join('room_types', 'hotels.id', '=', 'room_types.hotel_id')
                     ->orderBy('room_types.price_per_night', 'desc'),
                 'rating' => $query->orderBy('star_rating', 'desc'),
-                default => $query->orderBy('created_at', 'desc'),
+                default => $hasFulltext
+                    ? $query->orderByDesc('relevance_score')
+                    : $query->orderBy('created_at', 'desc'),
             };
 
             $hotels = $query->paginate(12);

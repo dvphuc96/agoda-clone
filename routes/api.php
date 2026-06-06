@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Api\SocialAuthController;
 use App\Http\Controllers\Api\SupportTicketController;
 use App\Http\Controllers\Api\HotelController;
+use App\Http\Controllers\Api\SearchSuggestController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\RoomTypeController;
@@ -21,6 +22,7 @@ use App\Http\Controllers\Api\TransferBookingController;
 use App\Http\Controllers\Api\CouponController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\WishlistController;
+use App\Http\Controllers\Api\PriceAlertController;
 use App\Http\Controllers\Api\RecentlyViewController;
 use App\Http\Controllers\Api\LoyaltyController;
 use App\Http\Controllers\Api\Partner\PartnerReviewController;
@@ -79,6 +81,7 @@ Route::get('/currencies', [CurrencyController::class, 'index']);
 
 // Hotel routes (rate-limited)
 Route::middleware('throttle:search')->group(function () {
+    Route::get('/search/suggest', [SearchSuggestController::class, 'suggest']);
     Route::get('/hotels', [HotelController::class, 'index']);
     Route::get('/hotels/featured', [HotelController::class, 'featured']);
     Route::get('/hotels/compare', [HotelController::class, 'compare']);
@@ -185,6 +188,9 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     Route::get('/loyalty', [LoyaltyController::class, 'show']);
     Route::get('/loyalty/transactions', [LoyaltyController::class, 'transactions']);
     Route::post('/loyalty/redeem', [LoyaltyController::class, 'redeem']);
+
+    // Price alerts
+    Route::apiResource('price-alerts', PriceAlertController::class)->only(['index', 'store', 'destroy', 'update']);
 
     // Support tickets
     Route::get('/support/tickets', [SupportTicketController::class, 'index']);

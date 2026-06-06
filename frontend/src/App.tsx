@@ -22,6 +22,7 @@ import MyBookingsPage from './client/pages/MyBookingsPage';
 import BookingDetailPage from './client/pages/BookingDetailPage';
 import ModifyBookingPage from './client/pages/ModifyBookingPage';
 import NotificationsPage from './client/pages/NotificationsPage';
+import PriceAlertsPage from './client/pages/PriceAlertsPage';
 import WishlistPage from './client/pages/WishlistPage';
 import LoyaltyPage from './client/pages/LoyaltyPage';
 import ProfilePage from './client/pages/ProfilePage';
@@ -88,6 +89,7 @@ export default function App() {
                 <Route path="/bookings/:bookingCode" element={<BookingDetailPage />} />
                 <Route path="/bookings/:bookingCode/modify" element={<ModifyBookingPage />} />
                 <Route path="/notifications" element={<NotificationsPage />} />
+                <Route path="/price-alerts" element={<PriceAlertsPage />} />
                 <Route path="/wishlist" element={<WishlistPage />} />
                 <Route path="/loyalty" element={<LoyaltyPage />} />
                 <Route path="/profile" element={<ProfilePage />} />

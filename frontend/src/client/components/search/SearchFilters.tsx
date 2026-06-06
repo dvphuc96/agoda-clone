@@ -1,6 +1,8 @@
-import { useReducer } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { RotateCcw, SlidersHorizontal, Star } from 'lucide-react';
+import { useReducer, useState, useRef, useEffect, useCallback } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { RotateCcw, SlidersHorizontal, Star, Search, X } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import apiClient from '../../../shared/api/client';
 import { useI18n } from '../../../shared/i18n/useI18n';
 
 const starOptions = [1, 2, 3, 4, 5];
@@ -25,6 +27,15 @@ function priceValue(value: string, fallback: number): number {
 
 function formatPrice(value: string, fallback: number): string {
   return priceFormatter.format(priceValue(value, fallback)) + 'đ';
+}
+
+interface Suggestion {
+  id: number;
+  name: string;
+  slug: string;
+  star_rating: number;
+  address: string;
+  thumbnail: string | null;
 }
 
 interface FilterState {
@@ -67,7 +78,7 @@ function filterReducer(state: FilterState, action: FilterAction): FilterState {
         ...state,
         selectedAmenities: state.selectedAmenities.includes(action.value)
           ? state.selectedAmenities.filter((amenity) => amenity !== action.value)
-          : [...state.selectedAmenities, action.value],
+          : [...state.selectedAmenities, amenity],
       };
     case 'clear':
       return {
@@ -86,6 +97,7 @@ function filterReducer(state: FilterState, action: FilterAction): FilterState {
 export default function SearchFilters() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { t } = useI18n();
+  const navigate = useNavigate();
   const [state, dispatch] = useReducer(filterReducer, {
     q: searchParams.get('q') ?? '',
     priceMin: searchParams.get('price_min') || String(priceBounds.min),
@@ -96,6 +108,52 @@ export default function SearchFilters() {
   });
   const minPriceValue = priceValue(state.priceMin, priceBounds.min);
   const maxPriceValue = priceValue(state.priceMax, priceBounds.max);
+
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [debouncedQ, setDebouncedQ] = useState('');
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const suggestRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (state.q.trim().length < 2) {
+      setDebouncedQ('');
+      setShowSuggestions(false);
+      return;
+    }
+    debounceRef.current = setTimeout(() => setDebouncedQ(state.q.trim()), 300);
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+  }, [state.q]);
+
+  const { data: suggestions = [] } = useQuery<Suggestion[]>({
+    queryKey: ['search-suggest', debouncedQ],
+    queryFn: async () => {
+      const res = await apiClient.get<{ data: Suggestion[] }>('/search/suggest', { params: { q: debouncedQ } });
+      return res.data.data;
+    },
+    enabled: debouncedQ.length >= 2,
+    staleTime: 30_000,
+  });
+
+  useEffect(() => {
+    if (debouncedQ.length >= 2) setShowSuggestions(true);
+  }, [debouncedQ]);
+
+  const handleClickOutside = useCallback((e: MouseEvent) => {
+    if (suggestRef.current && !suggestRef.current.contains(e.target as Node)) {
+      setShowSuggestions(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [handleClickOutside]);
+
+  const handleSuggestionClick = (slug: string) => {
+    setShowSuggestions(false);
+    navigate(`/hotel/${slug}`);
+  };
 
   const applyFilters = () => {
     const params = new URLSearchParams(searchParams);
@@ -145,14 +203,71 @@ export default function SearchFilters() {
           <h4 className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-text-secondary">
             {t('search.hotelName')}
           </h4>
-          <input
-            type="text"
-            value={state.q}
-            onChange={e => dispatch({ type: 'setQuery', value: e.target.value })}
-            placeholder={t('search.hotelNamePlaceholder')}
-            maxLength={100}
-            className="w-full rounded-full border border-border bg-warm-surface px-4 py-2 text-sm text-text placeholder:text-text-secondary/60 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-          />
+          <div ref={suggestRef} className="relative">
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-text-secondary" />
+              <input
+                type="text"
+                value={state.q}
+                onChange={e => dispatch({ type: 'setQuery', value: e.target.value })}
+                onFocus={() => { if (debouncedQ.length >= 2 && suggestions.length > 0) setShowSuggestions(true); }}
+                placeholder={t('search.hotelNamePlaceholder')}
+                maxLength={100}
+                className="w-full rounded-full border border-border bg-warm-surface pl-9 pr-4 py-2 text-sm text-text placeholder:text-text-secondary/60 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              />
+              {state.q && (
+                <button
+                  type="button"
+                  onClick={() => dispatch({ type: 'setQuery', value: '' })}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text"
+                >
+                  <X className="size-3.5" />
+                </button>
+              )}
+            </div>
+            {showSuggestions && debouncedQ.length >= 2 && (
+              <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-64 overflow-y-auto rounded-xl border border-border bg-white shadow-lg">
+                <div className="px-3 py-2 text-xs font-bold uppercase tracking-wider text-text-secondary">
+                  {t('search.suggestedHotels')}
+                </div>
+                {suggestions.length === 0 ? (
+                  <div className="px-3 py-3 text-center text-sm text-text-secondary">
+                    {t('search.noSuggestions')}
+                  </div>
+                ) : (
+                  <ul>
+                    {suggestions.map(s => (
+                      <li key={s.id}>
+                        <button
+                          type="button"
+                          onClick={() => handleSuggestionClick(s.slug)}
+                          className="flex w-full items-center gap-3 px-3 py-2 text-left transition-colors hover:bg-warm-surface"
+                        >
+                          {s.thumbnail ? (
+                            <img src={s.thumbnail} alt={s.name} className="size-9 shrink-0 rounded-lg object-cover" />
+                          ) : (
+                            <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-warm-surface">
+                              <Search className="size-3.5 text-text-secondary" />
+                            </div>
+                          )}
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-1.5">
+                              <span className="truncate text-xs font-semibold text-text">{s.name}</span>
+                              <span className="inline-flex items-center gap-0.5 text-[10px] text-primary">
+                                <Star className="size-2.5 fill-current" />
+                                {s.star_rating}
+                              </span>
+                            </div>
+                            <p className="truncate text-[10px] text-text-secondary">{s.address}</p>
+                          </div>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+          </div>
         </div>
         <div className="mb-3 flex items-center justify-between gap-3">
           <h4 className="text-xs font-bold uppercase tracking-[0.14em] text-text-secondary">{t('search.priceRange')}</h4>

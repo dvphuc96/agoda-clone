@@ -11,3 +11,5 @@ Artisan::command('inspire', function () {
 Schedule::command('bookings:expire')->everyFiveMinutes();
 
 Schedule::command('bookings:send-reminders')->dailyAt('08:00');
+
+Schedule::command('price-alerts:check')->hourly();

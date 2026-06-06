@@ -128,6 +128,8 @@ export type Messages = {
     errorBody: string;
     recommended: string;
     taxNote: string;
+    suggestedHotels: string;
+    noSuggestions: string;
   };
   hotel: {
     amenities: string;
@@ -683,6 +685,25 @@ export type Messages = {
     history: string;
     noTransactions: string;
     viewBookings: string;
+  };
+  priceAlerts: {
+    title: string;
+    subtitle: string;
+    targetPrice: string;
+    setAlert: string;
+    active: string;
+    inactive: string;
+    delete: string;
+    deleteConfirm: string;
+    noAlerts: string;
+    noAlertsDesc: string;
+    exploreHotels: string;
+    alertCreated: string;
+    alertDeleted: string;
+    currentPrice: string;
+    yourTarget: string;
+    setPriceAlert: string;
+    targetPricePlaceholder: string;
   };
 };
 
