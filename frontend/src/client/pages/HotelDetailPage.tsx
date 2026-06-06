@@ -1,9 +1,12 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useEffect, useRef, lazy, Suspense, useMemo } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
-import { ChevronRight, CalendarDays, ChevronDown } from 'lucide-react';
+import { ChevronRight, CalendarDays, ChevronDown, Bell } from 'lucide-react';
+import { toast } from 'react-toastify';
 import { getCollectionData, hotelsApi, type RoomType } from '../../shared/api/hotels';
+import { priceAlertsApi } from '../../shared/api/priceAlerts';
 import { useI18n } from '../../shared/i18n/useI18n';
+import { useAuth } from '../../shared/contexts/AuthContext';
 import { useRecentlyViewed } from '../hooks/useRecentlyViewed';
 import ImageGallery from '../components/hotel/ImageGallery';
 import HotelInfo from '../components/hotel/HotelInfo';
@@ -21,12 +24,16 @@ const vndFormatter = new Intl.NumberFormat('vi-VN');
 
 export default function HotelDetailPage() {
   const { t } = useI18n();
+  const { isAuthenticated } = useAuth();
+  const queryClient = useQueryClient();
   const { slug } = useParams<{ slug: string }>();
   const [searchParams] = useSearchParams();
   const checkIn = searchParams.get('check_in') || '';
   const checkOut = searchParams.get('check_out') || '';
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
   const [expandedCalendars, setExpandedCalendars] = useState<Set<number>>(new Set());
+  const [showAlertModal, setShowAlertModal] = useState(false);
+  const [targetPrice, setTargetPrice] = useState('');
   const { addHotel } = useRecentlyViewed();
   const recordedRef = useRef<string | null>(null);
 
@@ -55,6 +62,26 @@ export default function HotelDetailPage() {
     queryFn: () => hotelsApi.getRooms(slug!, checkIn, checkOut).then(r => getCollectionData<RoomType>(r.data)),
     enabled: !!slug && !!checkIn && !!checkOut,
   });
+
+  const alertMutation = useMutation({
+    mutationFn: () => priceAlertsApi.create(hotel!.id, Number(targetPrice)),
+    onSuccess: () => {
+      toast.success(t('priceAlerts.alertCreated'));
+      setShowAlertModal(false);
+      setTargetPrice('');
+      queryClient.invalidateQueries({ queryKey: ['price-alerts'] });
+    },
+    onError: () => {
+      toast.error(t('common.error'));
+    },
+  });
+
+  const openAlertModal = () => {
+    if (hotel?.min_price) {
+      setTargetPrice(String(Math.round(Number(hotel.min_price) * 0.9)));
+    }
+    setShowAlertModal(true);
+  };
 
   const seoJsonLd = useMemo(() => {
     if (!hotel) return undefined;
@@ -274,7 +301,57 @@ export default function HotelDetailPage() {
                 >
                   {t('hotel.rooms')}
                 </Link>
+                {isAuthenticated && (
+                  <button
+                    type="button"
+                    onClick={openAlertModal}
+                    className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-primary/30 bg-primary/5 px-4 py-2.5 text-xs font-semibold text-primary transition-colors hover:bg-primary/10"
+                  >
+                    <Bell className="size-3.5" />
+                    {t('priceAlerts.setPriceAlert')}
+                  </button>
+                )}
               </div>
+
+              {/* Price Alert Modal */}
+              {showAlertModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                  <div className="mx-4 w-full max-w-sm rounded-2xl bg-surface p-6 shadow-xl">
+                    <h3 className="text-lg font-bold text-text">{t('priceAlerts.setPriceAlert')}</h3>
+                    <p className="mt-1 text-sm text-text-secondary">{t('priceAlerts.targetPricePlaceholder')}</p>
+                    <input
+                      type="number"
+                      value={targetPrice}
+                      onChange={(e) => setTargetPrice(e.target.value)}
+                      className="mt-3 w-full rounded-xl border border-border bg-bg px-4 py-2.5 text-sm text-text outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                      placeholder={t('priceAlerts.targetPricePlaceholder')}
+                      min={1000}
+                    />
+                    {hotel?.min_price && (
+                      <p className="mt-1.5 text-xs text-text-secondary">
+                        {t('priceAlerts.currentPrice')}: {vndFormatter.format(Number(hotel.min_price))} VND/{t('hotel.perNight').replace('/', '').trim()}
+                      </p>
+                    )}
+                    <div className="mt-4 flex gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setShowAlertModal(false)}
+                        className="flex-1 rounded-xl border border-border px-4 py-2.5 text-sm font-medium text-text-secondary transition-colors hover:bg-bg"
+                      >
+                        {t('common.cancel')}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => alertMutation.mutate()}
+                        disabled={!targetPrice || Number(targetPrice) < 1000 || alertMutation.isPending}
+                        className="flex-1 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary/90 disabled:opacity-50"
+                      >
+                        {alertMutation.isPending ? t('common.loading') : t('priceAlerts.setAlert')}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Trust card */}
               <div className="rounded-2xl bg-surface p-5 ring-1 ring-black/5">
