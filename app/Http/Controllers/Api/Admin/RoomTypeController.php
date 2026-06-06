@@ -7,12 +7,16 @@ use App\Http\Resources\RoomTypeResource;
 use App\Models\Hotel;
 use App\Models\HotelImage;
 use App\Models\RoomType;
+use App\Services\CacheService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class RoomTypeController extends Controller
 {
+    public function __construct(
+        private CacheService $cache,
+    ) {}
     public function index(Hotel $hotel)
     {
         abort_if(!$hotel->exists, 404, 'Hotel not found.');
@@ -39,6 +43,8 @@ class RoomTypeController extends Controller
     {
         $roomType = $hotel->roomTypes()->create($this->validated($request));
 
+        $this->cache->forgetHotel($hotel->slug);
+
         return response()->json(new RoomTypeResource($roomType->load('images')), 201);
     }
 
@@ -51,13 +57,21 @@ class RoomTypeController extends Controller
     {
         $roomType->update($this->validated($request));
 
+        $this->cache->forgetHotel($roomType->hotel->slug);
+        $this->cache->forgetRoomAvailability($roomType->id);
+
         return new RoomTypeResource($roomType->refresh()->load(['hotel.location', 'images']));
     }
 
     public function destroy(RoomType $roomType): JsonResponse
     {
         abort_if($roomType->bookings()->exists(), 422, 'Cannot delete a room type with bookings.');
+        $hotelSlug = $roomType->hotel->slug;
+        $roomTypeId = $roomType->id;
         $roomType->delete();
+
+        $this->cache->forgetHotel($hotelSlug);
+        $this->cache->forgetRoomAvailability($roomTypeId);
 
         return response()->json(['message' => 'Room type deleted.']);
     }
@@ -77,6 +91,8 @@ class RoomTypeController extends Controller
                 'sort_order' => $roomType->images()->count() + $index,
             ]);
         }
+
+        $this->cache->forgetHotel($roomType->hotel->slug);
 
         return new RoomTypeResource($roomType->refresh()->load('images'));
     }

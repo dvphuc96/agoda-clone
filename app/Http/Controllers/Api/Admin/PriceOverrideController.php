@@ -8,12 +8,16 @@ use App\Http\Requests\Admin\UpdatePriceOverrideRequest;
 use App\Http\Resources\PriceOverrideResource;
 use App\Models\PriceOverride;
 use App\Models\RoomType;
+use App\Services\CacheService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class PriceOverrideController extends Controller
 {
+    public function __construct(
+        private CacheService $cache,
+    ) {}
     public function index(Request $request, RoomType $roomType): AnonymousResourceCollection
     {
         $overrides = $roomType->priceOverrides()
@@ -26,6 +30,9 @@ class PriceOverrideController extends Controller
     public function store(StorePriceOverrideRequest $request, RoomType $roomType): JsonResponse
     {
         $override = $roomType->priceOverrides()->create($request->validated());
+
+        $this->cache->forgetRoomAvailability($roomType->id);
+        $this->cache->forgetHotel($roomType->hotel->slug);
 
         return response()->json([
             'data' => new PriceOverrideResource($override),
@@ -42,6 +49,9 @@ class PriceOverrideController extends Controller
     {
         $priceOverride->update($request->validated());
 
+        $this->cache->forgetRoomAvailability($roomType->id);
+        $this->cache->forgetHotel($roomType->hotel->slug);
+
         return response()->json([
             'data' => new PriceOverrideResource($priceOverride),
             'message' => 'Price override updated successfully',
@@ -52,6 +62,9 @@ class PriceOverrideController extends Controller
     {
         $priceOverride->delete();
 
+        $this->cache->forgetRoomAvailability($roomType->id);
+        $this->cache->forgetHotel($roomType->hotel->slug);
+
         return response()->json([
             'message' => 'Price override deleted successfully',
         ]);
@@ -60,6 +73,9 @@ class PriceOverrideController extends Controller
     public function toggleActive(RoomType $roomType, PriceOverride $priceOverride): JsonResponse
     {
         $priceOverride->update(['is_active' => !$priceOverride->is_active]);
+
+        $this->cache->forgetRoomAvailability($roomType->id);
+        $this->cache->forgetHotel($roomType->hotel->slug);
 
         return response()->json([
             'data' => new PriceOverrideResource($priceOverride),

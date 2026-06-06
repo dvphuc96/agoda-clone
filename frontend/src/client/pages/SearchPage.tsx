@@ -8,6 +8,7 @@ import MapPanel from '../components/search/MapPanel';
 import MapViewToggle, { type ViewMode } from '../components/search/MapViewToggle';
 import { getCollectionData, hotelsApi, type Location } from '../../shared/api/hotels';
 import { useI18n } from '../../shared/i18n/useI18n';
+import { useSeo } from '../../shared/hooks/useSeo';
 
 export default function SearchPage() {
   const [searchParams] = useSearchParams();
@@ -29,6 +30,12 @@ export default function SearchPage() {
   const guestLabel = guestCount === 1
     ? t('searchForm.guestsSingular')
     : t('searchForm.guestsPlural', { count: Number.isFinite(guestCount) && guestCount > 0 ? guestCount : guests });
+
+  useSeo({
+    title: t('seo.searchTitle', { location: locationLabel || 'Vietnam' }),
+    description: t('seo.searchDescription', { location: locationLabel || 'Vietnam', count: 100 }),
+    canonicalUrl: `${window.location.origin}/search${location ? `?location=${location}` : ''}`,
+  });
 
   return (
     <div className="bg-bg pt-16 md:pt-20">

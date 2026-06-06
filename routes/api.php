@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\EmailVerificationController;
 use App\Http\Controllers\Api\PasswordResetController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\ChatController;
+use App\Http\Controllers\Api\CurrencyController;
 use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Api\SocialAuthController;
@@ -19,6 +21,9 @@ use App\Http\Controllers\Api\TransferBookingController;
 use App\Http\Controllers\Api\CouponController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\WishlistController;
+use App\Http\Controllers\Api\RecentlyViewController;
+use App\Http\Controllers\Api\LoyaltyController;
+use App\Http\Controllers\Api\Partner\PartnerReviewController;
 use App\Http\Controllers\Api\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Api\Admin\LocationController as AdminLocationController;
 use App\Http\Controllers\Api\Admin\HotelController as AdminHotelController;
@@ -47,8 +52,8 @@ use App\Http\Controllers\Api\Partner\PartnerBookingController;
 use App\Http\Controllers\Api\Partner\PartnerPriceOverrideController;
 use Illuminate\Support\Facades\Route;
 
-// Auth routes
-Route::prefix('auth')->group(function () {
+// Auth routes (rate-limited)
+Route::prefix('auth')->middleware('throttle:auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail']);
@@ -58,17 +63,28 @@ Route::prefix('auth')->group(function () {
     Route::get('/social/{provider}/redirect', [SocialAuthController::class, 'redirect']);
     Route::get('/social/{provider}/callback', [SocialAuthController::class, 'callback']);
     Route::post('/social/{provider}/token', [SocialAuthController::class, 'token']);
+
+    // Email verification
+    Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
+        ->middleware(['signed'])
+        ->name('verification.verify');
 });
 
 // Location routes
 Route::get('/locations', [LocationController::class, 'index']);
 Route::get('/locations/{slug}/hotels', [LocationController::class, 'hotels']);
 
-// Hotel routes
-Route::get('/hotels', [HotelController::class, 'index']);
-Route::get('/hotels/featured', [HotelController::class, 'featured']);
-Route::get('/hotels/{slug}', [HotelController::class, 'show']);
-Route::get('/hotels/{slug}/rooms', [HotelController::class, 'rooms']);
+// Currency routes
+Route::get('/currencies', [CurrencyController::class, 'index']);
+
+// Hotel routes (rate-limited)
+Route::middleware('throttle:search')->group(function () {
+    Route::get('/hotels', [HotelController::class, 'index']);
+    Route::get('/hotels/featured', [HotelController::class, 'featured']);
+    Route::get('/hotels/compare', [HotelController::class, 'compare']);
+    Route::get('/hotels/{slug}', [HotelController::class, 'show']);
+    Route::get('/hotels/{slug}/rooms', [HotelController::class, 'rooms']);
+});
 
 // Room type routes
 Route::get('/room-types/{roomType}', [RoomTypeController::class, 'show']);
@@ -96,9 +112,13 @@ Route::post('/chat/sessions/{session}/messages', [ChatController::class, 'sendMe
 Route::get('/chat/sessions/{session}/messages', [ChatController::class, 'getMessages']);
 
 // Authenticated routes
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/me', [AuthController::class, 'me']);
+
+    // Email verification (authenticated)
+    Route::get('/auth/email/verify', [EmailVerificationController::class, 'notice']);
+    Route::post('/auth/email/resend', [EmailVerificationController::class, 'resend']);
 
     // Coupon validation
     Route::get('/coupons/available', [CouponController::class, 'available']);
@@ -106,20 +126,26 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Profile routes
     Route::get('/profile', [ProfileController::class, 'show']);
-    Route::put('/profile', [ProfileController::class, 'update']);
-    Route::post('/profile/avatar', [ProfileController::class, 'uploadAvatar']);
-    Route::put('/profile/password', [ProfileController::class, 'changePassword']);
+    Route::middleware('verified')->group(function () {
+        Route::put('/profile', [ProfileController::class, 'update']);
+        Route::post('/profile/avatar', [ProfileController::class, 'uploadAvatar']);
+        Route::put('/profile/password', [ProfileController::class, 'changePassword']);
+    });
 
     Route::get('/bookings', [BookingController::class, 'index']);
-    Route::post('/bookings', [BookingController::class, 'store']);
+    Route::middleware('verified')->group(function () {
+        Route::post('/bookings', [BookingController::class, 'store']);
+        Route::post('/bookings/{bookingCode}/cancel-request', [BookingController::class, 'cancelRequest']);
+        Route::delete('/bookings/{bookingCode}', [BookingController::class, 'destroy']);
+        Route::post('/bookings/{bookingCode}/modify', [BookingModificationController::class, 'store']);
+    });
     Route::get('/bookings/{bookingCode}', [BookingController::class, 'show']);
-    Route::post('/bookings/{bookingCode}/cancel-request', [BookingController::class, 'cancelRequest']);
-    Route::delete('/bookings/{bookingCode}', [BookingController::class, 'destroy']);
-    Route::post('/bookings/{bookingCode}/modify', [BookingModificationController::class, 'store']);
     Route::get('/bookings/{bookingCode}/modifications', [BookingModificationController::class, 'index']);
     Route::get('/bookings/{bookingCode}/invoice', [InvoiceController::class, 'download']);
 
-    Route::post('/payments/create', [PaymentController::class, 'create']);
+    Route::middleware(['verified', 'throttle:payments'])->group(function () {
+        Route::post('/payments/create', [PaymentController::class, 'create']);
+    });
     Route::get('/payments/{id}', [PaymentController::class, 'show']);
 
     Route::post('/coupons/validate', [CouponController::class, 'validate']);
@@ -131,19 +157,34 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy']);
 
     Route::get('/transfers/bookings', [TransferBookingController::class, 'index']);
-    Route::post('/transfers/bookings', [TransferBookingController::class, 'store']);
+    Route::middleware('verified')->group(function () {
+        Route::post('/transfers/bookings', [TransferBookingController::class, 'store']);
+        Route::post('/transfers/bookings/{bookingCode}/cancel', [TransferBookingController::class, 'cancel']);
+    });
     Route::get('/transfers/bookings/{bookingCode}', [TransferBookingController::class, 'show']);
-    Route::post('/transfers/bookings/{bookingCode}/cancel', [TransferBookingController::class, 'cancel']);
 
     // Review routes (auth)
-    Route::post('/reviews', [ReviewController::class, 'store']);
-    Route::put('/reviews/{review}', [ReviewController::class, 'update']);
-    Route::delete('/reviews/{review}', [ReviewController::class, 'destroy']);
+    Route::middleware('verified')->group(function () {
+        Route::post('/reviews', [ReviewController::class, 'store']);
+        Route::put('/reviews/{review}', [ReviewController::class, 'update']);
+        Route::delete('/reviews/{review}', [ReviewController::class, 'destroy']);
+    });
 
     Route::get('/wishlists', [WishlistController::class, 'index']);
-    Route::post('/wishlists/toggle', [WishlistController::class, 'toggle']);
-    Route::delete('/wishlists/{hotel}', [WishlistController::class, 'destroy']);
+    Route::middleware('verified')->group(function () {
+        Route::post('/wishlists/toggle', [WishlistController::class, 'toggle']);
+        Route::delete('/wishlists/{hotel}', [WishlistController::class, 'destroy']);
+    });
     Route::get('/wishlists/check/{hotel}', [WishlistController::class, 'check']);
+
+    // Recently viewed
+    Route::get('/recently-viewed', [RecentlyViewController::class, 'index']);
+    Route::post('/recently-viewed', [RecentlyViewController::class, 'store']);
+
+    // Loyalty
+    Route::get('/loyalty', [LoyaltyController::class, 'show']);
+    Route::get('/loyalty/transactions', [LoyaltyController::class, 'transactions']);
+    Route::post('/loyalty/redeem', [LoyaltyController::class, 'redeem']);
 
     // Support tickets
     Route::get('/support/tickets', [SupportTicketController::class, 'index']);
@@ -172,6 +213,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/room-types/{roomType}/price-overrides', [PartnerPriceOverrideController::class, 'store']);
         Route::put('/price-overrides/{priceOverride}', [PartnerPriceOverrideController::class, 'update']);
         Route::patch('/price-overrides/{priceOverride}/toggle-active', [PartnerPriceOverrideController::class, 'toggleActive']);
+
+        Route::post('/reviews/{review}/respond', [PartnerReviewController::class, 'respond']);
     });
 });
 

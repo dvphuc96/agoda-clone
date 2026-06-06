@@ -5,11 +5,15 @@ namespace App\Http\Controllers\Api\Partner;
 use App\Http\Resources\PriceOverrideResource;
 use App\Models\PriceOverride;
 use App\Models\RoomType;
+use App\Services\CacheService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class PartnerPriceOverrideController extends PartnerController
 {
+    public function __construct(
+        private CacheService $cache,
+    ) {}
     public function index(Request $request, RoomType $roomType)
     {
         $this->checkHotelOwnership($roomType->hotel_id);
@@ -35,6 +39,9 @@ class PartnerPriceOverrideController extends PartnerController
 
         $override = $roomType->priceOverrides()->create($data);
 
+        $this->cache->forgetRoomAvailability($roomType->id);
+        $this->cache->forgetHotel($roomType->hotel->slug);
+
         return response()->json([
             'data' => new PriceOverrideResource($override),
             'message' => 'Price override created successfully',
@@ -55,6 +62,9 @@ class PartnerPriceOverrideController extends PartnerController
 
         $priceOverride->update($data);
 
+        $this->cache->forgetRoomAvailability($priceOverride->roomType->id);
+        $this->cache->forgetHotel($priceOverride->roomType->hotel->slug);
+
         return response()->json([
             'data' => new PriceOverrideResource($priceOverride),
             'message' => 'Price override updated successfully',
@@ -66,6 +76,9 @@ class PartnerPriceOverrideController extends PartnerController
         $this->checkHotelOwnership($priceOverride->roomType->hotel_id);
 
         $priceOverride->update(['is_active' => !$priceOverride->is_active]);
+
+        $this->cache->forgetRoomAvailability($priceOverride->roomType->id);
+        $this->cache->forgetHotel($priceOverride->roomType->hotel->slug);
 
         return response()->json([
             'data' => new PriceOverrideResource($priceOverride),

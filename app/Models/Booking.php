@@ -16,7 +16,7 @@ class Booking extends Model
 
     protected $fillable = [
         'user_id', 'room_type_id', 'coupon_id', 'booking_code', 'check_in', 'check_out',
-        'guests', 'special_requests', 'total_price', 'discount_amount', 'status', 'expires_at', 'modified_at',
+        'guests', 'special_requests', 'total_price', 'discount_amount', 'status', 'expires_at', 'modified_at', 'reminder_sent_at',
     ];
 
     protected function casts(): array
@@ -28,6 +28,7 @@ class Booking extends Model
             'discount_amount' => 'decimal:2',
             'expires_at' => 'datetime',
             'modified_at' => 'datetime',
+            'reminder_sent_at' => 'datetime',
         ];
     }
 

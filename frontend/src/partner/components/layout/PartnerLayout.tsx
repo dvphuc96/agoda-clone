@@ -1,10 +1,11 @@
-import { Building2, CalendarCheck, Home, LayoutDashboard, LogOut, Menu } from 'lucide-react';
+import { BarChart3, Building2, CalendarCheck, Home, LayoutDashboard, LogOut, Menu } from 'lucide-react';
 import { useState } from 'react';
 import { Link, NavLink, Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../../../shared/contexts/AuthContext';
 
 const navItems = [
   { to: '/partner', label: 'Dashboard', icon: LayoutDashboard, end: true },
+  { to: '/partner/analytics', label: 'Analytics', icon: BarChart3 },
   { to: '/partner/hotels', label: 'Hotels', icon: Building2 },
   { to: '/partner/bookings', label: 'Bookings', icon: CalendarCheck },
 ];

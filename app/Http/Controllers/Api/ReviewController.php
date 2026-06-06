@@ -31,7 +31,12 @@ class ReviewController extends Controller
 
     public function store(StoreReviewRequest $request): JsonResponse
     {
-        $review = $this->reviewService->createReview($request->user(), $request->validated());
+        $data = $request->validated();
+        if ($request->hasFile('images')) {
+            $data['images'] = $request->file('images');
+        }
+
+        $review = $this->reviewService->createReview($request->user(), $data);
 
         return response()->json(new ReviewResource($review->load('user')), 201);
     }
@@ -46,7 +51,13 @@ class ReviewController extends Controller
             'rating' => ['sometimes', 'integer', 'min:1', 'max:5'],
             'title' => ['nullable', 'string', 'max:255'],
             'comment' => ['nullable', 'string', 'max:1000'],
+            'images' => ['nullable', 'array', 'max:5'],
+            'images.*' => ['image', 'mimes:jpeg,png,webp', 'max:2048'],
         ]);
+
+        if ($request->hasFile('images')) {
+            $data['images'] = $request->file('images');
+        }
 
         $review = $this->reviewService->updateReview($review, $data);
 

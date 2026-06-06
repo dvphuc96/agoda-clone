@@ -19,12 +19,17 @@ class Review extends Model
         'title',
         'comment',
         'status',
+        'images',
+        'owner_response',
+        'owner_responded_at',
     ];
 
     protected function casts(): array
     {
         return [
             'rating' => 'integer',
+            'images' => 'array',
+            'owner_responded_at' => 'datetime',
             'deleted_at' => 'datetime',
         ];
     }

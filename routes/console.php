@@ -9,3 +9,5 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('bookings:expire')->everyFiveMinutes();
+
+Schedule::command('bookings:send-reminders')->dailyAt('08:00');

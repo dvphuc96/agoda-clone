@@ -41,6 +41,19 @@ class BookingResource extends JsonResource
             'total_price' => $this->total_price,
             'discount_amount' => (float) ($this->discount_amount ?? 0),
             'status' => $this->status,
+            'converted' => (function () {
+                $currency = app('currency') ?? 'VND';
+                if ($currency === 'VND') {
+                    return null;
+                }
+                $currencyService = app(\App\Services\CurrencyService::class);
+                return [
+                    'currency' => $currency,
+                    'total_price' => $currencyService->convert((float) $this->total_price, $currency),
+                    'total_price_formatted' => $currencyService->format((float) $this->total_price, $currency),
+                    'discount_amount' => $currencyService->convert((float) ($this->discount_amount ?? 0), $currency),
+                ];
+            })(),
             'expires_at' => $this->expires_at?->format('Y-m-d H:i:s'),
             'remaining_seconds' => $this->remaining_seconds,
             'nights' => $this->check_in->diffInDays($this->check_out),

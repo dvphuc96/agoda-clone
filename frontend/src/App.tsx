@@ -10,6 +10,7 @@ import { AuthProvider } from './shared/contexts/AuthContext';
 import ClientLayout from './client/layouts/ClientLayout';
 import HomePage from './client/pages/HomePage';
 import SearchPage from './client/pages/SearchPage';
+import ComparePage from './client/pages/ComparePage';
 import HotelDetailPage from './client/pages/HotelDetailPage';
 import BookingPage from './client/pages/BookingPage';
 import PaymentPage from './client/pages/PaymentPage';
@@ -22,6 +23,7 @@ import BookingDetailPage from './client/pages/BookingDetailPage';
 import ModifyBookingPage from './client/pages/ModifyBookingPage';
 import NotificationsPage from './client/pages/NotificationsPage';
 import WishlistPage from './client/pages/WishlistPage';
+import LoyaltyPage from './client/pages/LoyaltyPage';
 import ProfilePage from './client/pages/ProfilePage';
 import SupportPage from './client/pages/SupportPage';
 import SocialCallbackPage from './client/pages/SocialCallbackPage';
@@ -50,6 +52,7 @@ const PartnerDashboardPage = lazy(() => import('./partner/pages/PartnerDashboard
 const PartnerHotelsPage = lazy(() => import('./partner/pages/PartnerHotelsPage'));
 const PartnerRoomsPage = lazy(() => import('./partner/pages/PartnerRoomsPage'));
 const PartnerBookingsPage = lazy(() => import('./partner/pages/PartnerBookingsPage'));
+const PartnerAnalyticsPage = lazy(() => import('./partner/pages/PartnerAnalyticsPage'));
 
 const adminFallback = <div className="flex min-h-screen items-center justify-center bg-slate-100 text-slate-600">Loading admin…</div>;
 const partnerFallback = <div className="flex min-h-screen items-center justify-center bg-slate-100 text-slate-600">Loading partner portal…</div>;
@@ -73,6 +76,7 @@ export default function App() {
               <Route element={<ErrorBoundary><ClientLayout /></ErrorBoundary>}>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/search" element={<SearchPage />} />
+                <Route path="/compare" element={<ComparePage />} />
                 <Route path="/hotel/:slug" element={<HotelDetailPage />} />
                 <Route path="/booking/:roomTypeId" element={<BookingPage />} />
                 <Route path="/payment/:bookingCode" element={<PaymentPage />} />
@@ -85,6 +89,7 @@ export default function App() {
                 <Route path="/bookings/:bookingCode/modify" element={<ModifyBookingPage />} />
                 <Route path="/notifications" element={<NotificationsPage />} />
                 <Route path="/wishlist" element={<WishlistPage />} />
+                <Route path="/loyalty" element={<LoyaltyPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/support" element={<SupportPage />} />
                 <Route path="/auth/callback" element={<SocialCallbackPage />} />
@@ -114,6 +119,7 @@ export default function App() {
                 <Route path="hotels" element={<Suspense fallback={partnerFallback}><PartnerHotelsPage /></Suspense>} />
                 <Route path="hotels/:hotelId/rooms" element={<Suspense fallback={partnerFallback}><PartnerRoomsPage /></Suspense>} />
                 <Route path="bookings" element={<Suspense fallback={partnerFallback}><PartnerBookingsPage /></Suspense>} />
+                <Route path="analytics" element={<Suspense fallback={partnerFallback}><PartnerAnalyticsPage /></Suspense>} />
               </Route>
             </Routes>
             <ToastContainer

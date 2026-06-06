@@ -628,6 +628,15 @@ export type Messages = {
     actionDeleted: string;
     actionToggled: string;
   };
+  seo: {
+    homeTitle: string;
+    homeDescription: string;
+    searchTitle: string;
+    searchDescription: string;
+    hotelTitle: string;
+    hotelDescription: string;
+    siteSuffix: string;
+  };
 };
 
 type Join<K, P> = K extends string

@@ -6,6 +6,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use App\Http\Middleware\IsAdmin;
 use App\Http\Middleware\IsHotelOwner;
+use App\Http\Middleware\SetUserCurrency;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -21,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'isAdmin' => IsAdmin::class,
             'isHotelOwner' => IsHotelOwner::class,
         ]);
+        $middleware->api(append: [SetUserCurrency::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

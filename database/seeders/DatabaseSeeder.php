@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             TransferSeeder::class,
             AdminUserSeeder::class,
             CouponSeeder::class,
+            CurrencySeeder::class,
             DemoDataSeeder::class,
         ]);
     }

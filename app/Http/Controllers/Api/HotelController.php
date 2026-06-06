@@ -5,100 +5,102 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\HotelSearchRequest;
 use App\Http\Resources\HotelResource;
+use App\Http\Resources\HotelCompareResource;
 use App\Http\Resources\RoomTypeResource;
 use App\Models\Hotel;
+use App\Services\CacheService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class HotelController extends Controller
 {
+    public function __construct(
+        private CacheService $cache,
+    ) {}
+
     public function index(HotelSearchRequest $request)
     {
-        $hasRoomTypeFilters = $request->filled('guests')
-            || $request->filled('price_min')
-            || $request->filled('price_max')
-            || $request->filled(['check_in', 'check_out']);
+        $cacheKey = $this->cache->hotelSearchKey($request->query());
 
-        $query = Hotel::where('status', 'active')
-            ->with([
-                'location',
-                'images',
-                'roomTypes' => function ($q) use ($request, $hasRoomTypeFilters) {
-                    if ($hasRoomTypeFilters) {
-                        $this->applyRoomTypeSearchFilters($q, $request);
-                    }
-                },
-            ]);
+        return $this->cache->remember($cacheKey, $this->cache->getTtl('search'), function () use ($request) {
+            $hasRoomTypeFilters = $request->filled('guests')
+                || $request->filled('price_min')
+                || $request->filled('price_max')
+                || $request->filled(['check_in', 'check_out']);
 
-        if ($request->user()) {
-            $query->withCount([
-                'wishlists as user_has_wishlisted' => function ($q) use ($request) {
-                    $q->where('user_id', $request->user()->id);
-                },
-            ]);
-        }
+            $query = Hotel::where('status', 'active')
+                ->with([
+                    'location',
+                    'images',
+                    'roomTypes' => function ($q) use ($request, $hasRoomTypeFilters) {
+                        if ($hasRoomTypeFilters) {
+                            $this->applyRoomTypeSearchFilters($q, $request);
+                        }
+                    },
+                ]);
 
-        if ($request->location) {
-            $query->whereHas('location', function ($q) use ($request) {
-                $q->where('slug', $request->location)
-                  ->orWhere('name', 'like', "%{$request->location}%");
-            });
-        }
-
-        if ($q = trim((string) $request->q)) {
-            $escaped = str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $q);
-            $query->whereRaw('LOWER(name) LIKE LOWER(?) ESCAPE ?', ['%' . $escaped . '%', '\\']);
-        }
-
-        if ($request->star) {
-            $query->where('star_rating', $request->star);
-        }
-
-        if ($hasRoomTypeFilters) {
-            $query->whereHas('roomTypes', function ($q) use ($request) {
-                $this->applyRoomTypeSearchFilters($q, $request);
-            });
-        }
-
-        if ($request->types) {
-            $types = collect(explode(',', $request->types))
-                ->map(fn ($type) => trim($type))
-                ->intersect(['hotel', 'villa', 'resort', 'apartment'])
-                ->filter()
-                ->values();
-
-            if ($types->isNotEmpty()) {
-                $query->whereIn('property_type', $types);
-            }
-        }
-
-        if ($request->amenities) {
-            $amenities = collect(explode(',', $request->amenities))
-                ->map(fn ($amenity) => trim($amenity))
-                ->filter()
-                ->values();
-
-            foreach ($amenities as $amenity) {
-                $query->where(function ($q) use ($amenity) {
-                    $q->whereJsonContains('amenities', $amenity)
-                        ->orWhereHas('roomTypes', function ($roomQuery) use ($amenity) {
-                            $roomQuery->whereJsonContains('amenities', $amenity);
-                        });
+            if ($request->location) {
+                $query->whereHas('location', function ($q) use ($request) {
+                    $q->where('slug', $request->location)
+                      ->orWhere('name', 'like', "%{$request->location}%");
                 });
             }
-        }
 
-        match ($request->sort) {
-            'price_asc' => $query->join('room_types', 'hotels.id', '=', 'room_types.hotel_id')
-                ->orderBy('room_types.price_per_night', 'asc'),
-            'price_desc' => $query->join('room_types', 'hotels.id', '=', 'room_types.hotel_id')
-                ->orderBy('room_types.price_per_night', 'desc'),
-            'rating' => $query->orderBy('star_rating', 'desc'),
-            default => $query->orderBy('created_at', 'desc'),
-        };
+            if ($q = trim((string) $request->q)) {
+                $escaped = str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $q);
+                $query->whereRaw('LOWER(name) LIKE LOWER(?) ESCAPE ?', ['%' . $escaped . '%', '\\']);
+            }
 
-        $hotels = $query->paginate(12);
-        return HotelResource::collection($hotels->appends($request->query()));
+            if ($request->star) {
+                $query->where('star_rating', $request->star);
+            }
+
+            if ($hasRoomTypeFilters) {
+                $query->whereHas('roomTypes', function ($q) use ($request) {
+                    $this->applyRoomTypeSearchFilters($q, $request);
+                });
+            }
+
+            if ($request->types) {
+                $types = collect(explode(',', $request->types))
+                    ->map(fn ($type) => trim($type))
+                    ->intersect(['hotel', 'villa', 'resort', 'apartment'])
+                    ->filter()
+                    ->values();
+
+                if ($types->isNotEmpty()) {
+                    $query->whereIn('property_type', $types);
+                }
+            }
+
+            if ($request->amenities) {
+                $amenities = collect(explode(',', $request->amenities))
+                    ->map(fn ($amenity) => trim($amenity))
+                    ->filter()
+                    ->values();
+
+                foreach ($amenities as $amenity) {
+                    $query->where(function ($q) use ($amenity) {
+                        $q->whereJsonContains('amenities', $amenity)
+                            ->orWhereHas('roomTypes', function ($roomQuery) use ($amenity) {
+                                $roomQuery->whereJsonContains('amenities', $amenity);
+                            });
+                    });
+                }
+            }
+
+            match ($request->sort) {
+                'price_asc' => $query->join('room_types', 'hotels.id', '=', 'room_types.hotel_id')
+                    ->orderBy('room_types.price_per_night', 'asc'),
+                'price_desc' => $query->join('room_types', 'hotels.id', '=', 'room_types.hotel_id')
+                    ->orderBy('room_types.price_per_night', 'desc'),
+                'rating' => $query->orderBy('star_rating', 'desc'),
+                default => $query->orderBy('created_at', 'desc'),
+            };
+
+            $hotels = $query->paginate(12);
+            return HotelResource::collection($hotels->appends($request->query()));
+        }, ['search']);
     }
 
     private function applyRoomTypeSearchFilters($query, HotelSearchRequest $request): void
@@ -126,17 +128,16 @@ class HotelController extends Controller
 
     public function show(string $slug)
     {
-        $hotel = Hotel::where('slug', $slug)
-            ->where('status', 'active')
-            ->with(['location', 'images', 'roomTypes.images', 'reviews.user'])
-            ->when(auth()->check(), function ($q) {
-                $q->with(['wishlists' => function ($q) {
-                    $q->where('user_id', auth()->id());
-                }]);
-            })
-            ->firstOrFail();
+        $cacheKey = $this->cache->hotelDetailKey($slug);
 
-        return response()->json(new HotelResource($hotel));
+        return $this->cache->remember($cacheKey, $this->cache->getTtl('detail'), function () use ($slug) {
+            $hotel = Hotel::where('slug', $slug)
+                ->where('status', 'active')
+                ->with(['location', 'images', 'roomTypes.images', 'reviews.user'])
+                ->firstOrFail();
+
+            return response()->json(new HotelResource($hotel));
+        }, ['hotel:' . $slug]);
     }
 
     public function rooms(string $slug, Request $request)
@@ -146,25 +147,69 @@ class HotelController extends Controller
             'check_out' => ['required', 'date', 'after:check_in'],
         ]);
 
-        $hotel = Hotel::where('slug', $slug)->where('status', 'active')->firstOrFail();
+        $cacheKey = $this->cache->hotelRoomsKey($slug, $request->check_in, $request->check_out);
 
-        $roomTypes = $hotel->roomTypes()->with('images')->get()->map(function ($roomType) use ($request) {
-            $roomType->check_in = $request->check_in;
-            $roomType->check_out = $request->check_out;
-            return $roomType;
-        });
+        return $this->cache->remember($cacheKey, $this->cache->getTtl('rooms'), function () use ($slug, $request) {
+            $hotel = Hotel::where('slug', $slug)->where('status', 'active')->firstOrFail();
 
-        return RoomTypeResource::collection($roomTypes);
+            $roomTypes = $hotel->roomTypes()->with('images')->get()->map(function ($roomType) use ($request) {
+                $roomType->check_in = $request->check_in;
+                $roomType->check_out = $request->check_out;
+                return $roomType;
+            });
+
+            return RoomTypeResource::collection($roomTypes);
+        }, ['hotel:' . $slug]);
     }
 
     public function featured()
     {
-        $hotels = Hotel::where('status', 'active')
-            ->with(['location', 'images', 'roomTypes'])
-            ->inRandomOrder()
-            ->limit(6)
-            ->get();
+        $cacheKey = $this->cache->featuredHotelsKey();
 
-        return HotelResource::collection($hotels);
+        return $this->cache->remember($cacheKey, $this->cache->getTtl('featured'), function () {
+            $hotels = Hotel::where('status', 'active')
+                ->with(['location', 'images', 'roomTypes'])
+                ->inRandomOrder()
+                ->limit(6)
+                ->get();
+
+            return HotelResource::collection($hotels);
+        });
+    }
+
+    public function compare(Request $request)
+    {
+        $request->validate([
+            'slugs' => 'required|string|min:1',
+        ]);
+
+        $slugs = collect(explode(',', $request->slugs))
+            ->map(fn ($s) => trim($s))
+            ->filter()
+            ->unique()
+            ->take(3)
+            ->values();
+
+        if ($slugs->count() < 2) {
+            return response()->json(['message' => 'At least 2 hotels are required for comparison.'], 422);
+        }
+
+        $hotels = Hotel::where('status', 'active')
+            ->whereIn('slug', $slugs)
+            ->with([
+                'location',
+                'images',
+                'roomTypes.images',
+                'roomTypes.priceOverrides' => fn ($q) => $q->where('is_active', true),
+                'reviews' => fn ($q) => $q->where('status', 'approved'),
+            ])
+            ->get()
+            ->keyBy('slug');
+
+        $ordered = $slugs->map(fn ($slug) => $hotels->get($slug))->filter();
+
+        return response()->json([
+            'data' => HotelCompareResource::collection($ordered),
+        ]);
     }
 }

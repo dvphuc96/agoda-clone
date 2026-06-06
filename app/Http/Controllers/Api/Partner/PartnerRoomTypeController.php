@@ -5,11 +5,15 @@ namespace App\Http\Controllers\Api\Partner;
 use App\Http\Resources\RoomTypeResource;
 use App\Models\Hotel;
 use App\Models\RoomType;
+use App\Services\CacheService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class PartnerRoomTypeController extends PartnerController
 {
+    public function __construct(
+        private CacheService $cache,
+    ) {}
     public function index(Request $request, Hotel $hotel)
     {
         $this->checkHotelOwnership($hotel->id);
@@ -37,6 +41,8 @@ class PartnerRoomTypeController extends PartnerController
         ]);
 
         $roomType = $hotel->roomTypes()->create($data);
+
+        $this->cache->forgetHotel($hotel->slug);
 
         return response()->json([
             'data' => new RoomTypeResource($roomType->load('images')),
@@ -67,6 +73,9 @@ class PartnerRoomTypeController extends PartnerController
         ]);
 
         $roomType->update($data);
+
+        $this->cache->forgetHotel($roomType->hotel->slug);
+        $this->cache->forgetRoomAvailability($roomType->id);
 
         return new RoomTypeResource($roomType->refresh()->load(['hotel.location', 'images']));
     }

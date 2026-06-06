@@ -111,6 +111,46 @@ export function getCollectionData<T>(payload: CollectionPayload<T> | unknown): T
   return [];
 }
 
+export interface HotelCompareData {
+  id: number;
+  name: string;
+  slug: string;
+  property_type: string;
+  description: string | null;
+  address: string;
+  star_rating: number;
+  latitude: string | null;
+  longitude: string | null;
+  checkin_time: string;
+  checkout_time: string;
+  amenities: string[];
+  phone: string | null;
+  location: Location;
+  image: HotelImage | null;
+  images: HotelImage[];
+  pricing: { min_price: number; max_price: number; avg_price: number };
+  rooms_summary: {
+    count: number;
+    total_rooms: number;
+    max_guests: number;
+    types: Array<{
+      id: number;
+      name: string;
+      price_per_night: number;
+      max_guests: number;
+      bed_type: string;
+      size_sqm: number | null;
+      amenities: string[];
+      image: HotelImage | null;
+    }>;
+  };
+  reviews_summary: {
+    count: number;
+    avg_rating: number | null;
+    rating_distribution: Record<number, number>;
+  };
+}
+
 export interface HotelSearchParams {
   location?: string;
   check_in?: string;
@@ -133,6 +173,9 @@ export const hotelsApi = {
   searchHotels: (params: HotelSearchParams) => apiClient.get<PaginatedResponse<Hotel>>('/hotels', { params }),
 
   getFeatured: () => apiClient.get<ResourceCollection<Hotel> | Hotel[]>('/hotels/featured'),
+
+  compare: (slugs: string[]) =>
+    apiClient.get<ResourceCollection<HotelCompareData>>('/hotels/compare', { params: { slugs: slugs.join(',') } }),
 
   getHotel: (slug: string) =>
     apiClient.get<ApiResource<Hotel>>(`/hotels/${slug}`)

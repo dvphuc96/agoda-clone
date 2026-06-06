@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense, useMemo } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { ChevronRight, CalendarDays, ChevronDown } from 'lucide-react';
 import { getCollectionData, hotelsApi, type RoomType } from '../../shared/api/hotels';
@@ -13,6 +13,7 @@ import { getRoomsSectionLinkClasses } from '../components/hotel/roomsSectionStat
 import ReviewSummary from '../components/hotel/ReviewSummary';
 import ReviewList from '../components/hotel/ReviewList';
 import ErrorState from '../components/common/ErrorState';
+import { useSeo } from '../../shared/hooks/useSeo';
 
 const AvailabilityCalendar = lazy(() => import('../../shared/components/AvailabilityCalendar'));
 
@@ -53,6 +54,64 @@ export default function HotelDetailPage() {
     queryKey: ['hotel-rooms', slug, checkIn, checkOut],
     queryFn: () => hotelsApi.getRooms(slug!, checkIn, checkOut).then(r => getCollectionData<RoomType>(r.data)),
     enabled: !!slug && !!checkIn && !!checkOut,
+  });
+
+  const seoJsonLd = useMemo(() => {
+    if (!hotel) return undefined;
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'Hotel',
+      name: hotel.name,
+      description: hotel.description || undefined,
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: hotel.address,
+        addressLocality: hotel.location?.name,
+        addressCountry: 'VN',
+      },
+      starRating: hotel.star_rating > 0 ? { '@type': 'Rating', ratingValue: hotel.star_rating } : undefined,
+      ...(hotel.latitude && hotel.longitude ? {
+        geo: {
+          '@type': 'GeoCoordinates',
+          latitude: parseFloat(hotel.latitude),
+          longitude: parseFloat(hotel.longitude),
+        },
+      } : {}),
+      ...(hotel.min_price ? { priceRange: `${hotel.min_price} VND` } : {}),
+      ...(hotel.avg_rating != null && hotel.reviews_count ? {
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: hotel.avg_rating,
+          reviewCount: hotel.reviews_count,
+        },
+      } : {}),
+      image: hotel.images?.map(img => img.image_path) ?? [],
+      amenityFeature: hotel.amenities?.map(a => ({
+        '@type': 'LocationFeatureSpecification',
+        name: a,
+        value: true,
+      })) ?? [],
+      url: `${window.location.origin}/hotel/${hotel.slug}`,
+    };
+  }, [hotel]);
+
+  const seoDescription = hotel
+    ? t('seo.hotelDescription', {
+        name: hotel.name,
+        location: hotel.location?.name || '',
+        description: (hotel.description || '').slice(0, 160),
+      }).slice(0, 160)
+    : undefined;
+
+  useSeo({
+    title: hotel
+      ? t('seo.hotelTitle', { name: hotel.name, location: hotel.location?.name || '' })
+      : 'GoStay',
+    description: seoDescription,
+    ogImage: hotel?.images?.[0]?.image_path,
+    ogType: 'hotel',
+    canonicalUrl: hotel ? `${window.location.origin}/hotel/${hotel.slug}` : undefined,
+    jsonLd: seoJsonLd,
   });
 
   if (isLoading) {

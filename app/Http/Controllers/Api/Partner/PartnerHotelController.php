@@ -4,11 +4,15 @@ namespace App\Http\Controllers\Api\Partner;
 
 use App\Http\Resources\HotelResource;
 use App\Models\Hotel;
+use App\Services\CacheService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class PartnerHotelController extends PartnerController
 {
+    public function __construct(
+        private CacheService $cache,
+    ) {}
     public function index(Request $request)
     {
         $hotels = auth()->user()->ownedHotels()
@@ -44,6 +48,8 @@ class PartnerHotelController extends PartnerController
         ]);
 
         $hotel->update($data);
+
+        $this->cache->forgetHotel($hotel->slug);
 
         return new HotelResource($hotel->refresh()->load(['location', 'images', 'roomTypes']));
     }

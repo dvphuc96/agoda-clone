@@ -23,6 +23,9 @@ class RoomTypeResource extends JsonResource
             $priceBreakdown = $resolved['breakdown'];
         }
 
+        $currency = app('currency') ?? 'VND';
+        $currencyService = app(\App\Services\CurrencyService::class);
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -34,6 +37,14 @@ class RoomTypeResource extends JsonResource
             'effective_total' => $effectiveTotal,
             'average_per_night' => $averagePrice,
             'price_breakdown' => $priceBreakdown,
+            'converted' => $this->when($currency !== 'VND', fn() => [
+                'currency' => $currency,
+                'price_per_night' => $currencyService->convert((float) $this->price_per_night, $currency),
+                'price_formatted' => $currencyService->format((float) $this->price_per_night, $currency),
+                'effective_total' => $effectiveTotal ? $currencyService->convert((float) $effectiveTotal, $currency) : null,
+                'effective_total_formatted' => $effectiveTotal ? $currencyService->format((float) $effectiveTotal, $currency) : null,
+                'average_per_night' => $averagePrice ? $currencyService->convert((float) $averagePrice, $currency) : null,
+            ]),
             'amenities' => $this->amenities,
             'total_rooms' => $this->total_rooms,
             'images' => HotelImageResource::collection($this->whenLoaded('images')),

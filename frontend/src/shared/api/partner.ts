@@ -11,8 +11,44 @@ export interface PartnerStats {
   avg_rating: number;
 }
 
+export interface RevenueChartData {
+  date: string;
+  revenue: number;
+  bookings: number;
+}
+
+export interface OccupancyData {
+  date: string;
+  total_rooms: number;
+  booked_rooms: number;
+  rate: number;
+}
+
+export interface TopRoomType {
+  room_type: { id: number; name: string };
+  revenue: number;
+  bookings: number;
+  occupancy_rate: number;
+}
+
+export interface ReviewsSummary {
+  avg_rating: number;
+  total_reviews: number;
+  response_rate: number;
+  rating_trend: { date: string; avg_rating: number }[];
+}
+
 export const partnerApi = {
   stats: () => apiClient.get<PartnerStats>('/partner/dashboard/stats'),
+
+  revenueChart: (params?: { period?: string; start_date?: string; end_date?: string }) =>
+    apiClient.get<{ data: RevenueChartData[] }>('/partner/dashboard/revenue-chart', { params }),
+  occupancy: (params?: { start_date?: string; end_date?: string }) =>
+    apiClient.get<{ data: OccupancyData[] }>('/partner/dashboard/occupancy', { params }),
+  topRoomTypes: (params?: { limit?: number }) =>
+    apiClient.get<{ data: TopRoomType[] }>('/partner/dashboard/top-room-types', { params }),
+  reviewsSummary: () =>
+    apiClient.get<{ data: ReviewsSummary }>('/partner/dashboard/reviews-summary'),
 
   hotels: () => apiClient.get<Hotel[]>('/partner/hotels'),
   hotel: (id: number) => apiClient.get<Hotel>(`/partner/hotels/${id}`),

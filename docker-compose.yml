@@ -38,6 +38,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_started
     networks:
       - gostay
     environment:
@@ -54,8 +56,9 @@ services:
       - DB_USERNAME=docker
       - DB_PASSWORD=docker
       - SESSION_DRIVER=database
-      - CACHE_STORE=database
+      - CACHE_STORE=redis
       - QUEUE_CONNECTION=database
+      - REDIS_HOST=redis
       - VNPAY_TMN_CODE=
       - VNPAY_HASH_SECRET=
       - VNPAY_URL=https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
@@ -85,6 +88,18 @@ services:
     depends_on:
       - backend
 
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: gostay-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - gostay
+
   # phpMyAdmin (optional — database management)
   phpmyadmin:
     image: phpmyadmin:latest
@@ -110,3 +125,4 @@ networks:
 volumes:
   storage:
   frontend_node_modules:
+  redis_data:

@@ -11,7 +11,9 @@
         "laravel/framework": "^13.8",
         "laravel/sanctum": "*",
         "laravel/socialite": "^5.27",
-        "laravel/tinker": "^3.0"
+        "laravel/tinker": "^3.0",
+        "predis/predis": "^3.5",
+        "spatie/laravel-permission": "^8.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

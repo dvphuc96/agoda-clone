@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import apiClient from '../../shared/api/client';
 
 export interface RecentlyViewedHotel {
   id: number;
@@ -65,6 +66,12 @@ export function useRecentlyViewed() {
         writeStorage(updated);
         return updated;
       });
+
+      // Sync to backend if authenticated
+      const token = localStorage.getItem('auth_token');
+      if (token) {
+        apiClient.post('/recently-viewed', { hotel_id: hotel.id }).catch(() => {});
+      }
     },
     [],
   );

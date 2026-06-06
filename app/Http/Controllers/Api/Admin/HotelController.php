@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\HotelResource;
 use App\Models\Hotel;
 use App\Models\HotelImage;
+use App\Services\CacheService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -13,6 +14,9 @@ use Illuminate\Support\Str;
 
 class HotelController extends Controller
 {
+    public function __construct(
+        private CacheService $cache,
+    ) {}
     public function index(Request $request)
     {
         $query = Hotel::query()
@@ -46,8 +50,12 @@ class HotelController extends Controller
     {
         $data = $this->validated($request);
         $data['slug'] = $data['slug'] ?? Str::slug($data['name']);
+        $hotel = Hotel::create($data)->load(['location', 'images', 'roomTypes']);
 
-        return response()->json(new HotelResource(Hotel::create($data)->load(['location', 'images', 'roomTypes'])), 201);
+        $this->cache->forget($this->cache->featuredHotelsKey());
+        $this->cache->flushTag('search');
+
+        return response()->json(new HotelResource($hotel), 201);
     }
 
     public function show(Hotel $hotel): HotelResource
@@ -61,13 +69,18 @@ class HotelController extends Controller
         $data['slug'] = $data['slug'] ?? Str::slug($data['name']);
         $hotel->update($data);
 
+        $this->cache->forgetHotel($hotel->slug);
+
         return new HotelResource($hotel->refresh()->load(['location', 'images', 'roomTypes.images']));
     }
 
     public function destroy(Hotel $hotel): JsonResponse
     {
         abort_if($hotel->roomTypes()->whereHas('bookings')->exists(), 422, 'Cannot delete a hotel with bookings.');
+        $slug = $hotel->slug;
         $hotel->delete();
+
+        $this->cache->forgetHotel($slug);
 
         return response()->json(['message' => 'Hotel deleted.']);
     }
@@ -75,6 +88,8 @@ class HotelController extends Controller
     public function toggleStatus(Hotel $hotel): HotelResource
     {
         $hotel->update(['status' => $hotel->status === 'active' ? 'inactive' : 'active']);
+
+        $this->cache->forgetHotel($hotel->slug);
 
         return new HotelResource($hotel->refresh()->load(['location', 'images', 'roomTypes']));
     }
@@ -94,13 +109,20 @@ class HotelController extends Controller
             ]);
         }
 
+        $this->cache->forgetHotel($hotel->slug);
+
         return new HotelResource($hotel->refresh()->load(['location', 'images', 'roomTypes']));
     }
 
     public function destroyImage(HotelImage $image): JsonResponse
     {
+        $hotelSlug = $image->hotel->slug ?? null;
         Storage::disk('public')->delete($image->image_path);
         $image->delete();
+
+        if ($hotelSlug) {
+            $this->cache->forgetHotel($hotelSlug);
+        }
 
         return response()->json(['message' => 'Image deleted.']);
     }

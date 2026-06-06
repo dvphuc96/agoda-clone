@@ -21,6 +21,8 @@ class StoreReviewRequest extends FormRequest
             'comment' => ['nullable', 'string', 'max:1000'],
             'hotel_id' => ['required', 'exists:hotels,id'],
             'booking_id' => ['nullable', 'exists:bookings,id'],
+            'images' => ['nullable', 'array', 'max:5'],
+            'images.*' => ['image', 'mimes:jpeg,png,webp', 'max:2048'],
         ];
     }
 
