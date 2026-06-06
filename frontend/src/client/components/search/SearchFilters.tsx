@@ -78,7 +78,7 @@ function filterReducer(state: FilterState, action: FilterAction): FilterState {
         ...state,
         selectedAmenities: state.selectedAmenities.includes(action.value)
           ? state.selectedAmenities.filter((amenity) => amenity !== action.value)
-          : [...state.selectedAmenities, amenity],
+          : [...state.selectedAmenities, action.value],
       };
     case 'clear':
       return {
@@ -111,7 +111,7 @@ export default function SearchFilters() {
 
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [debouncedQ, setDebouncedQ] = useState('');
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const suggestRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { Search, X, Star } from 'lucide-react';
+import { Search, Star } from 'lucide-react';
 import apiClient from '../../../shared/api/client';
 import { useI18n } from '../../../shared/i18n/useI18n';
 
@@ -23,7 +23,7 @@ export default function SearchAutocomplete({ value, onSelect }: SearchAutocomple
   const [isOpen, setIsOpen] = useState(false);
   const [debouncedQ, setDebouncedQ] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { t } = useI18n();
   const navigate = useNavigate();
 
