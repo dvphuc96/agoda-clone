@@ -20,6 +20,7 @@ export const en: Messages = {
     next: 'Next',
     cancel: 'Cancel',
     status: 'Status',
+    back: 'Back',
   },
   nav: {
     hotels: 'Hotels',

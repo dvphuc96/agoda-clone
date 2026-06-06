@@ -22,6 +22,7 @@ export type Messages = {
     next: string;
     cancel: string;
     status: string;
+    back: string;
   };
   nav: {
     hotels: string;
@@ -453,6 +454,7 @@ export type Messages = {
     approved: string;
     rejected: string;
     loadMore: string;
+    ownerResponse: string;
   };
   bookingModification: {
     pageTitle: string;
@@ -636,6 +638,51 @@ export type Messages = {
     hotelTitle: string;
     hotelDescription: string;
     siteSuffix: string;
+  };
+  bookingReminder: {
+    title: string;
+    message: string;
+    checkInTomorrow: string;
+    hotelInfo: string;
+    address: string;
+    checkInTime: string;
+    phone: string;
+    viewBooking: string;
+  };
+  compare: {
+    title: string;
+    priceRange: string;
+    perNight: string;
+    rating: string;
+    reviews: string;
+    address: string;
+    checkInOut: string;
+    checkIn: string;
+    checkOut: string;
+    rooms: string;
+    roomTypes: string;
+    totalRooms: string;
+    amenities: string;
+    roomDetails: string;
+    night: string;
+    viewHotel: string;
+    addCompare: string;
+    selected: string;
+    startCompare: string;
+  };
+  loyalty: {
+    title: string;
+    points: string;
+    worth: string;
+    lifetime: string;
+    multiplier: string;
+    pointsNeeded: string;
+    totalEarned: string;
+    availableDiscount: string;
+    earnRate: string;
+    history: string;
+    noTransactions: string;
+    viewBookings: string;
   };
 };
 

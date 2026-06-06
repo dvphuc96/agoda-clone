@@ -49,10 +49,11 @@ export default function PartnerAnalyticsPage() {
     queryFn: async () => (await partnerApi.reviewsSummary()).data.data,
   });
 
-  const totalRevenue = (revenue.data ?? []).reduce((sum, r) => sum + r.revenue, 0);
-  const totalBookings = (revenue.data ?? []).reduce((sum, r) => sum + r.bookings, 0);
-  const avgRevenuePerDay = (revenue.data ?? []).length > 0
-    ? totalRevenue / revenue.data.length
+  const revenueItems = revenue.data ?? [];
+  const totalRevenue = revenueItems.reduce((sum, r) => sum + r.revenue, 0);
+  const totalBookings = revenueItems.reduce((sum, r) => sum + r.bookings, 0);
+  const avgRevenuePerDay = revenueItems.length > 0
+    ? totalRevenue / revenueItems.length
     : 0;
 
   const tabs: { key: Tab; label: string }[] = [

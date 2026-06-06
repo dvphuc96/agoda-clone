@@ -20,6 +20,7 @@ export const vi: Messages = {
     next: 'Tiếp',
     cancel: 'Hủy',
     status: 'Trạng thái',
+    back: 'Quay lại',
   },
   nav: {
     hotels: 'Khách sạn',
